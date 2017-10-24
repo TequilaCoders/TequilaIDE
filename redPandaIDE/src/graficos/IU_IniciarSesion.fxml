@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" minHeight="600.0" minWidth="800.0" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graficos.IU_IniciarSesionController">
+   <children>
+      <Pane layoutX="430.0" prefHeight="700.0" prefWidth="470.0" style="-fx-background-color: #1A405F;">
+         <children>
+            <TextField fx:id="txUsuario" layoutX="82.0" layoutY="237.0" prefHeight="35.0" prefWidth="300.0">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+               </font>
+            </TextField>
+            <Label layoutX="82.0" layoutY="122.0" text="Empieza a programar" textFill="WHITE">
+               <font>
+                  <Font name="Proxima Nova ScOsf Th Regular" size="24.0" />
+               </font>
+            </Label>
+            <PasswordField fx:id="txClave" layoutX="82.0" layoutY="331.0" prefHeight="35.0" prefWidth="300.0">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+               </font>
+            </PasswordField>
+            <Label fx:id="lbUsuario" layoutX="82.0" layoutY="213.0" text="Usuario:" textFill="#6494ed">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lbClave" layoutX="82.0" layoutY="309.0" text="Contraseña:" textFill="#6494ed">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Bold" size="16.0" />
+               </font>
+            </Label>
+            <JFXButton fx:id="botonIngresar" layoutX="82.0" layoutY="388.0" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #228B22;" text="Ingresar" textFill="WHITE">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
+               </font>
+            </JFXButton>
+            <Hyperlink fx:id="botonCrearCuenta" layoutX="133.0" layoutY="432.0" onAction="#eventoCrearCuenta" text="¿No tienes cuenta? Crea una" underline="true">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Bold" size="15.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="botonAleman" layoutX="367.0" layoutY="31.0" text="Deutsche" textFill="#17a589" underline="true">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Bold" size="16.0" />
+               </font>
+            </Hyperlink>
+            <Hyperlink fx:id="botonIngles" layoutX="299.0" layoutY="31.0" text="English" textFill="#17a589" underline="true">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Bold" size="16.0" />
+               </font>
+            </Hyperlink>
+         </children>
+      </Pane>
+      <Pane prefHeight="700.0" prefWidth="430.0" style="-fx-background-color: #0F1F38;">
+         <children>
+            <Label layoutX="64.0" layoutY="108.0" text="redPanda IDE" textFill="WHITE">
+               <font>
+                  <Font name="Proxima Nova ScOsf Th Regular" size="40.0" />
+               </font>
+            </Label>
+            <Label layoutX="66.0" layoutY="152.0" text="Una herramienta para el desarrollo colaborativo" textFill="#6494ed">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="66.0" layoutY="269.0" text="Acerca de:" textFill="WHITE">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="66.0" layoutY="287.0" text="Universidad Veracruzana" textFill="#17a589">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="66.0" layoutY="301.0" prefHeight="16.0" prefWidth="300.0" text="Tecnologías para la construcción de Software" textFill="#6494ed">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="65.0" layoutY="356.0" text="Desarrolladores:" textFill="WHITE">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="66.0" layoutY="373.0" prefHeight="45.0" prefWidth="233.0" text="- Miguel Alejandro Cámara Árciga&#10;- Alan Yoset García Cruz" textFill="#6494ed">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="66.0" layoutY="444.0" text="Académico: " textFill="WHITE">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="66.0" layoutY="461.0" text="Juan Carlos Pérez Arriaga" textFill="#6494ed">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Label>
+            <Hyperlink layoutX="61.0" layoutY="600.0" text="Proyecto GitHub" textFill="#17a589" underline="true">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
+               </font>
+            </Hyperlink>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
