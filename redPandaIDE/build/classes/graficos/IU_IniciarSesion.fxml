@@ -38,7 +38,7 @@
                   <Font name="Proxima Nova Alt Rg Bold" size="16.0" />
                </font>
             </Label>
-            <JFXButton fx:id="botonIngresar" layoutX="82.0" layoutY="388.0" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #FF228B22;" text="Ingresar" textFill="WHITE">
+            <JFXButton fx:id="botonIngresar" layoutX="82.0" layoutY="388.0" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #228B22;" text="Ingresar" textFill="WHITE">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
                </font>

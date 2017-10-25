@@ -14,7 +14,7 @@
             <Font name="Proxima Nova ScOsf Th Regular" size="24.0" />
          </font>
       </Label>
-      <JFXButton layoutX="85.0" layoutY="489.0" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #31B404;" text="Crear cuenta" textFill="WHITE">
+      <JFXButton layoutX="85.0" layoutY="489.0" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #228B22;" text="Crear cuenta" textFill="WHITE">
          <font>
             <Font name="Proxima Nova Alt Rg Bold" size="16.0" />
          </font>
