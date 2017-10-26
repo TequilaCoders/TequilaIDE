@@ -7,6 +7,7 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -17,7 +18,7 @@ import javafx.stage.Stage;
 public class RedPandaIDE extends Application {
 
   private Stage stagePrincipal;
-  private AnchorPane rootPane;
+  private TabPane rootPane;
 
   @Override
   public void start(Stage stagePrincipal) throws Exception {
@@ -26,14 +27,17 @@ public class RedPandaIDE extends Application {
   }
 
   public void mostrarVentanaPrincipal() {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/graficos/IU_IniciarSesion.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/graficos/IU_Editor.fxml"));
     try {
-      rootPane = (AnchorPane) loader.load();
+      rootPane = (TabPane) loader.load();
     } catch (IOException ex) {
       Logger.getLogger(RedPandaIDE.class.getName()).log(Level.SEVERE, null, ex);
     }
     Scene scene = new Scene(rootPane);
+    scene.getStylesheets().add(getClass().getResource("/recursos/estilos/tabPane.css").toExternalForm());
+    scene.getStylesheets().add(getClass().getResource("/recursos/estilos/editorArea.css").toExternalForm());
     stagePrincipal.setScene(scene);
+    stagePrincipal.setMaximized(true);
     stagePrincipal.show();
   }
 

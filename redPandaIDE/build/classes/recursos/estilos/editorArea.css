@@ -1,0 +1,21 @@
+.text-area {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent, #3c3c3c, transparent, #3c3c3c;
+	-fx-text-fill: #FFFFFF;
+    -fx-highlight-fill: #7ecfff;
+    -fx-font-size: 20px;
+    -fx-font-family: "Proxima Nova Alt Rg";
+}
+
+.text-area .content {
+    -fx-background-color: transparent, #3c3c3c, transparent, #3c3c3c;
+    -fx-padding: 0px;
+}
+
+.text-area:focused .content {
+    -fx-background-color: transparent, #3c3c3c, transparent, #3c3c3c;
+}
+
+.text-area:focused {
+    -fx-highlight-fill: #7ecfff;
+}
