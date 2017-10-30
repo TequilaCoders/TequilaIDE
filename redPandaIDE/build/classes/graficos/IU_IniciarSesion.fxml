@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" minHeight="600.0" minWidth="800.0" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graficos.IU_IniciarSesionController">
+<AnchorPane id="AnchorPane" minHeight="556.0" minWidth="800.0" prefHeight="596.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graficos.IU_IniciarSesionController">
    <children>
-      <Pane layoutX="430.0" prefHeight="700.0" prefWidth="470.0" style="-fx-background-color: #1A405F;">
+      <Pane layoutX="431.0" prefHeight="597.0" prefWidth="469.0" style="-fx-background-color: #1A405F;">
          <children>
             <TextField fx:id="txUsuario" layoutX="82.0" layoutY="237.0" prefHeight="35.0" prefWidth="300.0">
                <font>
@@ -60,7 +60,7 @@
             </Hyperlink>
          </children>
       </Pane>
-      <Pane prefHeight="700.0" prefWidth="430.0" style="-fx-background-color: #0F1F38;">
+      <Pane prefHeight="597.0" prefWidth="431.0" style="-fx-background-color: #0F1F38;">
          <children>
             <Label layoutX="64.0" layoutY="108.0" text="redPanda IDE" textFill="WHITE">
                <font>
@@ -107,7 +107,7 @@
                   <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
                </font>
             </Label>
-            <Hyperlink layoutX="61.0" layoutY="600.0" text="Proyecto GitHub" textFill="#17a589" underline="true">
+            <Hyperlink layoutX="57.0" layoutY="495.0" text="Proyecto GitHub" textFill="#17a589" underline="true">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
                </font>
