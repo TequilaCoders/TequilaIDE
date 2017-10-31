@@ -1,47 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Pane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../../../../GitHub/redPanda%20IDE/redPandaIDE/src/recursos/estilos/tabPane.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graficos.IU_EditorController">
-  <tabs>
-    <Tab text="editorArea.ccs">
-         <content>
-            <BorderPane prefHeight="200.0" prefWidth="200.0">
-               <center>
-                  <TextArea fx:id="textAreaUno" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                     <stylesheets>
-                        <URL value="@../../../../GitHub/redPanda%20IDE/redPandaIDE/src/recursos/estilos/editorArea.css" />
-                        <URL value="@../../../../GitHub/redPanda%20IDE/redPandaIDE/src/recursos/estilos/editorArea.css" />
-                     </stylesheets>
-                  </TextArea>
-               </center>
-               <left>
-                  <VBox fx:id="vBoxTabUno" prefHeight="361.0" prefWidth="31.0" style="-fx-background-color: #3c3c3c;" BorderPane.alignment="CENTER" />
-               </left>
-            </BorderPane>
-         </content>
-    </Tab>
-    <Tab text="Archivo.java">
-         <content>
-            <BorderPane prefHeight="200.0" prefWidth="200.0">
-               <center>
-                  <TextArea prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                     <stylesheets>
-                        <URL value="@../../../../GitHub/redPanda%20IDE/redPandaIDE/src/recursos/estilos/editorArea.css" />
-                        <URL value="@../../../../GitHub/redPanda%20IDE/redPandaIDE/src/recursos/estilos/editorArea.css" />
-                     </stylesheets>
-                  </TextArea>
-               </center>
-               <left>
-                  <VBox fx:id="vBoxTab2" prefHeight="361.0" prefWidth="31.0" style="-fx-background-color: #3c3c3c;" BorderPane.alignment="CENTER" />
-               </left>
-            </BorderPane>
-         </content>
-    </Tab>
-  </tabs>
-</TabPane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <MenuBar stylesheets="@../recursos/estilos/styleMenuBar.css" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu fx:id="menuFile" mnemonicParsing="false" text="Archivo">
+            <items>
+              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" text="Nuevo" />
+            </items>
+          </Menu>
+          <Menu fx:id="menuTools" mnemonicParsing="false" text="Herramientas">
+            <items>
+              <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="Opciones" />
+            </items>
+          </Menu>
+          <Menu fx:id="menuHelp" mnemonicParsing="false" text="Ayuda">
+            <items>
+              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="Acerca de" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <bottom>
+      <Pane prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #ABB1BA;" BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" stylesheets="@../recursos/estilos/styleTabPane.css" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

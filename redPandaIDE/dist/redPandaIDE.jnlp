@@ -2,14 +2,14 @@
 <jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="redPandaIDE.jnlp">
   <information>
     <title>redPandaIDE</title>
-    <vendor>alanc</vendor>
+    <vendor>Alan Yoset García Cruz</vendor>
     <description>null</description>
     <offline-allowed/>
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
     <jar href="lib\jfoenix.jar" size="2384520" download="eager" />
-    <jar href="redPandaIDE.jar" size="13329" download="eager" />
+    <jar href="redPandaIDE.jar" size="17681" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="redPandaIDE" >
     <param name="requiredFXVersion" value="8.0+"/>
