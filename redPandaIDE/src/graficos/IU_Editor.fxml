@@ -11,19 +11,19 @@
    <top>
       <MenuBar stylesheets="@../recursos/estilos/styleMenuBar.css" BorderPane.alignment="CENTER">
         <menus>
-          <Menu fx:id="menuFile" mnemonicParsing="false" text="Archivo">
+          <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
             <items>
-              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" text="Nuevo" />
+              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" text="%menuNew" />
             </items>
           </Menu>
-          <Menu fx:id="menuTools" mnemonicParsing="false" text="Herramientas">
+          <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
             <items>
-              <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="Opciones" />
+              <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="%menuOptions" />
             </items>
           </Menu>
-          <Menu fx:id="menuHelp" mnemonicParsing="false" text="Ayuda">
+          <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
             <items>
-              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="Acerca de" />
+              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="%menuAbout" />
             </items>
           </Menu>
         </menus>
