@@ -32,8 +32,9 @@ public class IU_FlowPaneNuevoProyectoController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     listeners();
-    accionBotones();
+    actionButtons();
   }  
+  
   
   public void listeners(){
     paneNuevoArchivo.setOnMouseEntered((e -> imageVNuevoArchivo.setImage(new Image("/graficos/iconos/mouse_sobreArchivo.png"))));
@@ -41,11 +42,11 @@ public class IU_FlowPaneNuevoProyectoController implements Initializable {
  
   }
   
-  public void accionBotones(){
-    paneNuevoArchivo.setOnMouseClicked((e -> crearArchivo()));
+  public void actionButtons(){
+    paneNuevoArchivo.setOnMouseClicked((e -> createFile()));
   }
   
-  public void crearArchivo(){
+  public void createFile(){
     //Funcion pendiente //
     //Aqui se carga el editor//
   }

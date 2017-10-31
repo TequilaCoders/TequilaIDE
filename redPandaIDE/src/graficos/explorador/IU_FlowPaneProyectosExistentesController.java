@@ -40,15 +40,15 @@ public class IU_FlowPaneProyectosExistentesController implements Initializable {
   private FlowPane flowPaneProyectosExistentes;
 
   Pane pane;
-  
+
   ArrayList<Pane> panelesProyectos = new ArrayList<>();
-  
+
   List<Proyecto> listaProyectos = new ArrayList<>();
-  
+
   int idProyecto;
-  
-  public IU_FlowPaneProyectosExistentesController(){
-    
+
+  public IU_FlowPaneProyectosExistentesController() {
+
   }
 
   /**
@@ -62,7 +62,7 @@ public class IU_FlowPaneProyectosExistentesController implements Initializable {
   }
 
   public void listeners() {
-    
+
     for (int i = 0; i < panelesProyectos.size(); i++) {
       ImageView im1 = (ImageView) panelesProyectos.get(i).getChildren().get(0);
       panelesProyectos.get(i).setOnMouseEntered((e -> im1.setImage(new Image("/graficos/iconos/proyecto_seleccionado.png"))));
@@ -72,15 +72,16 @@ public class IU_FlowPaneProyectosExistentesController implements Initializable {
     }
 
   }
-  
-  public void accionBotones(){
+
+  public void accionBotones() {
     for (int i = 0; i < panelesProyectos.size(); i++) {
-      
+
       ImageView im1 = (ImageView) panelesProyectos.get(i).getChildren().get(0);
       Label nombre = (Label) panelesProyectos.get(i).getChildren().get(1);
       panelesProyectos.get(i).setOnMouseClicked((new EventHandler<MouseEvent>() {
         @Override
         public void handle(MouseEvent e) {
+
           im1.setImage(new Image("/graficos/iconos/proyecto_clic.png"));
           buscarIDProyecto(nombre.getText());
           cargarFlowPaneArchivos();

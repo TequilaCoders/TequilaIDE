@@ -24,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 /**
@@ -263,8 +264,14 @@ public class IU_ExploradorController implements Initializable {
 
         imageVNuevoProyecto.setImage(new Image("/graficos/iconos/nuevo_proyectoClic.png"));
 
+        //se crea el cargador del nuevo componente
+        FXMLLoader crearProyecto = new FXMLLoader(getClass().getResource("IU_NuevoProyecto.fxml"));
         //se crea un nuevo Stage con el fxml IU_NuevoProyecto y se muestra
-        ventanaIngresoDatosNuevoProyecto();
+        Stage iuCrearNuevoProyecto;
+        iuCrearNuevoProyecto = ventanaIngresoDatosNuevoProyecto(crearProyecto);
+        iuCrearNuevoProyecto.show();
+        
+        listenerNuevoProyectoCerrado(crearProyecto, iuCrearNuevoProyecto);
       }
     }));
     //--------------------------------------------------------------------------------------------
@@ -272,10 +279,7 @@ public class IU_ExploradorController implements Initializable {
    buttonProyectos.setOnAction((e-> crearFlowPaneProyectosExistentes()));
   }
 
-  public void ventanaIngresoDatosNuevoProyecto() {
-
-    FXMLLoader crearProyecto = new FXMLLoader(getClass().getResource("IU_NuevoProyecto.fxml"));
-
+  public Stage ventanaIngresoDatosNuevoProyecto(FXMLLoader crearProyecto) {
     try {
       anchorPaneNuevoProyecto = crearProyecto.load();
     } catch (IOException ex) {
@@ -286,28 +290,29 @@ public class IU_ExploradorController implements Initializable {
 
     iuCrearNuevoProyecto.initOwner(anchorPanePrincipal.getScene().getWindow());
     Scene escena = new Scene(anchorPaneNuevoProyecto);
+    iuCrearNuevoProyecto.initStyle(StageStyle.UNDECORATED);
     iuCrearNuevoProyecto.setScene(escena);
-
-    iuCrearNuevoProyecto.show();
-
+    
+    return iuCrearNuevoProyecto;
+  }
+  
+  public void listenerNuevoProyectoCerrado(FXMLLoader crearProyecto, Stage iuCrearNuevoProyecto){
     //en el evento de cierre de la IU_NuevoProyecto, se obtendra el atributo estatusDeGaurdar, el cual
     //dira si se guardo un proyecto o no
     iuCrearNuevoProyecto.setOnHiding(new EventHandler<WindowEvent>() {
       @Override
       public void handle(WindowEvent we) {
-        System.out.println("se esta cerrando");
         estatusDeGuardado = crearProyecto.<IU_NuevoProyectoController>getController().getEstatusDeGuardado();
         //se comprueba si se guardo o no un proyecto para mostrar los archivos de este
         if (estatusDeGuardado) {
           //se muestra la ventana 
-          System.out.println("se esta abriendo la nueva ventana");
           crearFlowPaneNuevoProyecto();
         }
       }
     });
   }
   
-  public void crearFlowPaneNuevoProyecto(){
+  public FlowPane crearFlowPaneNuevoProyecto(){
     try {
       FlowPane crearProyecto = FXMLLoader.load(getClass().getResource("/graficos/explorador/IU_FlowPaneNuevoProyecto.fxml"));
       flowPaneProyectos.getChildren().setAll(crearProyecto);
@@ -319,9 +324,10 @@ public class IU_ExploradorController implements Initializable {
     paneNuevoProyecto.setVisible(false);
     flowPaneProyectos.setVisible(true);
     
+    return flowPaneProyectos;
   } 
   
-  public void crearFlowPaneProyectosExistentes(){
+  public FlowPane crearFlowPaneProyectosExistentes(){
     try {
       FlowPane crearProyecto = FXMLLoader.load(getClass().getResource("/graficos/explorador/IU_FlowPaneProyectosExistentes.fxml"));
       flowPaneProyectos.getChildren().setAll(crearProyecto);
@@ -336,6 +342,7 @@ public class IU_ExploradorController implements Initializable {
     flowPaneProyectos.setVisible(true);
     paneNuevoProyecto.setVisible(true);
     
+    return flowPaneProyectos;
   } 
   
   

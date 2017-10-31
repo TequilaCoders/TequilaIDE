@@ -15,7 +15,12 @@
 
 <AnchorPane id="AnchorPane" fx:id="anchorPanePrincipal" prefHeight="522.0" prefWidth="838.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graficos.explorador.IU_ExploradorController">
    <children>
-      <JFXNodesList fx:id="nodeListPerfil" layoutX="691.0" layoutY="10.0" prefHeight="4.0" prefWidth="0.0" />
+      <FlowPane fx:id="flowPaneProyectos" layoutX="199.0" layoutY="73.0" prefHeight="419.0" prefWidth="638.0" visible="false" />
+      <Pane layoutX="690.0" layoutY="7.0" prefHeight="235.0" prefWidth="149.0">
+         <children>
+            <JFXNodesList fx:id="nodeListPerfil" prefHeight="4.0" prefWidth="0.0" />
+         </children>
+      </Pane>
       <Pane layoutY="57.0" prefHeight="465.0" prefWidth="172.0" style="-fx-background-color: #1995AD;">
          <children>
             <JFXButton id="botonMenu" fx:id="buttonProyectos" layoutX="-6.0" layoutY="77.0" opacity="0.63" prefHeight="32.0" prefWidth="185.0" ripplerFill="#1995ad" style="-fx-background-color: #A1D6E2;" stylesheets="@../estilos/cssBotonesMenu.css" text="                     Mis Proyectos" textAlignment="RIGHT">
@@ -94,6 +99,5 @@
             </Label>
          </children>
       </Pane>
-      <FlowPane fx:id="flowPaneProyectos" layoutX="199.0" layoutY="73.0" prefHeight="419.0" prefWidth="638.0" visible="false" />
    </children>
 </AnchorPane>
