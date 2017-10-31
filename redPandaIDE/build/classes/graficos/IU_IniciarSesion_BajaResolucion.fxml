@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" minHeight="529.0" minWidth="717.0" prefHeight="558.0" prefWidth="717.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graficos.IU_IniciarSesionController">
+<AnchorPane id="AnchorPane" minHeight="529.0" minWidth="717.0" prefHeight="558.0" prefWidth="717.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graficos.IU_LogInController">
    <children>
       <Pane layoutX="349.0" prefHeight="558.0" prefWidth="368.0" style="-fx-background-color: #1A405F;">
          <children>
@@ -43,7 +43,7 @@
                   <Font name="Proxima Nova Alt Rg Regular" size="13.0" />
                </font>
             </JFXButton>
-            <Hyperlink fx:id="botonCrearCuenta" layoutX="103.0" layoutY="364.0" onAction="#eventoCrearCuenta" text="¿No tienes cuenta? Crea una" underline="true">
+            <Hyperlink fx:id="botonCrearCuenta" layoutX="103.0" layoutY="364.0" onAction="#eventLogIn" text="¿No tienes cuenta? Crea una" underline="true">
                <font>
                   <Font name="Proxima Nova Alt Rg Bold" size="12.0" />
                </font>

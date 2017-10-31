@@ -14,36 +14,31 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-
 /**
  *
  * @author Alan Yoset García Cruz
  */
 public class RedPandaIDE extends Application {
 
-  private Stage stagePrincipal;
-  private AnchorPane rootPane;
+    private Stage stagePrincipal;
+    private AnchorPane rootPane;
 
-  @Override
-  public void start(Stage stagePrincipal) throws Exception {
-    this.stagePrincipal = stagePrincipal;
-    mostrarVentanaPrincipal();
-  }
+    @Override
+    public void start(Stage stagePrincipal) throws Exception {
+        this.stagePrincipal = stagePrincipal;
+        mostrarVentanaPrincipal();
+    }
 
-  /*
+    /*
   Metodo que carga el escenario IU_Ingreso o IU_Ingreso_BajaResolucion, dependiendo de la resolución
   de la pantalla
-  */
-  public void mostrarVentanaPrincipal() {
+     */
+    public void mostrarVentanaPrincipal() {
+        ResourceBundle bundle = ResourceBundle.getBundle("recursos/idiomas.idioma");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graficos/IU_LogIn.fxml"), bundle);
 
-    ResourceBundle bundle = ResourceBundle.getBundle("recursos/idiomas.idioma");
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/graficos/IU_LogIn.fxml"),bundle);
-
-    //EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
-
-    //EntityManager entitymanager = emfactory.createEntityManager();
-    //se obtiene la resolución de la pantalla
-    /*Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
+        //se obtiene la resolución de la pantalla
+        /*Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
 
     double ancho = visualBounds.getWidth();
     double alto = visualBounds.getHeight();
@@ -56,24 +51,22 @@ public class RedPandaIDE extends Application {
     } else {
       loader = new FXMLLoader(getClass().getResource("/graficos/IU_IniciarSesion.fxml"));
     }*/
-
-    try {
-      rootPane = (AnchorPane) loader.load();
-    } catch (IOException ex) {
-      Logger.getLogger(RedPandaIDE.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            rootPane = (AnchorPane) loader.load();
+        } catch (IOException ex) {
+            Logger.getLogger(RedPandaIDE.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Scene scene = new Scene(rootPane);
+        stagePrincipal.initStyle(StageStyle.UNDECORATED);
+        stagePrincipal.setScene(scene);
+        //stagePrincipal.setMaximized(true);
+        stagePrincipal.show();
     }
-    Scene scene = new Scene(rootPane);
- 
-    stagePrincipal.initStyle(StageStyle.UNDECORATED);
-    stagePrincipal.setScene(scene);
-    //stagePrincipal.setMaximized(true);
-    stagePrincipal.show();
-  }
 
-  /**
-   * @param args the command line arguments
-   */
-  public static void main(String[] args) {
-    launch(args);
-  }
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

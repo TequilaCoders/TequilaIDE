@@ -27,7 +27,7 @@
                   <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
                </font>
             </JFXPasswordField>
-            <JFXButton fx:id="botonIngresar" layoutX="92.0" layoutY="396.0" prefHeight="35.0" prefWidth="290.0" style="-fx-background-color: #228B22;" text="%buttonAccess" textFill="WHITE">
+            <JFXButton fx:id="botonIngresar" layoutX="92.0" layoutY="396.0" onAction="#eventLogIn" prefHeight="35.0" prefWidth="290.0" style="-fx-background-color: #228B22;" text="%buttonAccess" textFill="WHITE">
                <font>
                   <Font name="Proxima Nova Alt Rg Bold" size="14.0" />
                </font>

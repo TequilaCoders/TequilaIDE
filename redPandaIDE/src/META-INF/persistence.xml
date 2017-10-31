@@ -4,6 +4,7 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>entidades.Proyecto</class>
     <class>entidades.Archivo</class>
+    <class>entidades.Usuario</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/tequilaide?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="tequiladmin"/>

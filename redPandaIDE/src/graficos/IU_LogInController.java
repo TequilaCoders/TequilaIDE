@@ -82,5 +82,20 @@ public class IU_LogInController implements Initializable {
         newScene = new Scene(reloadWindow);
         mainWindow.setScene(newScene);
     }
+    
+    @FXML
+    void eventLogIn(ActionEvent event) {
+        AnchorPane pane = null;
+        try {
+            pane = FXMLLoader.load(getClass().getResource("/graficos/explorador/IU_Explorador.fxml"), rb);
+        } catch (IOException ex) {
+            Logger.getLogger(IU_LogInController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Scene scenePartida = new Scene(pane);
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(scenePartida);
+        stage.show();
+
+    }
 
 }
