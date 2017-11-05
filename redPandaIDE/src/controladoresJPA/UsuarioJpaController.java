@@ -1,7 +1,7 @@
 package controladoresJPA;
 
 import controladoresJPA.exceptions.NonexistentEntityException;
-import entidades.Usuario;
+import entities.Usuario;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.fxmisc.richtext.CodeArea?>
+
+<<<<<<< HEAD:redPandaIDE/build/classes/graficos/IU_Tab.fxml
+<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graficos.IU_TabController">
+   <content>
+      <BorderPane fx:id="borderPane" prefHeight="400.0" prefWidth="600.0">
+         <left>
+            <VBox fx:id="vboxNumberLines" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="40.0" stylesheets="@../recursos/estilos/styleVBox.css" BorderPane.alignment="CENTER" />
+         </left>
+         <center>
+            <CodeArea fx:id="taEditor" autoScrollOnDragDesired="false" onKeyTyped="#addNumberLines" prefHeight="192.0" prefWidth="558.0" stylesheets="@../recursos/estilos/java-keywords.css" BorderPane.alignment="CENTER" />
+         </center>
+      </BorderPane>
+   </content>
+</ScrollPane>
+=======
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.IU_TabController">
+   <center>
+      <TextArea fx:id="taEditor" onKeyTyped="#addNumberLines" prefHeight="200.0" prefWidth="200.0" stylesheets="@../recursos/estilos/styleTextArea.css" BorderPane.alignment="CENTER" />
+   </center>
+   <left>
+      <VBox fx:id="vboxNumberLines" prefHeight="400.0" prefWidth="40.0" stylesheets="@../recursos/estilos/styleVBox.css" BorderPane.alignment="CENTER" />
+   </left>
+</BorderPane>
+>>>>>>> 81f60f122bbc879e172676070b0168e74e77132c:redPandaIDE/src/graphics/IU_Tab.fxml

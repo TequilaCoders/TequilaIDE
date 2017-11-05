@@ -37,23 +37,23 @@ public class RedPandaIDE extends Application {
   de la pantalla
      */
     public void mostrarVentanaPrincipal() {
-        ResourceBundle bundle = ResourceBundle.getBundle("recursos/idiomas.idioma");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graficos/IU_Editor.fxml"), bundle);
+        ResourceBundle bundle = ResourceBundle.getBundle("resources/languages.language");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/IU_LogIn.fxml"), bundle);
 
         //se obtiene la resolución de la pantalla
         /*Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
 
-    double ancho = visualBounds.getWidth();
-    double alto = visualBounds.getHeight();
+        double ancho = visualBounds.getWidth();
+        double alto = visualBounds.getHeight();
 
-    FXMLLoader loader = null;
-    
-    //dependiendo del alto y ancho de la pantalla se cargara la interfaz de baja o alta resolución 
-    if (alto < 1400 || ancho < 800) {
-      loader = new FXMLLoader(getClass().getResource("/graficos/explorador/IU_Explorador.fxml"));
-    } else {
-      loader = new FXMLLoader(getClass().getResource("/graficos/IU_IniciarSesion.fxml"));
-    }*/
+        FXMLLoader loader = null;
+
+        //dependiendo del alto y ancho de la pantalla se cargara la interfaz de baja o alta resolución 
+        if (alto < 1400 || ancho < 800) {
+          loader = new FXMLLoader(getClass().getResource("/graficos/explorador/IU_Explorador.fxml"));
+        } else {
+          loader = new FXMLLoader(getClass().getResource("/graficos/IU_IniciarSesion.fxml"));
+        }*/
         try {
             rootPane = (BorderPane) loader.load();
         } catch (IOException ex) {
@@ -62,7 +62,7 @@ public class RedPandaIDE extends Application {
         Scene scene = new Scene(rootPane);
         //stagePrincipal.initStyle(StageStyle.UNDECORATED);
         stagePrincipal.setScene(scene);
-       //stagePrincipal.setMaximized(true);
+        //stagePrincipal.setMaximized(true);
         stagePrincipal.show();
     }
 
