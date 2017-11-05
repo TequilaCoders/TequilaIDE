@@ -1,6 +1,5 @@
 package graficos;
 
-
 import com.jfoenix.controls.JFXDrawer;
 import java.io.IOException;
 import java.net.URL;
@@ -52,7 +51,7 @@ public class IU_LogInController implements Initializable {
         drawerRegistrar.open();
     }
 
-    public void closeDrawer() {
+    public void closeDrawer() {  
         drawerRegistrar.close();
         drawerRegistrar.toBack();
     }
@@ -95,7 +94,7 @@ public class IU_LogInController implements Initializable {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(scenePartida);
         stage.show();
-
     }
+    
 
 }

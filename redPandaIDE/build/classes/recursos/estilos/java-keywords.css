@@ -1,0 +1,38 @@
+.keyword {
+    -fx-fill: #F92772;
+    -fx-font-weight: bold;
+}
+.semicolon {
+    -fx-font-weight: bold;
+}
+.paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.bracket {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: teal;
+    -fx-font-weight: bold;
+}
+.string {
+    -fx-fill: yellow;
+}
+
+.comment {
+	-fx-fill: #41423D;
+}
+
+.paragraph-box:has-caret {
+    -fx-background-color: #39392F;
+}
+
+.code-area{
+    -fx-background-insets: 0;
+    -fx-background-color: transparent, #272822, transparent, #272822;
+    -fx-highlight-fill: #383830;
+    -fx-font-size: 20px;
+    -fx-font-family: "Courier New";
+}

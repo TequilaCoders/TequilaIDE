@@ -13,7 +13,8 @@
     <jar href="lib\jfoenix.jar" size="2384520" download="eager" />
     <jar href="lib\mysql-connector-java-5.1.23-bin.jar" size="834126" download="eager" />
     <jar href="lib\org.eclipse.persistence.jpa.jpql_2.5.2.v20140319-9ad6abd.jar" size="1366247" download="eager" />
-    <jar href="redPandaIDE.jar" size="86528" download="eager" />
+    <jar href="lib\richtextfx-demos-fat-0.7-M5.jar" size="866119" download="eager" />
+    <jar href="redPandaIDE.jar" size="91185" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="redPandaIDE" >
     <param name="requiredFXVersion" value="8.0+"/>
