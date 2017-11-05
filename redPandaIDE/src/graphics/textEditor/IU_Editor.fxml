@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.textEditor.IU_EditorController">
+   <top>
+      <MenuBar stylesheets="@../../resources/styles/styleMenuBar.css" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
+            <items>
+              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addTab" text="%menuNew" />
+            </items>
+          </Menu>
+          <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
+            <items>
+              <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="%menuOptions" />
+            </items>
+          </Menu>
+          <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
+            <items>
+              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="%menuAbout" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+   <bottom>
+      <Pane prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #ABB1BA;" BorderPane.alignment="CENTER" />
+   </bottom>
+   <center>
+      <TabPane fx:id="tabPaneArchivos" prefHeight="30.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Alaska%20Iced%20Tea.css" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>

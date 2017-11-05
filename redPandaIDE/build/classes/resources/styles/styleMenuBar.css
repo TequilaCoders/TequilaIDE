@@ -1,0 +1,15 @@
+.menu-bar{
+  -fx-background-color: #FFFFFF;
+  -fx-border-width: 2;
+}
+
+.menu-bar .label {
+    -fx-font-size: 16px;
+    -fx-font-family: "Proxima Nova Alt Rg";
+    -fx-text-fill: black;
+}
+
+.menu-item .label{
+  -fx-font-size: 14px;
+  -fx-label-line-length: 8;
+}

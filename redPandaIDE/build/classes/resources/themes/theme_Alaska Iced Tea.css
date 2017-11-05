@@ -1,0 +1,82 @@
+.text {
+    -fx-fill: black;
+}
+
+.keyword {
+    -fx-fill: #0081B8;
+    -fx-font-weight: bold;
+}
+.semicolon {
+    -fx-fill: blue;
+    -fx-font-weight: bold;
+}
+.paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.bracket {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: teal;
+    -fx-font-weight: bold;
+}
+.string {
+    -fx-fill: #00CCAC;
+}
+
+.comment {
+	-fx-fill: #90908A;
+}
+
+.paragraph-box:has-caret {
+    -fx-background-color: rgba(63, 191, 191, 0.26);
+}
+
+.code-area{
+    -fx-background-insets: 0;
+    -fx-background-color: transparent, white, transparent, white;
+    -fx-highlight-fill: #E9A0FE;
+    -fx-font-size: 20px;
+    -fx-font-family: "Courier New";
+}
+
+VBox {
+  -fx-background-color: white;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.tab-pane {
+    -fx-tab-min-width:90px;
+    -fx-tab-min-height: 30px;
+    -fx-background-color: #00A3E5;
+}
+
+.tab{
+    -fx-background-insets: 0 1 0 1,0,0;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #3BCBEE;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: white;
+}
+
+.tab .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-font-family: "Proxima Nova Alt Rg";
+
+}
+
+.tab:selected .tab-label { 
+    -fx-alignment: CENTER;
+    -fx-text-fill: black;
+}
