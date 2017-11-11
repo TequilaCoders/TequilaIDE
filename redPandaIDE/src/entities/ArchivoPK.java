@@ -75,7 +75,7 @@ public class ArchivoPK implements Serializable {
 
   @Override
   public String toString() {
-    return "entidades.ArchivoPK[ idArchivo=" + idArchivo + ", proyectoidProyecto=" + proyectoidProyecto + " ]";
+    return "entities.ArchivoPK[ idArchivo=" + idArchivo + ", proyectoidProyecto=" + proyectoidProyecto + " ]";
   }
 
 }

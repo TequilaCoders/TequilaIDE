@@ -1,3 +1,9 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
 package entities;
 
 import java.io.Serializable;
@@ -22,7 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
   @NamedQuery(name = "Archivo.findByIdArchivo", query = "SELECT a FROM Archivo a WHERE a.archivoPK.idArchivo = :idArchivo"),
   @NamedQuery(name = "Archivo.findByNombre", query = "SELECT a FROM Archivo a WHERE a.nombre = :nombre"),
   @NamedQuery(name = "Archivo.findByTipo", query = "SELECT a FROM Archivo a WHERE a.tipo = :tipo"),
-  @NamedQuery(name = "Archivo.findByProyectoidProyecto", query = "SELECT a FROM Archivo a WHERE a.archivoPK.proyectoidProyecto = :proyectoidProyecto")})
+  @NamedQuery(name = "Archivo.findByProyectoidProyecto", query = "SELECT a FROM Archivo a WHERE a.archivoPK.proyectoidProyecto = :proyectoidProyecto"),
+  @NamedQuery(name = "Archivo.findByContenido", query = "SELECT a FROM Archivo a WHERE a.contenido = :contenido")})
 public class Archivo implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -34,6 +41,8 @@ public class Archivo implements Serializable {
   @Basic(optional = false)
   @Column(name = "tipo")
   private String tipo;
+  @Column(name = "contenido")
+  private String contenido;
 
   public Archivo() {
   }
@@ -76,6 +85,14 @@ public class Archivo implements Serializable {
     this.tipo = tipo;
   }
 
+  public String getContenido() {
+    return contenido;
+  }
+
+  public void setContenido(String contenido) {
+    this.contenido = contenido;
+  }
+
   @Override
   public int hashCode() {
     int hash = 0;
@@ -98,7 +115,7 @@ public class Archivo implements Serializable {
 
   @Override
   public String toString() {
-    return "entidades.Archivo[ archivoPK=" + archivoPK + " ]";
+    return "entities.Archivo[ archivoPK=" + archivoPK + " ]";
   }
 
 }

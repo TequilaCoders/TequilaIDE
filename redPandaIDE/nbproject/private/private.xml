@@ -5,10 +5,10 @@
         <group>
             <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/fileExplorer/IU_FileExplorerController.java</file>
             <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/textEditor/IU_EditorController.java</file>
-            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/main/RedPandaIDE.java</file>
             <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/textEditor/IU_TabController.java</file>
-            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/fileExplorer/IU_FileExplorer.fxml</file>
             <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/fileExplorer/IU_FlowPaneMyProjectsController.java</file>
+            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/textEditor/IU_Tab.fxml</file>
+            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/fileExplorer/IU_FlowPaneFilesController.java</file>
             <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/login/IU_LogInController.java</file>
         </group>
     </open-files>

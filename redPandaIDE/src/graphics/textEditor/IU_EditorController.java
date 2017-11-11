@@ -4,6 +4,7 @@ import entities.Archivo;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,10 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 /**
  * FXML Controller class
@@ -27,7 +32,7 @@ import javafx.stage.Stage;
  */
 public class IU_EditorController implements Initializable {
 
-    @FXML
+    /*@FXML
     private Menu menuFile;
     @FXML
     private MenuItem menuItemNew;
@@ -38,11 +43,11 @@ public class IU_EditorController implements Initializable {
     @FXML
     private Menu menuHelp;
     @FXML
-    private MenuItem menuItemAbout;
+    private MenuItem menuItemAbout;*/
     @FXML
     private TabPane tabPaneArchivos;
     
-    private ArrayList<Archivo> fileList;
+    List<Archivo> fileList = new ArrayList<>();
     
     private int idProject;
     
@@ -62,7 +67,8 @@ public class IU_EditorController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.rb = rb; 
-        System.out.println("id projecto = "+ idProject);
+        loadFiles();
+        showFirstTab(checkNumberOfFiles());
     }    
     
        @FXML
@@ -77,6 +83,76 @@ public class IU_EditorController implements Initializable {
         tabPaneArchivos.getSelectionModel().selectLast();
       } catch (IOException ex) {
         Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    
+    /**
+     * Metodo sobrecargado para crear la primera pestaña de un proyecto que no tiene archivos
+     */
+    @FXML
+    void addTab() {
+      try {
+        Tab tab = new Tab();
+        tab.setText("untitled");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Tab.fxml"), rb);
+        
+        ScrollPane newFile = loader.load();
+        
+        tab.setContent(newFile);
+        
+        
+        tabPaneArchivos.getTabs().add(tab); 
+        tabPaneArchivos.getSelectionModel().selectLast();
+      } catch (IOException ex) {
+        Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    
+    /**
+     * Metodo sobrecargado para crear la primera pestaña de un proyecto que tiene archivos
+     */
+    @FXML
+    void addTab(String title, String content) {
+      try {
+        Tab tab = new Tab();
+        tab.setText(title);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Tab.fxml"), rb);
+        
+        IU_TabController controller = new IU_TabController();
+        loader.setController(controller);
+        
+        ScrollPane newFile = loader.load();
+        controller.setContent(content);
+        tab.setContent(newFile);
+        
+        tabPaneArchivos.getTabs().add(tab); 
+        tabPaneArchivos.getSelectionModel().selectLast();
+      } catch (IOException ex) {
+        Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
+    
+    /**
+     * Method used to see when to open a new tab, and when to open an existing file
+     * @return 
+     */
+    public int checkNumberOfFiles(){
+      int fileCuantity;
+      
+      if (fileList.isEmpty()) {
+        return fileCuantity = 0;
+      } else {
+        return fileCuantity = fileList.size();
+      }
+    }
+    
+    public void showFirstTab(int fileCuantity){
+      if (fileCuantity == 0) {
+        addTab();
+      } else {
+        String name = fileList.get(0).getNombre();
+        String content = fileList.get(0).getContenido();
+        addTab(name, content);
       }
     }
     
@@ -99,6 +175,17 @@ public class IU_EditorController implements Initializable {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+    
+    public void loadFiles() {
+
+    //Se abre la conexion con la BD
+    EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
+    EntityManager entitymanager = emfactory.createEntityManager();
+
+    TypedQuery<Archivo> query
+        = entitymanager.createNamedQuery("Archivo.findByProyectoidProyecto", Archivo.class).setParameter("proyectoidProyecto", idProject); //CAMBIAR EL 1 POR EL ID DE USUARIO>>>>
+    fileList = query.getResultList();
   }
     
 }
