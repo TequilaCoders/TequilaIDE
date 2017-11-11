@@ -7,15 +7,18 @@ package graphics.fileExplorer;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXNodesList;
+import graphics.textEditor.IU_EditorController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -78,6 +81,9 @@ public class IU_FileExplorerController implements Initializable {
   boolean estatusDeGuardado;
 
   private ResourceBundle rb;
+  
+  Stage fileExplorerStage ;//= (Stage) anchorPaneMain.getScene().getWindow();;
+  
 
   /**
    * Initializes the controller class.
@@ -91,6 +97,9 @@ public class IU_FileExplorerController implements Initializable {
     listeners();
     loadProfileMenu_Buttons();
     this.rb = rb;
+    create_FlowPaneMyProjects();
+    //setStage();
+    //getStage();
   }
 
   //Al seleccionar crear un nuevo proyecto------------------------------------
@@ -105,7 +114,7 @@ public class IU_FileExplorerController implements Initializable {
     iuCreate_NewProject = window_NewProject_DataInput(loader);
     iuCreate_NewProject.show();
 
-    listener_Window_NewProject_Closed(loader, iuCreate_NewProject);
+    listener_WindowNewProject_Closed(loader, iuCreate_NewProject);
   }
 
   @FXML
@@ -197,6 +206,10 @@ public class IU_FileExplorerController implements Initializable {
     buttonSetUp.setMinHeight(32);
   }
 
+  public void setStage(){
+    fileExplorerStage = (Stage) anchorPaneMain.getScene().getWindow();
+  }
+  
   public FlowPane getFlowPaneProyectos() {
     return flowPaneProyectos;
   }
@@ -242,37 +255,56 @@ public class IU_FileExplorerController implements Initializable {
     return iuCrearNuevoProyecto;
   }
   
-  public void listener_Window_NewProject_Closed(FXMLLoader loader, Stage iuCreate_NewProject){
+  public void listener_WindowNewProject_Closed(FXMLLoader loader, Stage iuCreate_NewProject){
+    
     //en el evento de cierre de la IU_NuevoProyecto, se obtendra el atributo estatusDeGaurdar, el cual
     //dira si se guardo un proyecto o no
-    iuCreate_NewProject.setOnHiding((WindowEvent we) -> {
-      estatusDeGuardado = loader.<IU_NewProjectController>getController().getEstatusDeGuardado();
-      //se comprueba si se guardo o no un proyecto para mostrar los archivos de este
-      if (estatusDeGuardado) {
-        //se muestra la ventana
-        create_FlowPaneNewProject();
+    iuCreate_NewProject.setOnHiding(new EventHandler<WindowEvent>() {
+      int idProject;
+      @Override
+      public void handle(WindowEvent we) {
+        estatusDeGuardado = loader.<IU_NewProjectController>getController().getEstatusDeGuardado();
+        //se comprueba si se guardo o no un proyecto para mostrar los archivos de este
+        if (estatusDeGuardado) {
+          //obtiene el id del proyecto recien creado
+          idProject = loader.<IU_NewProjectController>getController().getIdProject();
+      
+          System.out.println("el id es: "+idProject);
+          //se muestra la ventana
+          fileExplorerStage = (Stage) anchorPaneMain.getScene().getWindow();
+          IU_EditorController controllerObject = new IU_EditorController();
+          controllerObject.open_Editor(idProject, fileExplorerStage, rb);
+        }
       }
     });
   }
   
-  public FlowPane create_FlowPaneNewProject(){
-    try {
-      FlowPane crearProyecto = FXMLLoader.load(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneNewProject.fxml"));
-      flowPaneProyectos.getChildren().setAll(crearProyecto);
+  /* A Eliminar
+  public void open_TextEditor(int idProject, Stage fileExplorerStage) {
+    
+    Stage stage = (Stage) anchorPaneMain.getScene().getWindow();
+    try { 
 
-    } catch (IOException ex) {
-      Logger.getLogger(IU_FileExplorerController.class.getName()).log(Level.SEVERE, null, ex);
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Editor.fxml"), rb);
+      
+      IU_EditorController controller = new IU_EditorController();
+      fxmlLoader.setController(controller);
+      System.out.println("abriendo otra ventana, proyecto = "+idProject);
+      controller.setIdProject(idProject);
+      
+      Parent root1 = (Parent) fxmlLoader.load();
+      
+      //Stage stage = new Stage();
+      stage.setScene(new Scene(root1));
+      stage.show();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
-    
-    paneNewProject.setVisible(false);
-    flowPaneProyectos.setVisible(true);
-    
-    return flowPaneProyectos;
-  } 
+  }*/
   
   public FlowPane create_FlowPaneMyProjects(){
     try {
-      FlowPane crearProyecto = FXMLLoader.load(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneMyProjects.fxml"));
+      FlowPane crearProyecto = FXMLLoader.load(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneMyProjects.fxml"), rb);
       flowPaneProyectos.getChildren().setAll(crearProyecto);
      
     } catch (IOException ex) {

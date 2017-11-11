@@ -36,25 +36,26 @@ public class IU_LogInController implements Initializable {
         this.rb = rb;
     }
 
-    @FXML
-    private void openDrawer(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/IU_SignUp.fxml"), rb);
-            Pane pane = loader.load();
-            IU_SignUpController controller = loader.getController();
-            drawerRegistrar.setSidePane(pane);
-            controller.setParentController(this);
-        } catch (Exception ex) {
-            Logger.getLogger(IU_LogInController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        drawerRegistrar.toFront();
-        drawerRegistrar.open();
+  @FXML
+  private void openDrawer(ActionEvent event) {
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/IU_SignUp.fxml"), rb);
+      Pane pane = loader.load();
+      IU_SignUpController controller = loader.getController();
+      
+      drawerRegistrar.setSidePane(pane);
+      controller.setParentController(this);
+    } catch (Exception ex) {
+      Logger.getLogger(IU_LogInController.class.getName()).log(Level.SEVERE, null, ex);
     }
+    drawerRegistrar.toFront();
+    drawerRegistrar.open();
+  }
 
-    public void closeDrawer() {  
-        drawerRegistrar.close();
-        drawerRegistrar.toBack();
-    }
+  public void closeDrawer() {
+    drawerRegistrar.close();
+    drawerRegistrar.toBack();
+  }
 
     @FXML
     void changeLanguage(ActionEvent event) throws IOException {

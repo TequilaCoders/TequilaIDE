@@ -28,6 +28,7 @@ import javafx.stage.Stage;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 /**
  * FXML Controller class
@@ -55,6 +56,8 @@ public class IU_NewProjectController implements Initializable {
   private JFXTextField tfName;
   
   private boolean estatusDeGuardado;
+  
+  private int idProject;
 
   /**
    * Initializes the controller class.
@@ -112,14 +115,19 @@ public class IU_NewProjectController implements Initializable {
     entitymanager.persist(proyectoACrear);
     entitymanager.getTransaction().commit();
     
+    entitymanager.close();
+    
+    //se obtiene el id del proyecto recien creado
+    getIdFromProject(nombre);
+    
     //una vez creado el proyecto se cierra el stage y se muestra la alerta de confirmación
     Stage stage = (Stage) paneNewProject.getScene().getWindow();
-    
         
-    mostrarAlerta();
+    //mostrarAlerta();
     stage.close();
   }
 
+  /* A eliminar
   public void mostrarAlerta() {
 
       Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -129,10 +137,27 @@ public class IU_NewProjectController implements Initializable {
 
       alert.show();
 
+  }*/
+  
+  public int getIdFromProject(String nombre){
+    
+    //Se abre la conexion con la BD
+    EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
+    EntityManager entitymanager = emfactory.createEntityManager();
+    
+    TypedQuery<Proyecto> query
+        = entitymanager.createNamedQuery("Proyecto.findByNombre", Proyecto.class).setParameter("nombre", nombre); //CAMBIAR EL 1 POR EL ID DE USUARIO>>>>
+    idProject = query.getSingleResult().getProyectoPK().getIdProyecto();
+    
+    return idProject;
   }
   
   public boolean getEstatusDeGuardado(){
     return estatusDeGuardado;
+  }
+  
+  public int getIdProject(){
+    return idProject;
   }
   
 }

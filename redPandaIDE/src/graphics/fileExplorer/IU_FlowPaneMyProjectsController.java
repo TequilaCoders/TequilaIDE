@@ -1,6 +1,7 @@
 package graphics.fileExplorer;
 
 import entities.Proyecto;
+import graphics.textEditor.IU_EditorController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
+import javafx.stage.Stage;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -39,8 +41,10 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
   ArrayList<Pane> projectPanes = new ArrayList<>();
 
   List<Proyecto> ProjectList = new ArrayList<>();
+  
+  Stage fileExplorerStage;
 
-  int idProject;
+  //int idProject;
 
   private ResourceBundle rb;
 
@@ -76,12 +80,14 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
       ImageView im1 = (ImageView) projectPanes.get(i).getChildren().get(0);
       Label name = (Label) projectPanes.get(i).getChildren().get(1);
       projectPanes.get(i).setOnMouseClicked((new EventHandler<MouseEvent>() {
+ ;
         @Override
         public void handle(MouseEvent e) {
 
           im1.setImage(new Image("/resources/icons/proyecto_clic.png"));
-          searchProjectID(name.getText());
-          create_FlowPaneFiles();
+          int idProject = searchProjectID(name.getText());
+          
+          open_EditorWindow(idProject);
         }
       }));
     }
@@ -128,6 +134,7 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
   public int searchProjectID(String name) {
 
     Proyecto p;
+    int idProject = 0;
     for (int i = 0; i < ProjectList.size(); i++) {
       p = ProjectList.get(i);
       if (p.getNombre().equals(name)) {
@@ -137,26 +144,11 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
     return idProject;
   }
 
-  public void create_FlowPaneFiles() {
-    FXMLLoader loder = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneFiles.fxml"));
-
-    try {
-
-      IU_FlowPaneFilesController controler = new IU_FlowPaneFilesController();
-
-      loder.setController(controler);
-
-      //se le pasa el id del proyecto seleccionado al controlador del flowpane
-      controler.setIdProject(idProject);
-
-      FlowPane newFlowPane = loder.load();
-
-      flowPaneMyProjects.getChildren().remove(flowPaneMyProjects);
-      flowPaneMyProjects.getChildren().setAll(newFlowPane);
-
-    } catch (IOException ex) {
-      Logger.getLogger(IU_FileExplorerController.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
+  public void open_EditorWindow(int idProject) {
+    
+    fileExplorerStage = (Stage) flowPaneMyProjects.getScene().getWindow();
+    IU_EditorController controllerObject = new IU_EditorController();
+    controllerObject.open_Editor(idProject, fileExplorerStage, rb);
   }
+
 }

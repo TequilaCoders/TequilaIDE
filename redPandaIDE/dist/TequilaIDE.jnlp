@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="TequilaIDE.jar" size="65260" download="eager" />
+    <jar href="TequilaIDE.jar" size="67841" download="eager" />
     <jar href="lib\eclipselink.jar" size="8478776" download="eager" />
     <jar href="lib\javax.persistence_2.1.0.v201304241213.jar" size="164637" download="eager" />
     <jar href="lib\jfoenix.jar" size="2384520" download="eager" />

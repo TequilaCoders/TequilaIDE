@@ -7,15 +7,9 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 /**
  *
@@ -24,7 +18,7 @@ import javafx.stage.StageStyle;
 public class RedPandaIDE extends Application {
 
     private Stage stagePrincipal;
-    private BorderPane rootPane;
+    private AnchorPane rootPane;
 
     @Override
     public void start(Stage stagePrincipal) throws Exception {
@@ -38,7 +32,8 @@ public class RedPandaIDE extends Application {
      */
     public void mostrarVentanaPrincipal() {
         ResourceBundle bundle = ResourceBundle.getBundle("resources/languages.language");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Editor.fxml"), bundle);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FileExplorer.fxml"), bundle);
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Editor.fxml"), bundle);
 
         //se obtiene la resolución de la pantalla
         /*Rectangle2D visualBounds = Screen.getPrimary().getVisualBounds();
@@ -55,7 +50,7 @@ public class RedPandaIDE extends Application {
           loader = new FXMLLoader(getClass().getResource("/graficos/IU_IniciarSesion.fxml"));
         }*/
         try {
-            rootPane = (BorderPane) loader.load();
+            rootPane = loader.load();
         } catch (IOException ex) {
             Logger.getLogger(RedPandaIDE.class.getName()).log(Level.SEVERE, null, ex);
         }

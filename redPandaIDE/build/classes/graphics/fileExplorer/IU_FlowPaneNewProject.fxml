@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<FlowPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="419.0" prefWidth="638.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.fileExplorer.IU_FlowPaneNewProjectController">
+<FlowPane fx:id="fPaneNewProject" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="419.0" prefWidth="638.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.fileExplorer.IU_FlowPaneNewProjectController">
    <children>
-      <Pane fx:id="paneNewFIle" prefHeight="90.0" prefWidth="90.0">
+      <Pane fx:id="paneNewFIle" onMouseClicked="#onPaneNewFileSelected" prefHeight="90.0" prefWidth="90.0">
          <children>
             <ImageView fx:id="imageVNewFile" fitHeight="58.0" fitWidth="68.0" layoutX="12.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
                <image>
