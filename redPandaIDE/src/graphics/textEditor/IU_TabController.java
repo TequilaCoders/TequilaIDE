@@ -133,8 +133,13 @@ public class IU_TabController implements Initializable {
     spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
     return spansBuilder.create();
   }
-  
+
   public void setContent(String content) {
     taEditor.replaceText(content);
   }
+
+  public String getContent() {
+    return taEditor.getText();
+  }
+
 }

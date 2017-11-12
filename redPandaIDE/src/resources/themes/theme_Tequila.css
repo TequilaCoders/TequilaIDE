@@ -1,0 +1,103 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 12/11/2017, 02:09:46 PM
+    Author     : Miguel Alejandro Cámara Árciga
+*/
+
+#paneEditor {
+    -fx-background-color: #0F1F38;
+}
+
+#menuBarEditor{
+    -fx-background-color: #0F1F38;
+}
+
+.text {
+    -fx-fill: white;
+}
+
+.tab-pane {
+    -fx-tab-min-width:90px;
+    -fx-tab-min-height: 30px;
+    -fx-background-color: #0F1F38;
+}
+
+.tab-pane .tab {
+    -fx-background-color: #4CB5F5;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color:  #0F1F38;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab{
+    -fx-background-insets: 0 1 0 1,0,0;
+}
+
+.code-area{
+    -fx-background-insets: 0;
+    -fx-background-color: transparent,  #0F1F38, transparent,  #0F1F38;
+    -fx-highlight-fill: #F0810F;
+    -fx-font-size: 20px;
+    -fx-font-family: "Courier New";
+}
+
+.tab-header-background{
+    -fx-background-color:  #336B87;
+}
+
+VBox {
+  -fx-background-color: #0F1F38;
+  -fx-fill: white;
+}
+
+.menu-bar{
+    -fx-background-color: #0F1F38;
+}
+
+.paragraph-box:has-caret {
+    -fx-background-color: rgba(63, 191, 191, 0.26);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.keyword {
+    -fx-fill: #4CB5F5;
+    -fx-font-weight: bold;
+}
+.semicolon {
+    -fx-fill: #B7B8B6;
+    -fx-font-weight: bold;
+}
+
+.paren {
+    -fx-fill: #B3C100;
+    -fx-font-weight: bold;
+}
+.bracket {
+    -fx-fill: #B3C100;
+    -fx-font-weight: bold;
+}
+.brace {
+    -fx-fill: #B3C100;
+    -fx-font-weight: bold;
+}
+

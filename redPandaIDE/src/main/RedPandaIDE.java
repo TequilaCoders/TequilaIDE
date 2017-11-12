@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /**
  *
@@ -55,7 +56,7 @@ public class RedPandaIDE extends Application {
             Logger.getLogger(RedPandaIDE.class.getName()).log(Level.SEVERE, null, ex);
         }
         Scene scene = new Scene(rootPane);
-        //stagePrincipal.initStyle(StageStyle.UNDECORATED);
+        stagePrincipal.initStyle(StageStyle.UNIFIED);
         stagePrincipal.setScene(scene);
         //stagePrincipal.setMaximized(true);
         stagePrincipal.show();

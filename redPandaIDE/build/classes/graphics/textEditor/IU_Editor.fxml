@@ -4,40 +4,55 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0">
-         <top>
-            <MenuBar stylesheets="@../../resources/styles/styleMenuBar.css" BorderPane.alignment="CENTER">
-               <menus>
-                  <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
-                     <items>
-                        <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addTab" text="%menuNew" />
-                     </items>
-                  </Menu>
-                  <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
-                     <items>
-                        <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="%menuOptions" />
-                     </items>
-                  </Menu>
-                  <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
-                     <items>
-                        <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="%menuAbout" />
-                     </items>
-                  </Menu>
-               </menus>
-            </MenuBar>
-         </top>
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1366.0">
          <bottom>
             <Pane prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #ABB1BA;" BorderPane.alignment="CENTER" />
          </bottom>
          <center>
-            <TabPane fx:id="tabPaneArchivos" prefHeight="30.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Alaska%20Iced%20Tea.css" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER" />
+            <TabPane fx:id="tabPaneArchivos" onMouseClicked="#newTab" prefHeight="30.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER" />
          </center>
+         <top>
+            <Pane id="paneEditor" fx:id="paneToolBar" prefHeight="28.0" prefWidth="1374.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER">
+               <children>
+                  <MenuBar id="menuBarEditor" stylesheets="@../../resources/themes/theme_Tequila.css">
+                     <menus>
+                        <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
+                           <items>
+                              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addTab" text="%menuNew" />
+                           </items>
+                        </Menu>
+                        <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
+                           <items>
+                              <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="%menuOptions" />
+                           </items>
+                        </Menu>
+                        <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
+                           <items>
+                              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="%menuAbout" />
+                           </items>
+                        </Menu>
+                     </menus>
+                  </MenuBar>
+                  <Pane accessibleText="Explorador de Archivos" layoutX="1338.0" onMouseClicked="#returnToFileExplorer" prefHeight="30.0" prefWidth="28.0">
+                     <children>
+                        <ImageView fitHeight="27.0" fitWidth="27.0" focusTraversable="true" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/icons/proyecto.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </Pane>
+               </children>
+            </Pane>
+         </top>
       </BorderPane>
    </children>
 </AnchorPane>

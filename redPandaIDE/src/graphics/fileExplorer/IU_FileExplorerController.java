@@ -218,7 +218,7 @@ public class IU_FileExplorerController implements Initializable {
     this.flowPaneProyectos = flowPaneProyectos;
   }
 
-  public void loadProfileMenu_Buttons() {
+  private void loadProfileMenu_Buttons() {
     nodeListProfile.addAnimatedNode(buttonProfile);
     nodeListProfile.addAnimatedNode(buttonProfileOptions);
     nodeListProfile.addAnimatedNode(buttonSetUp);
@@ -227,7 +227,7 @@ public class IU_FileExplorerController implements Initializable {
     nodeListProfile.setSpacing(15);
   }
 
-  public void listeners() {
+  private void listeners() {
 
     buttonProfile.setOnMouseEntered((e -> imageVUserImage.setImage(new Image("/resources/icons/Male_User_Filled_White.png"))));
     buttonProfile.setOnMouseExited((e -> imageVUserImage.setImage(new Image("/resources/icons/Male_User_Filled.png"))));
@@ -318,6 +318,23 @@ public class IU_FileExplorerController implements Initializable {
     paneNewProject.setVisible(true);
     
     return flowPaneProyectos;
+  }
+  
+  public void open_FileExplorer(Stage fileExplorerStage, ResourceBundle rb){
+    try { 
+
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FileExplorer.fxml"), rb);
+           
+      Parent root1 = (Parent) fxmlLoader.load();
+      
+      //Stage stage = new Stage();
+      fileExplorerStage.setMaximized(false);
+      fileExplorerStage.setScene(new Scene(root1));
+
+      fileExplorerStage.show();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
 }
