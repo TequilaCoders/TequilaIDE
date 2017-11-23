@@ -39,7 +39,7 @@ public class IU_LogInController implements Initializable {
   @FXML
   private void openDrawer(ActionEvent event) {
     try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/IU_SignUp.fxml"), rb);
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/login/IU_SignUp.fxml"), rb);
       Pane pane = loader.load();
       IU_SignUpController controller = loader.getController();
       

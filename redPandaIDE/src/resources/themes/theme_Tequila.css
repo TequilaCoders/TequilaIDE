@@ -21,13 +21,13 @@ and open the template in the editor.
 }
 
 .tab-pane {
-    -fx-tab-min-width:90px;
+    -fx-tab-min-width:130px;
     -fx-tab-min-height: 30px;
     -fx-background-color: #0F1F38;
 }
 
 .tab-pane .tab {
-    -fx-background-color: #4CB5F5;
+    -fx-background-color: gray;
 }
 
 .tab-pane .tab:selected {
@@ -39,6 +39,14 @@ and open the template in the editor.
 .tab{
     -fx-background-insets: 0 1 0 1,0,0;
 }
+
+.tab-pane > .tab-header-area > .headers-region > .tab {
+      -fx-shape: "M300,290 L310,168 L410,168 L421,290 L300,290 z";
+}
+
+.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
+    -fx-shape: "M300,290 L310,168 L410,168 L421,290 L300,290 z";
+}   
 
 .code-area{
     -fx-background-insets: 0;

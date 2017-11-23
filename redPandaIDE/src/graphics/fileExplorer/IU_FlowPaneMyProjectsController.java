@@ -2,16 +2,12 @@ package graphics.fileExplorer;
 
 import entities.Proyecto;
 import graphics.textEditor.IU_EditorController;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -44,13 +40,7 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
   
   Stage fileExplorerStage;
 
-  //int idProject;
-
   private ResourceBundle rb;
-
-  public IU_FlowPaneMyProjectsController() {
-
-  }
 
   /**
    * Initializes the controller class.
@@ -59,22 +49,27 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     this.rb = rb;
     createIcons(loadProjects());
-    listeners();
-    buttonActions();
+    hoverListeners();
+    projectSelectedAction();
   }
 
-  public void listeners() {
-
+  /**
+   * Método que esta a la escucha de los eventos de entrada y salida del mouse sobre los pane creados
+   * por cada prooyecto, es aquí donde se agrega el efecto de cambio de color sobre los iconos de los pane.
+   */
+  public void hoverListeners() {
     for (int i = 0; i < projectPanes.size(); i++) {
       ImageView im1 = (ImageView) projectPanes.get(i).getChildren().get(0);
       projectPanes.get(i).setOnMouseEntered((e -> im1.setImage(new Image("/resources/icons/proyecto_seleccionado.png"))));
       ImageView im2 = (ImageView) projectPanes.get(i).getChildren().get(0);
       projectPanes.get(i).setOnMouseExited((e -> im2.setImage(new Image("resources/icons/proyecto.png"))));
-
     }
   }
 
-  public void buttonActions() {
+  /**
+   * Método que esta a la escucha de eventos sobre los projectPanes.
+   */
+  public void projectSelectedAction() {
     for (int i = 0; i < projectPanes.size(); i++) {
 
       ImageView im1 = (ImageView) projectPanes.get(i).getChildren().get(0);
@@ -85,14 +80,18 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
         public void handle(MouseEvent e) {
 
           im1.setImage(new Image("/resources/icons/proyecto_clic.png"));
-          int idProject = searchProjectID(name.getText());
+          Proyecto selectedProject = searchProjectByName(name.getText());
           
-          open_EditorWindow(idProject);
+          open_EditorWindow(selectedProject);
         }
       }));
     }
   }
 
+  /**
+   * Método que carga los proyectos relacionados al proyectos seleccionado.
+   * @return 
+   */
   public List<Proyecto> loadProjects() {
     //Se abre la conexion con la BD
     EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
@@ -103,6 +102,10 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
     return ProjectList = query.getResultList();
   }
 
+  /**
+   * Método que crea iconos para cada elementos de la lista recibida como entrada 
+   * @param listaProyectos 
+   */
   public void createIcons(List<Proyecto> listaProyectos) {
 
     flowPaneMyProjects.setHgap(7);
@@ -131,24 +134,33 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
     flowPaneMyProjects.getChildren().addAll(projectPanes);
   }
 
-  public int searchProjectID(String name) {
+  /**
+   * Método que regresa el proyecto cuyo nombre coincida con el parametro de entrada
+   * @param name
+   * @return 
+   */
+  public Proyecto searchProjectByName(String name) {
 
-    Proyecto p;
-    int idProject = 0;
+    Proyecto proyectoAuxiliar;
+    Proyecto selectedProject = null;
     for (int i = 0; i < ProjectList.size(); i++) {
-      p = ProjectList.get(i);
-      if (p.getNombre().equals(name)) {
-        return idProject = p.getProyectoPK().getIdProyecto();
+      proyectoAuxiliar = ProjectList.get(i);
+      if (proyectoAuxiliar.getNombre().equals(name)) {
+        selectedProject = proyectoAuxiliar;
       }
     }
-    return idProject;
+    return selectedProject;
   }
 
-  public void open_EditorWindow(int idProject) {
+  /**
+   * Método que ventana IU_Editor.fxml
+   * @param selectedProject 
+   */
+  public void open_EditorWindow(Proyecto selectedProject) {
     
     fileExplorerStage = (Stage) flowPaneMyProjects.getScene().getWindow();
     IU_EditorController controllerObject = new IU_EditorController();
-    controllerObject.open_Editor(idProject, fileExplorerStage, rb);
+    controllerObject.open_Editor(selectedProject, fileExplorerStage, rb);
   }
 
 }

@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -54,7 +56,7 @@ public class IU_TabController implements Initializable {
       + "|(?<STRING>" + STRING_PATTERN + ")"
       + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
   );
-
+  
   @FXML
   private BorderPane borderPane;
   @FXML
@@ -65,6 +67,14 @@ public class IU_TabController implements Initializable {
   private CodeArea taEditor;
 
   private String content;
+  
+  private int braceCount;
+  
+  Tab tab;
+
+  public void setTab(Tab tab) {
+    this.tab = tab;
+  }
 
   /**
    * Initializes the controller class.
@@ -96,7 +106,8 @@ public class IU_TabController implements Initializable {
   private void addNumberLines(KeyEvent event) {
     int currentLines = vboxNumberLines.getChildren().size();
     int numberLines = taEditor.getParagraphs().size();
-
+    
+    //autoComplete(event);
     if (numberLines > currentLines) {
       for (int i = currentLines; i < numberLines; i++) {
         Label numberLine = new Label(i + 1 + "");
@@ -107,6 +118,36 @@ public class IU_TabController implements Initializable {
       for (int i = currentLines; i > numberLines; i--) {
         vboxNumberLines.getChildren().remove(i - 1);
       }
+    }
+  }
+  
+  /**
+   * Metodo sobrecargado para visualizar el numero de lineas desde que se carga el tab
+   */
+  private void addNumberLines(){
+    int currentLines = vboxNumberLines.getChildren().size();
+    int numberLines = taEditor.getParagraphs().size();
+    
+    //autoComplete(event);
+    if (numberLines > currentLines) {
+      for (int i = currentLines; i < numberLines; i++) {
+        Label numberLine = new Label(i + 1 + "");
+        numberLine.setStyle("-fx-font-size: 20px; -fx-font-family: \"Courier New\"; -fx-text-fill: #90908A;");
+        vboxNumberLines.getChildren().add(numberLine);
+      }
+    } else if (numberLines < currentLines) {
+      for (int i = currentLines; i > numberLines; i--) {
+        vboxNumberLines.getChildren().remove(i - 1);
+      }
+    }
+  }
+
+  //METODO PENDIENTE
+  @FXML
+  void braceOpenedListener(KeyEvent event) {
+    System.out.println(event.getCharacter());
+    if (event.getCharacter().equals("a")) {
+      System.out.println("se aumento cuenta");
     }
   }
 
@@ -134,8 +175,33 @@ public class IU_TabController implements Initializable {
     return spansBuilder.create();
   }
 
+      @FXML
+    void setTabTitle(InputMethodEvent event) {
+        System.out.println("presionas tecla");
+    }
+    
+  /* Metodo incompleto
+  @FXML
+  void autoComplete(KeyEvent event) {
+    
+    if (event.getCharacter().equals("(")) {
+      String newText = getContent() + ")";
+      setContent(newText);
+    } else if (event.getCharacter().equals("[")) {
+      String newText = getContent() + "]";
+      setContent(newText);
+      
+    } else if (event.getCharacter().equals("{")) {
+      String newText = getContent() + "}";
+      setContent(newText);
+    }
+  }
+*/
+
   public void setContent(String content) {
     taEditor.replaceText(content);
+    //se carga el numero de lineas al cargar el tab
+    addNumberLines();
   }
 
   public String getContent() {

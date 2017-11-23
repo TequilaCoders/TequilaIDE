@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXDrawer?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -12,47 +14,69 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1366.0">
-         <bottom>
-            <Pane prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #ABB1BA;" BorderPane.alignment="CENTER" />
-         </bottom>
+      <JFXDrawer fx:id="drawerFileTree" layoutY="73.0" prefHeight="577.0" prefWidth="180.0" style="-fx-background-color: transparent;" />
+      <BorderPane prefHeight="200.0" prefWidth="200.0">
          <center>
-            <TabPane fx:id="tabPaneArchivos" onMouseClicked="#newTab" prefHeight="30.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER" />
-         </center>
-         <top>
-            <Pane id="paneEditor" fx:id="paneToolBar" prefHeight="28.0" prefWidth="1374.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER">
-               <children>
-                  <MenuBar id="menuBarEditor" stylesheets="@../../resources/themes/theme_Tequila.css">
-                     <menus>
-                        <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
-                           <items>
-                              <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addTab" text="%menuNew" />
-                           </items>
-                        </Menu>
-                        <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
-                           <items>
-                              <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="%menuOptions" />
-                           </items>
-                        </Menu>
-                        <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
-                           <items>
-                              <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="%menuAbout" />
-                           </items>
-                        </Menu>
-                     </menus>
-                  </MenuBar>
-                  <Pane accessibleText="Explorador de Archivos" layoutX="1338.0" onMouseClicked="#returnToFileExplorer" prefHeight="30.0" prefWidth="28.0">
+            <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1366.0" BorderPane.alignment="CENTER">
+               <bottom>
+                  <Pane prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #ABB1BA;" BorderPane.alignment="CENTER" />
+               </bottom>
+               <top>
+                  <Pane id="paneEditor" fx:id="paneToolBar" prefHeight="28.0" prefWidth="1374.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER">
                      <children>
-                        <ImageView fitHeight="27.0" fitWidth="27.0" focusTraversable="true" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../../resources/icons/proyecto.png" />
-                           </image>
-                        </ImageView>
+                        <MenuBar id="menuBarEditor" layoutX="32.0" layoutY="2.0">
+                           <menus>
+                              <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
+                                 <items>
+                                    <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addTab" text="%menuNew" />
+                                 </items>
+                              </Menu>
+                              <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
+                                 <items>
+                                    <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="%menuOptions" />
+                                 </items>
+                              </Menu>
+                              <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
+                                 <items>
+                                    <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="%menuAbout" />
+                                 </items>
+                              </Menu>
+                           </menus>
+                           <stylesheets>
+                              <URL value="@../../resources/themes/theme_Tequila.css" />
+                              <URL value="@../../resources/styles/styleMenuBar.css" />
+                           </stylesheets>
+                        </MenuBar>
+                        <Pane fx:id="paneFileExplorer" accessibleText="Explorador de Archivos" layoutX="1338.0" onMouseClicked="#returnToFileExplorer" prefHeight="30.0" prefWidth="28.0">
+                           <children>
+                              <ImageView fx:id="imageVFileExplorer" fitHeight="27.0" fitWidth="27.0" focusTraversable="true" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../resources/icons/proyecto.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </Pane>
+                        <Pane fx:id="paneHamburger" layoutY="1.0" onMouseClicked="#openDrawer" prefHeight="28.0" prefWidth="30.0">
+                           <children>
+                              <ImageView fx:id="imageVHamburger" fitHeight="26.0" fitWidth="24.0" layoutX="4.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../resources/icons/hamburger_orange.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </Pane>
                      </children>
                   </Pane>
-               </children>
-            </Pane>
-         </top>
+               </top>
+               <center>
+                  <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <TabPane fx:id="tabPaneArchivos" onMouseClicked="#newTab" prefHeight="658.0" prefWidth="1366.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
+                     </children>
+                  </Pane>
+               </center>
+            </BorderPane>
+         </center>
       </BorderPane>
    </children>
 </AnchorPane>

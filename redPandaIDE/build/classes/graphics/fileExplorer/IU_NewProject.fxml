@@ -17,7 +17,7 @@
                   <Font name="Proxima Nova Alt Rg Bold" size="16.0" />
                </font>
             </Label>
-            <JFXButton fx:id="buttonCreate" layoutX="41.0" layoutY="152.0" prefHeight="25.0" prefWidth="79.0" style="-fx-background-color: #1A405F;" text="Crear" textFill="WHITE" />
+            <JFXButton fx:id="buttonCreate" layoutX="41.0" layoutY="152.0" onAction="#createProject" prefHeight="25.0" prefWidth="79.0" style="-fx-background-color: #1A405F;" text="Crear" textFill="WHITE" />
             <JFXTextField fx:id="tfName" focusColor="BLACK" labelFloat="true" layoutX="41.0" layoutY="60.0" prefHeight="25.0" prefWidth="270.0" promptText="Nombre proyecto" unFocusColor="#0f1f38">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="13.0" />

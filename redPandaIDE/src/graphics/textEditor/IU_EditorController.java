@@ -1,7 +1,9 @@
 package graphics.textEditor;
 
+import com.jfoenix.controls.JFXDrawer;
 import entities.Archivo;
 import entities.ArchivoPK;
+import entities.Proyecto;
 import graphics.fileExplorer.IU_FileExplorerController;
 import java.io.IOException;
 import java.net.URL;
@@ -11,26 +13,21 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.stage.Screen;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -43,40 +40,52 @@ import javax.persistence.TypedQuery;
  */
 public class IU_EditorController implements Initializable {
 
-  /*@FXML
-    private Menu menuFile;
-    @FXML
-    private MenuItem menuItemNew;
-    @FXML
-    private Menu menuTools;
-    @FXML
-    private MenuItem menuItemOptions;
-    @FXML
-    private Menu menuHelp;
-    @FXML
-    private MenuItem menuItemAbout;*/
   @FXML
   private TabPane tabPaneArchivos;
 
   @FXML
-  private Pane paneToolBar;
+  private JFXDrawer drawerFileTree;
+
+  @FXML
+  private Pane paneHamburger;
+
+  @FXML
+  private ImageView imageVHamburger;
+
+  @FXML
+  private Pane paneFileExplorer;
+
+  @FXML
+  private ImageView imageVFileExplorer;
 
   List<Archivo> fileList = new ArrayList<>();
+  
+  List<String> currentTabs = new ArrayList<>();
 
-  private int idProject;
+  private Proyecto selectedProject;
+
+  private int projectID;
 
   private ResourceBundle rb;
-  
+
   Stage mainStage;
 
-  public int getIdProject() {
-    return idProject;
+  public void setSelectedProject(Proyecto selectedProject) {
+    this.selectedProject = selectedProject;
   }
 
-  public void setIdProject(int idProject) {
-    this.idProject = idProject;
+  public void setProjectID() {
+    this.projectID = selectedProject.getProyectoPK().getIdProyecto();
   }
 
+  public List<String> getCurrentTabs() {
+    return currentTabs;
+  }
+
+  /**
+   * Método que cierra la ventana IU_Editor y abre IU_FileExplorer
+   * @param event 
+   */
   @FXML
   void returnToFileExplorer(MouseEvent event) {
     
@@ -91,10 +100,16 @@ public class IU_EditorController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     this.rb = rb;
+    setProjectID();
     loadFiles();
     showFirstTab(checkNumberOfFiles());
+    listeners();
   }
 
+  /**
+   * Método que crea una nueva pestaña en el evento de 2 clics sobre el tabPane
+   * @param event 
+   */
   @FXML
   void newTab(MouseEvent event) {
     if (event.getButton().equals(MouseButton.PRIMARY)) {
@@ -104,6 +119,10 @@ public class IU_EditorController implements Initializable {
     }
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void addTab(ActionEvent event) {
     try {
@@ -113,6 +132,7 @@ public class IU_EditorController implements Initializable {
 
       IU_TabController controller = new IU_TabController();
       loader.setController(controller);
+      controller.setTab(tab);
 
       ScrollPane newFile = loader.load();
       tab.setContent(newFile);
@@ -125,7 +145,7 @@ public class IU_EditorController implements Initializable {
   }
 
   /**
-   * Metodo sobrecargado para crear la primera pestaña de un proyecto que no tiene archivos
+   * Metodo sobrecargado para crear la primera pestaña de un proyecto que no tiene archivos.
    */
   @FXML
   void addTab() {
@@ -136,6 +156,7 @@ public class IU_EditorController implements Initializable {
 
       IU_TabController controller = new IU_TabController();
       loader.setController(controller);
+      controller.setTab(tab);
 
       ScrollPane newFile = loader.load();
 
@@ -151,7 +172,7 @@ public class IU_EditorController implements Initializable {
   }
 
   /**
-   * Metodo sobrecargado para crear la primera pestaña de un proyecto que tiene archivos
+   * Metodo sobrecargado para crear la primera pestaña de un proyecto que tiene archivos.
    */
   @FXML
   void addTab(String title, String content, int fileId) {
@@ -159,15 +180,18 @@ public class IU_EditorController implements Initializable {
       Tab tab = new Tab();
       tab.setText(title);
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Tab.fxml"), rb);
-
+      
       IU_TabController controller = new IU_TabController();
       loader.setController(controller);
+      controller.setTab(tab);
 
       ScrollPane newFile = loader.load();
       controller.setContent(content);
       tab.setContent(newFile);
 
       tabPaneArchivos.getTabs().add(tab);
+      //se agrega el titulo de la pestaña a la lista de pestañas abiertas actualmente
+      currentTabs.add(title);
       
       tabPaneArchivos.getSelectionModel().selectLast();
       listener_TabClosed(tab, controller, fileId);
@@ -176,18 +200,70 @@ public class IU_EditorController implements Initializable {
     }
   }
 
+  /**
+   * Carga un drawer con un vbox que contiene el explorador de archivos en forma de treeview
+   * @param event 
+   */
+  @FXML
+  void openDrawer(MouseEvent event) {   
+
+    try {
+      
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_FileTree.fxml"), rb);
+      IU_FileTreeController controller = new IU_FileTreeController();
+      
+      loader.setController(controller);
+      
+      controller.setSelectedProject(selectedProject);
+      controller.setFileList(fileList);
+      controller.setEditorController(this);
+      
+      VBox vbox = loader.load();
+      
+      drawerFileTree.setSidePane(vbox);
+      
+      if (drawerFileTree.isShown()) {
+ 
+        drawerFileTree.close();
+        drawerFileTree.toBack();
+        
+      } else {
+        drawerFileTree.toFront();
+        drawerFileTree.open();
+        
+      }
+    } catch (IOException ex) {
+      Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  /**
+   * Método que esta a la escucha del evento de cierre de una pestaña.
+   * @param tab
+   * @param controller
+   * @param fileId 
+   */
   public void listener_TabClosed(Tab tab, IU_TabController controller, int fileId) {
 
     tab.setOnClosed(e -> {
-      if (controller.getContent().isEmpty() == false) {
-        System.out.println("se activo guardado automatico");
+      if (controller.getContent().trim().isEmpty() == false) {
+        
+        //se elimina la pestaña de la lista de pestañas abiertas actuales
+        String title = tab.getText();
+        currentTabs.remove(title);
+        
+        //se guarda el contenido de la pestaña
         saveTextContent(tab, controller, fileId);
       }
-    });
-    
-    
+    }); 
   }
 
+  /**
+   * Método encargado de guardar el contenido de una pestaña en el evento de cierre.
+   * @param tab
+   * @param controller
+   * @param fileId 
+   */
   public void saveTextContent(Tab tab, IU_TabController controller, int fileId) {
     String content = controller.getContent();
     String name = tab.getText();
@@ -202,11 +278,11 @@ public class IU_EditorController implements Initializable {
     //si el archivo ya existe, se le asigna el id correspondiente (Solo se actualiza el objeto)
     if (fileId != -1) {
       fileKeys.setIdArchivo(fileId);
-      fileKeys.setProyectoidProyecto(idProject);
+      fileKeys.setProyectoidProyecto(projectID);
 
       Archivo fileToUpdate = entitymanager.find(Archivo.class, fileKeys);
 
-      fileKeys.setProyectoidProyecto(idProject);
+      fileKeys.setProyectoidProyecto(projectID);
 
       entitymanager.getTransaction().begin();
       fileToUpdate.setContenido(content);
@@ -217,7 +293,7 @@ public class IU_EditorController implements Initializable {
       //si no existe, entonces se crea y se guarda
     } else {
 
-      fileKeys.setProyectoidProyecto(idProject);
+      fileKeys.setProyectoidProyecto(projectID);
 
       //se asignan los atributos al archivo
       Archivo fileToSave = new Archivo();
@@ -251,6 +327,10 @@ public class IU_EditorController implements Initializable {
     }
   }
 
+  /**
+   * Método que carga la primera pestaña con el primer archivo de la variable fileList.
+   * @param fileCuantity 
+   */
   public void showFirstTab(int fileCuantity) {
     if (fileCuantity == 0) {
       addTab();
@@ -262,7 +342,13 @@ public class IU_EditorController implements Initializable {
     }
   }
 
-  public void open_Editor(int idProject, Stage fileExplorerStage, ResourceBundle rb) {
+  /**
+   * Método que carga la ventana IU_Editor.fxml, recibe el proyecto seleccionado 
+   * @param selectedProject
+   * @param fileExplorerStage
+   * @param rb 
+   */
+  public void open_Editor(Proyecto selectedProject, Stage fileExplorerStage, ResourceBundle rb) {
     //this.rb = rb;
     try {
 
@@ -270,23 +356,22 @@ public class IU_EditorController implements Initializable {
 
       IU_EditorController controller = new IU_EditorController();
       fxmlLoader.setController(controller);
-      System.out.println("abriendo otra ventana, proyecto = " + idProject);
-      controller.setIdProject(idProject);
+      System.out.println("abriendo otra ventana, proyecto = " + selectedProject.getProyectoPK().getIdProyecto());
+      controller.setSelectedProject(selectedProject);
 
       Parent root1 = (Parent) fxmlLoader.load();
-
-      //Stage stage = new Stage();
       fileExplorerStage.setScene(new Scene(root1));
 
       fileExplorerStage.show();
-      //mainStage = fileExplorerStage;
-
       fileExplorerStage.setMaximized(true);
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
+  /**
+   * Metodo que recupera todos los archivos relacionados al proyecto.
+   */
   public void loadFiles() {
 
     //Se abre la conexion con la BD
@@ -294,8 +379,19 @@ public class IU_EditorController implements Initializable {
     EntityManager entitymanager = emfactory.createEntityManager();
 
     TypedQuery<Archivo> query
-        = entitymanager.createNamedQuery("Archivo.findByProyectoidProyecto", Archivo.class).setParameter("proyectoidProyecto", idProject); //CAMBIAR EL 1 POR EL ID DE USUARIO>>>>
+        = entitymanager.createNamedQuery("Archivo.findByProyectoidProyecto", Archivo.class).setParameter("proyectoidProyecto", projectID); //CAMBIAR EL 1 POR EL ID DE USUARIO>>>>
     fileList = query.getResultList();
   }
+  
+  /**
+   * Métodos que estan a la escucha de eventos en los elementos paneHamburger y paneFileExplorer.
+   */
+  public void listeners(){
+    paneHamburger.setOnMouseEntered((e -> imageVHamburger.setImage(new Image("/resources/icons/hamburger_white.png"))));
+    paneHamburger.setOnMouseExited((e -> imageVHamburger.setImage(new Image("/resources/icons/hamburger_orange.png"))));
 
+    paneFileExplorer.setOnMouseEntered((e -> imageVFileExplorer.setImage(new Image("/resources/icons/proyecto_seleccionado.png"))));
+    paneFileExplorer.setOnMouseExited((e -> imageVFileExplorer.setImage(new Image("/resources/icons/proyecto.png"))));
+    
+  }
 }

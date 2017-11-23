@@ -7,6 +7,8 @@ package graphics.fileExplorer;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXNodesList;
+import entities.Proyecto;
+import entities.ProyectoPK;
 import graphics.textEditor.IU_EditorController;
 import java.io.IOException;
 import java.net.URL;
@@ -82,7 +84,7 @@ public class IU_FileExplorerController implements Initializable {
 
   private ResourceBundle rb;
   
-  Stage fileExplorerStage ;//= (Stage) anchorPaneMain.getScene().getWindow();;
+  Stage fileExplorerStage ;
   
 
   /**
@@ -98,18 +100,18 @@ public class IU_FileExplorerController implements Initializable {
     loadProfileMenu_Buttons();
     this.rb = rb;
     create_FlowPaneMyProjects();
-    //setStage();
-    //getStage();
+
   }
 
-  //Al seleccionar crear un nuevo proyecto------------------------------------
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void projectSelected(MouseEvent event) {
     imageVNewProject.setImage(new Image("/resources/icons/nuevo_proyectoClic.png"));
 
-    //se crea el cargador del nuevo componente
     FXMLLoader loader = new FXMLLoader(getClass().getResource("IU_NewProject.fxml"));
-    //se crea un nuevo Stage con el fxml IU_NuevoProyecto y se muestra
     Stage iuCreate_NewProject;
     iuCreate_NewProject = window_NewProject_DataInput(loader);
     iuCreate_NewProject.show();
@@ -117,17 +119,29 @@ public class IU_FileExplorerController implements Initializable {
     listener_WindowNewProject_Closed(loader, iuCreate_NewProject);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void myProjectsSelected(ActionEvent event) {
     create_FlowPaneMyProjects();
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonAllProjectsMouseEntered(MouseEvent event) {
     buttonAllProjects.setStyle("-fx-background-color:white;");
     buttonAllProjects.setPrefWidth(200);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonAllProjectsMouseExited(MouseEvent event) {
     buttonAllProjects.setStyle("-fx-background-color:#A1D6E2;");
@@ -140,24 +154,40 @@ public class IU_FileExplorerController implements Initializable {
     buttonProjects.setPrefWidth(200);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonMyProjectsMouseExited(MouseEvent event) {
     buttonProjects.setStyle("-fx-background-color:#A1D6E2;");
     buttonProjects.setPrefWidth(185);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonSharedProjectsMouseEntered(MouseEvent event) {
     buttonSharedProjects.setStyle("-fx-background-color:white;");
     buttonSharedProjects.setPrefWidth(200);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonSharedProjectsMouseExited(MouseEvent event) {
     buttonSharedProjects.setStyle("-fx-background-color:#A1D6E2;");
     buttonSharedProjects.setPrefWidth(185);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonHelpMouseEntered(MouseEvent event) {
     buttonHelp.setStyle("-fx-background-color:white;");
@@ -166,6 +196,10 @@ public class IU_FileExplorerController implements Initializable {
     buttonHelp.setMinHeight(36);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonHelpMouseExited(MouseEvent event) {
     buttonHelp.setStyle("-fx-background-color:#A1D6E2;");
@@ -174,6 +208,10 @@ public class IU_FileExplorerController implements Initializable {
     buttonHelp.setMinHeight(32);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonProfileOptionsMouseEntered(MouseEvent event) {
     buttonProfileOptions.setStyle("-fx-background-color:white;");
@@ -182,6 +220,10 @@ public class IU_FileExplorerController implements Initializable {
     buttonProfileOptions.setMinHeight(36);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonProfileOptionsMouseExited(MouseEvent event) {
     buttonProfileOptions.setStyle("-fx-background-color:#A1D6E2;");
@@ -190,6 +232,10 @@ public class IU_FileExplorerController implements Initializable {
     buttonProfileOptions.setMinHeight(32);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonSetUpMouseEntered(MouseEvent event) {
     buttonSetUp.setStyle("-fx-background-color:white;");
@@ -198,6 +244,10 @@ public class IU_FileExplorerController implements Initializable {
     buttonSetUp.setMinHeight(36);
   }
 
+  /**
+   * 
+   * @param event 
+   */
   @FXML
   void buttonSetUpMouseExited(MouseEvent event) {
     buttonSetUp.setStyle("-fx-background-color:#A1D6E2;");
@@ -206,18 +256,10 @@ public class IU_FileExplorerController implements Initializable {
     buttonSetUp.setMinHeight(32);
   }
 
-  public void setStage(){
-    fileExplorerStage = (Stage) anchorPaneMain.getScene().getWindow();
-  }
-  
-  public FlowPane getFlowPaneProyectos() {
-    return flowPaneProyectos;
-  }
-
-  public void setFlowPaneProyectos(FlowPane flowPaneProyectos) {
-    this.flowPaneProyectos = flowPaneProyectos;
-  }
-
+  /**
+   * Método que agrega los elementos buttonProfile,buttonProfileOptions,buttonSetUp y buttonHelp
+   * a un NodeList.
+   */
   private void loadProfileMenu_Buttons() {
     nodeListProfile.addAnimatedNode(buttonProfile);
     nodeListProfile.addAnimatedNode(buttonProfileOptions);
@@ -227,6 +269,9 @@ public class IU_FileExplorerController implements Initializable {
     nodeListProfile.setSpacing(15);
   }
 
+  /**
+   * listeners de elementos graficos de la ventana que solo utilizan expresiones lambda.
+   */
   private void listeners() {
 
     buttonProfile.setOnMouseEntered((e -> imageVUserImage.setImage(new Image("/resources/icons/Male_User_Filled_White.png"))));
@@ -238,6 +283,11 @@ public class IU_FileExplorerController implements Initializable {
     buttonProjects.setOnAction((e-> create_FlowPaneMyProjects()));
   }
 
+  /**
+   * Metodo que crea un nuevo escenario para ingresar los datos del nuevo proyecto
+   * @param crearProyecto
+   * @return 
+   */
   public Stage window_NewProject_DataInput(FXMLLoader crearProyecto) {
     try {
       anchorPaneNewProject = crearProyecto.load();
@@ -255,53 +305,41 @@ public class IU_FileExplorerController implements Initializable {
     return iuCrearNuevoProyecto;
   }
   
+  /**
+   * Metodo que esta a la escucha del evento de cierre de la ventana IU_NewProject, cuando se active
+   * se recuperara el estatusGuardado para saber si un proyecto fue creado o no en dicha ventana.
+   * @param loader
+   * @param iuCreate_NewProject 
+   */
   public void listener_WindowNewProject_Closed(FXMLLoader loader, Stage iuCreate_NewProject){
-    
-    //en el evento de cierre de la IU_NuevoProyecto, se obtendra el atributo estatusDeGaurdar, el cual
-    //dira si se guardo un proyecto o no
     iuCreate_NewProject.setOnHiding(new EventHandler<WindowEvent>() {
       int idProject;
       @Override
       public void handle(WindowEvent we) {
         estatusDeGuardado = loader.<IU_NewProjectController>getController().getEstatusDeGuardado();
-        //se comprueba si se guardo o no un proyecto para mostrar los archivos de este
+
         if (estatusDeGuardado) {
-          //obtiene el id del proyecto recien creado
+     
           idProject = loader.<IU_NewProjectController>getController().getIdProject();
-      
-          System.out.println("el id es: "+idProject);
-          //se muestra la ventana
+  
+          ProyectoPK justCreatedProjectKey = new ProyectoPK();
+          justCreatedProjectKey.setIdProyecto(idProject);
+          
+          Proyecto justCreatedProyect = new Proyecto();
+          justCreatedProyect.setProyectoPK(justCreatedProjectKey);
+
           fileExplorerStage = (Stage) anchorPaneMain.getScene().getWindow();
           IU_EditorController controllerObject = new IU_EditorController();
-          controllerObject.open_Editor(idProject, fileExplorerStage, rb);
+          controllerObject.open_Editor(justCreatedProyect, fileExplorerStage, rb);
         }
       }
     });
   }
   
-  /* A Eliminar
-  public void open_TextEditor(int idProject, Stage fileExplorerStage) {
-    
-    Stage stage = (Stage) anchorPaneMain.getScene().getWindow();
-    try { 
-
-      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Editor.fxml"), rb);
-      
-      IU_EditorController controller = new IU_EditorController();
-      fxmlLoader.setController(controller);
-      System.out.println("abriendo otra ventana, proyecto = "+idProject);
-      controller.setIdProject(idProject);
-      
-      Parent root1 = (Parent) fxmlLoader.load();
-      
-      //Stage stage = new Stage();
-      stage.setScene(new Scene(root1));
-      stage.show();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }*/
-  
+  /**
+   * Reemplaza el FXMLoader del FlowPane actual por IU_FlowPaneMyProjects.fxml
+   * @return 
+   */
   public FlowPane create_FlowPaneMyProjects(){
     try {
       FlowPane crearProyecto = FXMLLoader.load(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneMyProjects.fxml"), rb);
@@ -310,8 +348,6 @@ public class IU_FileExplorerController implements Initializable {
     } catch (IOException ex) {
       Logger.getLogger(IU_FileExplorerController.class.getName()).log(Level.SEVERE, null, ex);
     }
-    
-    //paneNuevoProyecto.setVisible(false);
     flowPaneProyectos.getChildren().add(0, paneNewProject);
     
     flowPaneProyectos.setVisible(true);
@@ -320,20 +356,23 @@ public class IU_FileExplorerController implements Initializable {
     return flowPaneProyectos;
   }
   
+  /**
+   * Metodo que abre la ventana IU_FileExplorer.fxml
+   * @param fileExplorerStage
+   * @param rb 
+   */
   public void open_FileExplorer(Stage fileExplorerStage, ResourceBundle rb){
     try { 
 
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FileExplorer.fxml"), rb);
            
       Parent root1 = (Parent) fxmlLoader.load();
-      
-      //Stage stage = new Stage();
+ 
       fileExplorerStage.setMaximized(false);
       fileExplorerStage.setScene(new Scene(root1));
 
       fileExplorerStage.show();
     } catch (Exception e) {
-      e.printStackTrace();
     }
   }
 

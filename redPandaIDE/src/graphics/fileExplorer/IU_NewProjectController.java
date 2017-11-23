@@ -18,11 +18,8 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javax.persistence.EntityManager;
@@ -38,16 +35,10 @@ import javax.persistence.TypedQuery;
 public class IU_NewProjectController implements Initializable {
 
   @FXML
-  private AnchorPane anchorPaneNuevoProyecto;
-
-  @FXML
   private Pane paneNewProject;
 
   @FXML
   private JFXComboBox cbLanguages;
-
-  @FXML
-  private JFXButton buttonCreate;
 
   @FXML
   private JFXButton buttonCancel;
@@ -67,18 +58,33 @@ public class IU_NewProjectController implements Initializable {
     estatusDeGuardado = false;
     try {
       llenarComboBoxSucursal();
-      listeners();
     } catch (SQLException ex) {
       Logger.getLogger(IU_NewProjectController.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
+  
+  public boolean getEstatusDeGuardado(){
+    return estatusDeGuardado;
+  }
+  
+  public int getIdProject(){
+    return idProject;
+  }
 
+  /**
+   * Metodo llamado al accionar el elemento buttonCancel
+   * @param event 
+   */
   @FXML
   void closeWindow(ActionEvent event) {
     Stage stage = (Stage) buttonCancel.getScene().getWindow();
     stage.close();
   }
 
+  /**
+   * Método que carga el elemento cbLanguages con los lenguajes de programación del IDE.
+   * @throws SQLException 
+   */
   public void llenarComboBoxSucursal() throws SQLException {
     String[] listaLenguajesProgramacion = {"Java", "Python", "C++"};
 
@@ -88,11 +94,12 @@ public class IU_NewProjectController implements Initializable {
     cbLanguages.setItems(lenguajesProgramacion);
   }
 
-  public void listeners() {
-    buttonCreate.setOnAction(e -> createProject());
-  }
-
-  public void createProject() {
+  /**
+   * NOTA --- ELIMINAR CONSULTA A LA BD DESDE AQUÍ
+   * @param event 
+   */
+  @FXML
+  void createProject(ActionEvent event) {
     estatusDeGuardado = true;
     String nombre;
     String lenguajeProgramacion;
@@ -127,18 +134,11 @@ public class IU_NewProjectController implements Initializable {
     stage.close();
   }
 
-  /* A eliminar
-  public void mostrarAlerta() {
-
-      Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-      alert.setTitle("Confirmación");
-      alert.setHeaderText(null);
-      alert.setContentText("El proyecto ha sido creado");
-
-      alert.show();
-
-  }*/
-  
+  /**
+   * Regresa el id del proyecto cuyo atributo nombre coincida con el parametro de entrada
+   * @param nombre
+   * @return 
+   */
   public int getIdFromProject(String nombre){
     
     //Se abre la conexion con la BD
@@ -150,14 +150,5 @@ public class IU_NewProjectController implements Initializable {
     idProject = query.getSingleResult().getProyectoPK().getIdProyecto();
     
     return idProject;
-  }
-  
-  public boolean getEstatusDeGuardado(){
-    return estatusDeGuardado;
-  }
-  
-  public int getIdProject(){
-    return idProject;
-  }
-  
+  }  
 }

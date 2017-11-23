@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPaneMain" prefHeight="522.0" prefWidth="838.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.fileExplorer.IU_FileExplorerController">
+<AnchorPane id="AnchorPane" fx:id="anchorPaneMain" prefHeight="270.0" prefWidth="839.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.fileExplorer.IU_FileExplorerController">
    <children>
       <FlowPane fx:id="flowPaneProyectos" layoutX="199.0" layoutY="73.0" prefHeight="419.0" prefWidth="638.0" visible="false" />
       <Pane layoutX="690.0" layoutY="7.0" prefHeight="235.0" prefWidth="149.0">
@@ -20,19 +20,19 @@
             <JFXNodesList fx:id="nodeListProfile" prefHeight="4.0" prefWidth="0.0" />
          </children>
       </Pane>
-      <Pane layoutY="57.0" prefHeight="465.0" prefWidth="172.0" style="-fx-background-color: #1995AD;">
+      <Pane layoutY="58.0" prefHeight="465.0" prefWidth="172.0" style="-fx-background-color: #1995AD;">
          <children>
-            <JFXButton id="botonMenu" fx:id="buttonProjects" alignment="CENTER_RIGHT" layoutX="-6.0" layoutY="77.0" onMouseEntered="#buttonMyProjectsMouseEntered" onMouseExited="#buttonMyProjectsMouseExited" opacity="0.63" prefHeight="32.0" prefWidth="185.0" ripplerFill="#1995ad" style="-fx-background-color: #A1D6E2;" stylesheets="@../../resources/styles/styleMenuButtons.css" text="%buttonMyProjects" textAlignment="RIGHT">
+            <JFXButton id="botonMenu" fx:id="buttonProjects" alignment="CENTER_RIGHT" layoutX="-6.0" layoutY="77.0" onMouseEntered="#buttonMyProjectsMouseEntered" onMouseExited="#buttonMyProjectsMouseExited" opacity="0.91" prefHeight="32.0" prefWidth="185.0" ripplerFill="#1995ad" style="-fx-background-color: #A1D6E2;" stylesheets="@../../resources/styles/styleMenuButtons.css" text="%buttonMyProjects" textAlignment="RIGHT">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="13.0" />
                </font>
             </JFXButton>
-            <JFXButton id="botonMenu" fx:id="buttonSharedProjects" alignment="CENTER_RIGHT" layoutX="-6.0" layoutY="130.0" onMouseEntered="#buttonSharedProjectsMouseEntered" onMouseExited="#buttonSharedProjectsMouseExited" opacity="0.63" prefHeight="32.0" prefWidth="185.0" ripplerFill="#1995ad" style="-fx-background-color: #A1D6E2;" stylesheets="@../../resources/styles/styleMenuButtons.css" text="%buttonSharedProjects">
+            <JFXButton id="botonMenu" fx:id="buttonSharedProjects" alignment="CENTER_RIGHT" layoutX="-6.0" layoutY="130.0" onMouseEntered="#buttonSharedProjectsMouseEntered" onMouseExited="#buttonSharedProjectsMouseExited" opacity="0.91" prefHeight="32.0" prefWidth="185.0" ripplerFill="#1995ad" style="-fx-background-color: #A1D6E2;" stylesheets="@../../resources/styles/styleMenuButtons.css" text="%buttonSharedProjects">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="13.0" />
                </font>
             </JFXButton>
-            <JFXButton id="botonMenu" fx:id="buttonAllProjects" alignment="CENTER_RIGHT" layoutX="-6.0" layoutY="24.0" onMouseEntered="#buttonAllProjectsMouseEntered" onMouseExited="#buttonAllProjectsMouseExited" opacity="0.65" prefHeight="32.0" prefWidth="185.0" ripplerFill="#1995ad" style="-fx-background-color: #A1D6E2;" stylesheets="@../../resources/styles/styleMenuButtons.css" text="%buttonAll">
+            <JFXButton id="botonMenu" fx:id="buttonAllProjects" alignment="CENTER_RIGHT" layoutX="-6.0" layoutY="24.0" onMouseEntered="#buttonAllProjectsMouseEntered" onMouseExited="#buttonAllProjectsMouseExited" opacity="0.91" prefHeight="32.0" prefWidth="185.0" ripplerFill="#1995ad" style="-fx-background-color: #A1D6E2;" stylesheets="@../../resources/styles/styleMenuButtons.css" text="%buttonAll">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="13.0" />
                </font>
