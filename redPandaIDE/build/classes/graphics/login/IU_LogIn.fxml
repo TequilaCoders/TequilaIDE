@@ -22,7 +22,7 @@
                   <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
                </font>
             </JFXTextField>
-            <JFXPasswordField focusColor="#17a589" labelFloat="true" layoutX="92.0" layoutY="331.0" prefHeight="35.0" prefWidth="290.0" promptText="%promptPassword" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
+            <JFXPasswordField fx:id="pfPassword" focusColor="#17a589" labelFloat="true" layoutX="92.0" layoutY="331.0" prefHeight="35.0" prefWidth="290.0" promptText="%promptPassword" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
                </font>
@@ -54,12 +54,12 @@
             </Hyperlink>
             <ImageView fitHeight="35.0" fitWidth="35.0" layoutX="45.0" layoutY="242.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../recursos/icons/ic_account_circle_black_48dp.png" />
+                  <Image url="@../../resources/icons/ic_account_circle_black_48dp.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="35.0" fitWidth="35.0" layoutX="45.0" layoutY="333.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../recursos/icons/ic_https_black_48dp.png" />
+                  <Image url="@../../resources/icons/ic_https_black_48dp.png" />
                </image>
             </ImageView>
          </children>

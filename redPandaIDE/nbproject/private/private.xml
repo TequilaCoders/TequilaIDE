@@ -3,9 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/entities/Usuario.java</file>
-            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/fileExplorer/IU_NewProjectController.java</file>
-            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/login/IU_SignUpController.java</file>
+            <file>file:/C:/Users/alanc/Documents/GitHub/redPanda%20IDE/redPandaIDE/src/graphics/login/IU_LogInController.java</file>
+            <file>file:/C:/Users/alanc/Documents/GitHub/redPanda%20IDE/redPandaIDE/src/graphics/login/IU_SignUpController.java</file>
+            <file>file:/C:/Users/alanc/Documents/GitHub/redPanda%20IDE/redPandaIDE/src/main/RedPandaIDE.java</file>
+            <file>file:/C:/Users/alanc/Documents/GitHub/redPanda%20IDE/redPandaIDE/src/graphics/textEditor/IU_TabController.java</file>
         </group>
     </open-files>
 </project-private>

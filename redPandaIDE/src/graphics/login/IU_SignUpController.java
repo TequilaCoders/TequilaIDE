@@ -60,7 +60,7 @@ public class IU_SignUpController implements Initializable {
 
   @FXML
   private ImageView imPasswordRedCross;
-  
+
   boolean emailStatus = false;
   boolean aliasStatus = false;
 
@@ -93,10 +93,10 @@ public class IU_SignUpController implements Initializable {
     alias = tfAlias.getText().toLowerCase();
     email = tfEmail.getText().toLowerCase();
     password = pfPassword.getText();
-    
+
     hashedPassword = getHashedPassword(password);
     createUser(name, alias, email, hashedPassword);
-    
+
   }
 
   @FXML
@@ -106,25 +106,25 @@ public class IU_SignUpController implements Initializable {
     String email;
     String password;
     String confirmedPassword;
-    
+
     name = tfName.getText();
     alias = tfAlias.getText().toLowerCase();
     email = tfEmail.getText().toLowerCase();
     password = pfPassword.getText();
     confirmedPassword = pfConfirmPassword.getText();
-    
+
     boolean emptyStatus = thereAreEmptyFields(name, alias, email, password, confirmedPassword);;
     isAliasDuplicate();
     isEmailDuplicate();
 
     boolean passwordStatus = isPasswordConfirmationCorrect(password, confirmedPassword);
-    
+
     //A ELIMINAR!!------------------------
-      System.out.println("empty: " + emptyStatus);
-      System.out.println("alias: " + aliasStatus);
-      System.out.println("email: " + emailStatus);
-      System.out.println("password: " + passwordStatus);
-      //_---------------------------------------------
+    System.out.println("empty: " + emptyStatus);
+    System.out.println("alias: " + aliasStatus);
+    System.out.println("email: " + emailStatus);
+    System.out.println("password: " + passwordStatus);
+    //_---------------------------------------------
 
     if (!emptyStatus && !aliasStatus && !emailStatus && passwordStatus) {
       buttonSignUp.setDisable(false);
@@ -132,7 +132,7 @@ public class IU_SignUpController implements Initializable {
       buttonSignUp.setDisable(true);
     }
   }
-  
+
   public Usuario createUser(String name, String alias, String email, String password) {
 
     Usuario newUser = new Usuario();
@@ -140,18 +140,18 @@ public class IU_SignUpController implements Initializable {
     newUser.setAlias(alias);
     newUser.setCorreo(email);
     newUser.setClave(password);
-    
+
     EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
     EntityManager entitymanager = emfactory.createEntityManager();
-    
+
     entitymanager.getTransaction().begin();
     entitymanager.persist(newUser);
     entitymanager.getTransaction().commit();
-    
+
     entitymanager.close();
-    
+
     System.out.println("se creo usuario");
-    
+
     return newUser;
   }
 
@@ -166,7 +166,7 @@ public class IU_SignUpController implements Initializable {
 
   public void isAliasDuplicate() {
     tfAlias.setOnKeyTyped((KeyEvent event) -> {
-      
+
       String alias = tfAlias.getText() + event.getCharacter();
 
       List<Usuario> coincidenceList;
@@ -179,11 +179,11 @@ public class IU_SignUpController implements Initializable {
           .getResultList();
 
       if (coincidenceList.isEmpty() || tfAlias.getText().isEmpty()) { //esta duplicado
-        
+
         aliasStatus = false;
         tfAlias.setFocusColor(Paint.valueOf("#77d2ff"));
         tfAlias.setUnFocusColor(Paint.valueOf("#17a589"));
-       
+
         tfAlias.setPromptText("Alias");
         tfAlias.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
         imAliasRedCross.setVisible(false);
@@ -194,7 +194,7 @@ public class IU_SignUpController implements Initializable {
         tfAlias.setPromptText("Alias (ya existe el Alias)");
         tfAlias.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
         imAliasRedCross.setVisible(true);
-      }  
+      }
     });
   }
 
@@ -250,13 +250,11 @@ public class IU_SignUpController implements Initializable {
     }
     return status;
   }
-  
-  private String getHashedPassword(String password) {
 
+  private String getHashedPassword(String password) {
     String result = null;
 
     try {
-
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       byte[] hash = digest.digest(password.getBytes("UTF-8"));
       return bytesToHex(hash); // make it printable
@@ -268,6 +266,5 @@ public class IU_SignUpController implements Initializable {
 
   private String bytesToHex(byte[] hash) {
     return DatatypeConverter.printHexBinary(hash);
-
   }
 }

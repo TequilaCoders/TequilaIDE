@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1366.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <JFXDrawer fx:id="drawerFileTree" layoutY="73.0" prefHeight="577.0" prefWidth="180.0" style="-fx-background-color: transparent;" />
       <BorderPane prefHeight="200.0" prefWidth="200.0">
@@ -74,11 +74,7 @@
                   </Pane>
                </top>
                <center>
-                  <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-                     <children>
-                        <TabPane fx:id="tabPaneArchivos" onMouseClicked="#newTab" prefHeight="662.0" prefWidth="1366.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
-                     </children>
-                  </Pane>
+                  <TabPane fx:id="tabPaneArchivos" onMouseClicked="#newTab" prefHeight="662.0" prefWidth="1366.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER" />
                </center>
             </BorderPane>
          </center>
