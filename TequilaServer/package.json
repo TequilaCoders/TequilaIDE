@@ -1,0 +1,19 @@
+{
+  "name": "TequilaServer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "TequilaServer.js",
+  "scripts": {
+    "start": "nodemon server/TequilaServer.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  }
+}
