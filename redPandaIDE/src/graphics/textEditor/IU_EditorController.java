@@ -1,5 +1,6 @@
 package graphics.textEditor;
 
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDrawer;
 import entities.Archivo;
 import entities.ArchivoPK;
@@ -7,11 +8,14 @@ import entities.Proyecto;
 import graphics.fileExplorer.IU_FileExplorerController;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -59,7 +63,7 @@ public class IU_EditorController implements Initializable {
   private ImageView imageVFileExplorer;
 
   List<Archivo> fileList = new ArrayList<>();
-  
+
   List<String> currentTabs = new ArrayList<>();
 
   private Proyecto selectedProject;
@@ -133,6 +137,7 @@ public class IU_EditorController implements Initializable {
       IU_TabController controller = new IU_TabController();
       loader.setController(controller);
       controller.setTab(tab);
+      controller.setFileList(fileList);
 
       ScrollPane newFile = loader.load();
       tab.setContent(newFile);
@@ -157,6 +162,7 @@ public class IU_EditorController implements Initializable {
       IU_TabController controller = new IU_TabController();
       loader.setController(controller);
       controller.setTab(tab);
+      controller.setFileList(fileList);
 
       ScrollPane newFile = loader.load();
 
@@ -184,6 +190,7 @@ public class IU_EditorController implements Initializable {
       IU_TabController controller = new IU_TabController();
       loader.setController(controller);
       controller.setTab(tab);
+      controller.setFileList(fileList);
 
       ScrollPane newFile = loader.load();
       controller.setContent(content);
@@ -254,6 +261,7 @@ public class IU_EditorController implements Initializable {
         
         //se guarda el contenido de la pestaña
         saveTextContent(tab, controller, fileId);
+        loadFiles();
       }
     }); 
   }
@@ -382,7 +390,7 @@ public class IU_EditorController implements Initializable {
         = entitymanager.createNamedQuery("Archivo.findByProyectoidProyecto", Archivo.class).setParameter("proyectoidProyecto", projectID); //CAMBIAR EL 1 POR EL ID DE USUARIO>>>>
     fileList = query.getResultList();
   }
-  
+
   /**
    * Métodos que estan a la escucha de eventos en los elementos paneHamburger y paneFileExplorer.
    */

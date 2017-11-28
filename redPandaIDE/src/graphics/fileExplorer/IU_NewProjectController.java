@@ -56,14 +56,10 @@ public class IU_NewProjectController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     estatusDeGuardado = false;
-    try {
-      llenarComboBoxSucursal();
-    } catch (SQLException ex) {
-      Logger.getLogger(IU_NewProjectController.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    loadComboBoxProgramingLanguages();
   }
-  
-  public boolean getEstatusDeGuardado(){
+
+  public boolean getEstatusDeGuardado() {
     return estatusDeGuardado;
   }
   
@@ -83,20 +79,21 @@ public class IU_NewProjectController implements Initializable {
 
   /**
    * Método que carga el elemento cbLanguages con los lenguajes de programación del IDE.
-   * @throws SQLException 
    */
-  public void llenarComboBoxSucursal() throws SQLException {
-    String[] listaLenguajesProgramacion = {"Java", "Python", "C++"};
+  public void loadComboBoxProgramingLanguages() {
+    System.out.println("hehehehjh");
+    String[] programingLanguagesList = {"Java", "Python", "C++"};
 
-    ObservableList<String> lenguajesProgramacion = FXCollections.observableArrayList(
-        listaLenguajesProgramacion);
+    ObservableList<String> programingLanguages = FXCollections.observableArrayList(
+        programingLanguagesList);
 
-    cbLanguages.setItems(lenguajesProgramacion);
+    cbLanguages.setItems(programingLanguages);
   }
 
   /**
    * NOTA --- ELIMINAR CONSULTA A LA BD DESDE AQUÍ
-   * @param event 
+   *
+   * @param event
    */
   @FXML
   void createProject(ActionEvent event) {

@@ -33,7 +33,7 @@ public class RedPandaIDE extends Application {
      */
     public void mostrarVentanaPrincipal() {
         ResourceBundle bundle = ResourceBundle.getBundle("resources/languages.language");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FileExplorer.fxml"), bundle);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/login/IU_LogIn.fxml"), bundle);
         //FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Editor.fxml"), bundle);
 
         //se obtiene la resolución de la pantalla

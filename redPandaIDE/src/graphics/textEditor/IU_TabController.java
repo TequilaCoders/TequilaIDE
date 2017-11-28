@@ -1,17 +1,23 @@
 package graphics.textEditor;
 
+import com.jfoenix.controls.JFXComboBox;
+import entities.Archivo;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -56,6 +62,10 @@ public class IU_TabController implements Initializable {
       + "|(?<STRING>" + STRING_PATTERN + ")"
       + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
   );
+
+  public void setFileList(List<Archivo> fileList) {
+    this.fileList = fileList;
+  }
   
   @FXML
   private BorderPane borderPane;
@@ -65,11 +75,13 @@ public class IU_TabController implements Initializable {
   private VBox vboxNumberLines;
   @FXML
   private CodeArea taEditor;
+  @FXML
+  private JFXComboBox<String> cbTextLanguage;
+  
+  String content;
 
-  private String content;
-  
-  private int braceCount;
-  
+  List<Archivo> fileList = new ArrayList<>();
+
   Tab tab;
 
   public void setTab(Tab tab) {
@@ -81,6 +93,8 @@ public class IU_TabController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+    
+    
     borderPane.prefHeightProperty().bind(scrollPane.heightProperty());
     borderPane.prefWidthProperty().bind(scrollPane.widthProperty());
 
@@ -90,14 +104,47 @@ public class IU_TabController implements Initializable {
     Label numberLine = new Label("1");
     numberLine.setStyle("-fx-font-size: 20px; -fx-font-family: \"Courier New\"; -fx-text-fill: #90908A;");
     vboxNumberLines.getChildren().add(numberLine);
+    loadComboBoxTextLanguages();
 
+    if (tab.getText().equals("untitled")) {
+      listenerSetTabTitle();
+    }
+  }
+
+  @FXML
+  void setLanguageSintax(ActionEvent event) {
+    cbTextLanguage = (JFXComboBox<String>) event.getSource();
+    String selectedItem = cbTextLanguage.getSelectionModel().getSelectedItem();
+    
+    switch(selectedItem){
+      case "Texto":
+        loadPlainText();
+        System.out.println("seleccionaste texto");
+        break;
+      case "Java":
+        loadJavaText();
+        System.out.println("seleccionaste java");
+        break;
+      default:
+        System.out.println("lenguaje aun no soportado :v ");
+        break;
+    }
+  }
+
+  public void loadPlainText() {
+    //String currentText = taEditor.getText().trim();
+    taEditor.getStyleSpans(0,taEditor.getLength()).getStyleSpan(0).getStyle().clear();
+    //taEditor.replaceText(currentText);
+    
+  }
+  
+  public void loadJavaText(){
     taEditor.richChanges()
         .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
         .subscribe(change -> {
           try {
             taEditor.setStyleSpans(0, computeHighlighting(taEditor.getText()));
           } catch (Exception ex) {
-
           }
         });
   }
@@ -106,7 +153,7 @@ public class IU_TabController implements Initializable {
   private void addNumberLines(KeyEvent event) {
     int currentLines = vboxNumberLines.getChildren().size();
     int numberLines = taEditor.getParagraphs().size();
-    
+
     //autoComplete(event);
     if (numberLines > currentLines) {
       for (int i = currentLines; i < numberLines; i++) {
@@ -120,14 +167,14 @@ public class IU_TabController implements Initializable {
       }
     }
   }
-  
+
   /**
    * Metodo sobrecargado para visualizar el numero de lineas desde que se carga el tab
    */
-  private void addNumberLines(){
+  private void addNumberLines() {
     int currentLines = vboxNumberLines.getChildren().size();
     int numberLines = taEditor.getParagraphs().size();
-    
+
     //autoComplete(event);
     if (numberLines > currentLines) {
       for (int i = currentLines; i < numberLines; i++) {
@@ -175,11 +222,6 @@ public class IU_TabController implements Initializable {
     return spansBuilder.create();
   }
 
-      @FXML
-    void setTabTitle(InputMethodEvent event) {
-        System.out.println("presionas tecla");
-    }
-    
   /* Metodo incompleto
   @FXML
   void autoComplete(KeyEvent event) {
@@ -196,9 +238,9 @@ public class IU_TabController implements Initializable {
       setContent(newText);
     }
   }
-*/
-
+   */
   public void setContent(String content) {
+    this.content = content;
     taEditor.replaceText(content);
     //se carga el numero de lineas al cargar el tab
     addNumberLines();
@@ -206,6 +248,72 @@ public class IU_TabController implements Initializable {
 
   public String getContent() {
     return taEditor.getText();
+  }  
+  
+  public void loadComboBoxTextLanguages() {
+    String[] textLanguagesList = {"Texto", "Java", "Python", "C++"};
+
+    ObservableList<String> textLanguages = FXCollections.observableArrayList(
+        textLanguagesList);
+
+    cbTextLanguage.setItems(textLanguages);
   }
 
+  public void listenerSetTabTitle() {
+    taEditor.textProperty().addListener((obs, old, niu) -> {
+      int numberLines = taEditor.getParagraphs().size();
+      String newValue = niu.trim();
+
+      if (taEditor.getCaretPosition() < 51 && numberLines == 1) {
+
+        if (newValue.isEmpty()) {
+          tab.setText("untitled");
+        } else
+        if (taEditor.getText().length() < 51) {
+          tab.setText(newValue);
+          int duplicateIndex = checkDuplicateTitle(newValue);
+
+          if (duplicateIndex == 0) {
+            tab.setText(newValue);
+          } else {
+            tab.setText(newValue + duplicateIndex);
+          }
+          
+        } else {
+          String titleToBe = newValue.substring(0, 51);
+          int duplicateIndex = checkDuplicateTitle(titleToBe);
+
+          if (duplicateIndex == 0) {
+            tab.setText(titleToBe);
+          } else {
+            tab.setText(titleToBe + duplicateIndex);
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * regrese 0 si no esta duplicado, en caso de estar duplicado regresa el indice de duplicidad.
+   * @param title
+   * @return 
+   */
+  public int checkDuplicateTitle(String title) {
+    int duplicateIndex = 0;
+    
+    for (int i = 0; i < fileList.size(); i++) {
+      String fileTitle = fileList.get(i).getNombre();
+      
+      if (fileTitle.equals(title)) {
+        String lastCharacter = fileTitle.substring(fileTitle.length() - 1);
+        System.out.println("ultimo caracter" + lastCharacter);
+        try {
+          duplicateIndex = Integer.parseInt(lastCharacter) + 1;
+        } catch (NumberFormatException e) {
+          duplicateIndex = 1;
+        }
+      }
+    }
+    return duplicateIndex;
+  }
 }

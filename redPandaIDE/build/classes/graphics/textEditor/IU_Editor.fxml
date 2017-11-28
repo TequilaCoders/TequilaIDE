@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXDrawer?>
-<?import java.net.URL?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -18,13 +17,10 @@
       <BorderPane prefHeight="200.0" prefWidth="200.0">
          <center>
             <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="715.0" prefWidth="1366.0" BorderPane.alignment="CENTER">
-               <bottom>
-                  <Pane prefHeight="30.0" prefWidth="200.0" style="-fx-background-color: #ABB1BA;" BorderPane.alignment="CENTER" />
-               </bottom>
                <top>
-                  <Pane id="paneEditor" fx:id="paneToolBar" prefHeight="28.0" prefWidth="1374.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER">
+                  <Pane id="paneEditor" fx:id="paneToolBar" prefHeight="55.0" prefWidth="1366.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER">
                      <children>
-                        <MenuBar id="menuBarEditor" layoutX="32.0" layoutY="2.0">
+                        <MenuBar id="menuBarEditor" layoutX="32.0" layoutY="2.0" stylesheets="@../../resources/themes/theme_Tequila.css">
                            <menus>
                               <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
                                  <items>
@@ -42,10 +38,6 @@
                                  </items>
                               </Menu>
                            </menus>
-                           <stylesheets>
-                              <URL value="@../../resources/themes/theme_Tequila.css" />
-                              <URL value="@../../resources/styles/styleMenuBar.css" />
-                           </stylesheets>
                         </MenuBar>
                         <Pane fx:id="paneFileExplorer" accessibleText="Explorador de Archivos" layoutX="1338.0" onMouseClicked="#returnToFileExplorer" prefHeight="30.0" prefWidth="28.0">
                            <children>
@@ -58,11 +50,24 @@
                         </Pane>
                         <Pane fx:id="paneHamburger" layoutY="1.0" onMouseClicked="#openDrawer" prefHeight="28.0" prefWidth="30.0">
                            <children>
-                              <ImageView fx:id="imageVHamburger" fitHeight="26.0" fitWidth="24.0" layoutX="4.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+                              <ImageView fx:id="imageVHamburger" fitHeight="20.0" fitWidth="18.0" layoutX="10.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image url="@../../resources/icons/hamburger_orange.png" />
                                  </image>
                               </ImageView>
+                           </children>
+                        </Pane>
+                        <Pane layoutX="-2.0" layoutY="29.0" prefHeight="27.0" prefWidth="1368.0">
+                           <children>
+                              <Pane layoutX="7.0" layoutY="1.0" prefHeight="26.0" prefWidth="26.0">
+                                 <children>
+                                    <ImageView fitHeight="20.0" fitWidth="21.0" layoutX="4.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../resources/icons/save_yellow.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </Pane>
                            </children>
                         </Pane>
                      </children>
@@ -71,7 +76,7 @@
                <center>
                   <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                      <children>
-                        <TabPane fx:id="tabPaneArchivos" onMouseClicked="#newTab" prefHeight="658.0" prefWidth="1366.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
+                        <TabPane fx:id="tabPaneArchivos" onMouseClicked="#newTab" prefHeight="662.0" prefWidth="1366.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
                      </children>
                   </Pane>
                </center>

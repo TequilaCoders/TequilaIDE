@@ -12,12 +12,20 @@ and open the template in the editor.
     -fx-background-color: #0F1F38;
 }
 
-#menuBarEditor{
-    -fx-background-color: #0F1F38;
+.menu-bar{
+  -fx-background-color: #0F1F38;
+  -fx-border-width: 2;
 }
 
-.text {
-    -fx-fill: white;
+.menu-bar .label {
+    -fx-font-size: 16px;
+    -fx-font-family: "Proxima Nova Alt Rg";
+    -fx-text-fill: white;
+}
+
+.menu-item .label{
+  -fx-font-size: 14px;
+  -fx-label-line-length: 8;
 }
 
 .tab-pane {
@@ -27,7 +35,11 @@ and open the template in the editor.
 }
 
 .tab-pane .tab {
-    -fx-background-color: gray;
+    -fx-background-color: #7BA4A8;
+}
+
+.tab .tab-label { 
+    -fx-text-fill: white;
 }
 
 .tab-pane .tab:selected {
@@ -36,12 +48,17 @@ and open the template in the editor.
     -fx-faint-focus-color: transparent;
 }
 
+.tab-content-area .text-field {
+    -fx-text-fill: white;
+}
+
 .tab{
     -fx-background-insets: 0 1 0 1,0,0;
 }
 
 .tab-pane > .tab-header-area > .headers-region > .tab {
       -fx-shape: "M300,290 L310,168 L410,168 L421,290 L300,290 z";
+      -fx-text-fill: white;
 }
 
 .tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
@@ -69,10 +86,31 @@ VBox {
     -fx-background-color: #0F1F38;
 }
 
+
 .paragraph-box:has-caret {
-    -fx-background-color: rgba(63, 191, 191, 0.26);
+    -fx-background-color: #5CC5EF;
 }
 
+.paragraph-box:has-caret .text{
+    -fx-fill: black;
+}
+
+.paragraph-box .text{
+    -fx-fill: white;
+    -fx-font-family: "Courier New";
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: black;
+}
+
+.combo-box .list-view .list-cell {
+    -fx-text-fill: black;
+}
+
+.combo-box .cell {
+    -fx-text-fill: black;
+}
 
 
 
