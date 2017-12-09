@@ -5,16 +5,21 @@
  */
 package graphics.fileExplorer;
 
+import com.google.gson.Gson;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-import entities.Proyecto;
-import entities.ProyectoPK;
+import graphics.login.IU_LogInController;
+import static graphics.login.IU_LogInController.socket;
+import io.socket.client.IO;
+import io.socket.emitter.Emitter;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -22,10 +27,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
+import logic.Project;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * FXML Controller class
@@ -81,7 +85,6 @@ public class IU_NewProjectController implements Initializable {
    * Método que carga el elemento cbLanguages con los lenguajes de programación del IDE.
    */
   public void loadComboBoxProgramingLanguages() {
-    System.out.println("hehehehjh");
     String[] programingLanguagesList = {"Java", "Python", "C++"};
 
     ObservableList<String> programingLanguages = FXCollections.observableArrayList(
@@ -90,62 +93,50 @@ public class IU_NewProjectController implements Initializable {
     cbLanguages.setItems(programingLanguages);
   }
 
-  /**
-   * NOTA --- ELIMINAR CONSULTA A LA BD DESDE AQUÍ
-   *
-   * @param event
-   */
   @FXML
   void createProject(ActionEvent event) {
     estatusDeGuardado = true;
-    String nombre;
-    String lenguajeProgramacion;
+    String name;
+    String programmingLanguage;
 
-    nombre = tfName.getText();
-    lenguajeProgramacion = (String) cbLanguages.getSelectionModel().getSelectedItem();
-
-    //Se abre la conexion con la BD
-    EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
-    EntityManager entitymanager = emfactory.createEntityManager();
-
-    //FALTA AGREGAR EL USUARIO DE MANERA FORMAL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><
-    ProyectoPK clavesProyecto = new ProyectoPK();
-    clavesProyecto.setUsuarioidUsuario(1);
-
-    Proyecto proyectoACrear = new Proyecto(clavesProyecto, nombre, lenguajeProgramacion);
-
-    //Se inserta el objeto en la BD
-    entitymanager.getTransaction().begin();
-    entitymanager.persist(proyectoACrear);
-    entitymanager.getTransaction().commit();
+    name = tfName.getText();
+    programmingLanguage = (String) cbLanguages.getSelectionModel().getSelectedItem();
     
-    entitymanager.close();
+    JSONObject projectToSend = new JSONObject();
     
-    //se obtiene el id del proyecto recien creado
-    getIdFromProject(nombre);
+    projectToSend.accumulate("name", name);
+    projectToSend.accumulate("programmingLanguage", programmingLanguage);
     
-    //una vez creado el proyecto se cierra el stage y se muestra la alerta de confirmación
-    Stage stage = (Stage) paneNewProject.getScene().getWindow();
-        
-    //mostrarAlerta();
-    stage.close();
+    //----------VALOR TEMPORAL------------------
+    projectToSend.accumulate("userID", "1");
+    //-------------------------------------------
+
+    socket.connect();
+    System.err.println("logrado");
+
+    socket.emit("saveProject", projectToSend);
+    
+    socket.on("projectSaved", new Emitter.Listener() {
+      @Override
+      public void call(Object... os) {
+        if ((boolean) os[0]) {
+          System.out.println("proyecto guardado exitosamente");
+          idProject = (int) os[1];
+          
+          Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+              Stage stage = (Stage) paneNewProject.getScene().getWindow();
+              stage.close();
+              socket.disconnect();
+            }
+          });
+        } else {
+          System.out.println((String) os[1]);
+          socket.disconnect();
+        }
+      }
+    });
+
   }
-
-  /**
-   * Regresa el id del proyecto cuyo atributo nombre coincida con el parametro de entrada
-   * @param nombre
-   * @return 
-   */
-  public int getIdFromProject(String nombre){
-    
-    //Se abre la conexion con la BD
-    EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
-    EntityManager entitymanager = emfactory.createEntityManager();
-    
-    TypedQuery<Proyecto> query
-        = entitymanager.createNamedQuery("Proyecto.findByNombre", Proyecto.class).setParameter("nombre", nombre); //CAMBIAR EL 1 POR EL ID DE USUARIO>>>>
-    idProject = query.getSingleResult().getProyectoPK().getIdProyecto();
-    
-    return idProject;
-  }  
 }

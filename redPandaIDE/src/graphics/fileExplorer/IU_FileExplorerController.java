@@ -7,12 +7,11 @@ package graphics.fileExplorer;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXNodesList;
-import entities.Proyecto;
-import entities.ProyectoPK;
 import graphics.textEditor.IU_EditorController;
-import graphics.tools.Tools;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +31,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import logic.Project;
+import logic.User;
 
 /**
  * FXML Controller class
@@ -85,7 +86,13 @@ public class IU_FileExplorerController implements Initializable {
 
   private ResourceBundle rb;
   
-  Stage fileExplorerStage ;
+  Stage fileExplorerStage;
+  
+  FlowPane fpProjects;
+  
+  User user;
+  
+  List<Project> projectList = new ArrayList<>();
   
 
   /**
@@ -96,14 +103,22 @@ public class IU_FileExplorerController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
-
-    listeners();
-    loadProfileMenu_Buttons();
     this.rb = rb;
     create_FlowPaneMyProjects();
+    
+    listeners();
+    loadProfileMenu_Buttons();
 
   }
+  
+  public void setProjectList(List<Project> projectList) {
+    this.projectList = projectList;
+  }
 
+  public void setUser(User user) {
+    this.user = user;
+  }
+  
   /**
    * 
    * @param event 
@@ -126,7 +141,7 @@ public class IU_FileExplorerController implements Initializable {
    */
   @FXML
   void myProjectsSelected(ActionEvent event) {
-    create_FlowPaneMyProjects();
+    load_FlowPaneMyProjects();
   }
 
   /**
@@ -323,15 +338,12 @@ public class IU_FileExplorerController implements Initializable {
      
           idProject = loader.<IU_NewProjectController>getController().getIdProject();
   
-          ProyectoPK justCreatedProjectKey = new ProyectoPK();
-          justCreatedProjectKey.setIdProyecto(idProject);
-          
-          Proyecto justCreatedProyect = new Proyecto();
-          justCreatedProyect.setProyectoPK(justCreatedProjectKey);
+          Project justCreatedProyect = new Project();
+          justCreatedProyect.setIdProyecto(idProject);
 
           fileExplorerStage = (Stage) anchorPaneMain.getScene().getWindow();
           IU_EditorController controllerObject = new IU_EditorController();
-          controllerObject.open_Editor(justCreatedProyect, fileExplorerStage, rb);
+          controllerObject.open_Editor(justCreatedProyect, fileExplorerStage, rb, user);
         }
       }
     });
@@ -343,8 +355,15 @@ public class IU_FileExplorerController implements Initializable {
    */
   public FlowPane create_FlowPaneMyProjects(){
     try {
-      FlowPane crearProyecto = FXMLLoader.load(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneMyProjects.fxml"), rb);
-      flowPaneProyectos.getChildren().setAll(crearProyecto);
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneMyProjects.fxml"), rb);
+      
+      IU_FlowPaneMyProjectsController controller = new IU_FlowPaneMyProjectsController();
+      controller.setUser(user);
+      loader.setController(controller);
+
+      FlowPane newFlowPane = loader.load();
+      fpProjects = newFlowPane;
+      flowPaneProyectos.getChildren().setAll(fpProjects);
      
     } catch (IOException ex) {
       Logger.getLogger(IU_FileExplorerController.class.getName()).log(Level.SEVERE, null, ex);
@@ -357,21 +376,34 @@ public class IU_FileExplorerController implements Initializable {
     return flowPaneProyectos;
   }
   
+  public void load_FlowPaneMyProjects(){
+    
+    flowPaneProyectos.getChildren().setAll(fpProjects);
+    
+    flowPaneProyectos.getChildren().add(0, paneNewProject);
+    
+    flowPaneProyectos.setVisible(true);
+    paneNewProject.setVisible(true);
+  }
+  
   /**
    * Metodo que abre la ventana IU_FileExplorer.fxml
    * @param fileExplorerStage
    * @param rb 
    */
-  public void open_FileExplorer(Stage fileExplorerStage, ResourceBundle rb){
+  public void open_FileExplorer(Stage fileExplorerStage, ResourceBundle rb, User user){
     try { 
 
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FileExplorer.fxml"), rb);
-           
+      IU_FileExplorerController controller = new IU_FileExplorerController(); 
+      controller.setUser(user);
+      fxmlLoader.setController(controller);
       Parent root1 = (Parent) fxmlLoader.load();
  
       fileExplorerStage.setMaximized(false);
       fileExplorerStage.setScene(new Scene(root1));
 
+      System.out.println("cargando explorador");
       fileExplorerStage.show();
     } catch (Exception e) {
     }

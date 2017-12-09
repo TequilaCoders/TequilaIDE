@@ -1,6 +1,10 @@
 package graphics.tools;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import javafx.scene.control.Alert;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * 
@@ -8,19 +12,35 @@ import javafx.scene.control.Alert;
  */
 public class Tools {
   
-  /**Metodo que recibe un String como titulo de la alerta y un String como contenido de esta, y
-   * regresa dicha alerta.
-   *
-   * @param title
-   * @param message
-   */
-  public static void displayAlert(String title, String message) {
-    //agregar ventana emergente---------------------------------------
+  public static void displayWarningAlert(String title, String message) {
     Alert alert = new Alert(Alert.AlertType.WARNING);
     alert.setTitle(title);
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.show();
-    //fin ventana emergente--------------------------------------------
+  }
+
+  public static void displayConfirmationAlert(String title, String message) {
+    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.show();
+  }
+  
+  public static String getHashedPassword(String password) {
+    String result = null;
+
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      byte[] hash = digest.digest(password.getBytes("UTF-8"));
+      return bytesToHex(hash); // make it printable
+    } catch (NoSuchAlgorithmException | UnsupportedEncodingException ex) {
+    }
+    return result;
+  }
+
+  private static String bytesToHex(byte[] hash) {
+    return DatatypeConverter.printHexBinary(hash);
   }
 }

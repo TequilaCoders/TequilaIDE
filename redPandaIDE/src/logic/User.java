@@ -16,9 +16,9 @@ public class User {
   public User() {
   }
 
-  public User(String alias, String clave) {
+  public User(int idUsuario, String alias) {
+    this.idUsuario = idUsuario;
     this.alias = alias;
-    this.clave = clave;
   }
 
   public String getAlias() {

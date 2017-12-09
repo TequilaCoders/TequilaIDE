@@ -1,15 +1,19 @@
 package graphics.login;
 
+import com.google.gson.Gson;
 import com.jfoenix.controls.JFXDrawer;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
+import graphics.fileExplorer.IU_FileExplorerController;
+import graphics.tools.Tools;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +29,9 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javax.xml.bind.DatatypeConverter;
+import logic.Project;
+import logic.User;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -42,6 +48,8 @@ public class IU_LogInController implements Initializable {
   private JFXTextField tfUser;
   @FXML
   private JFXPasswordField pfPassword;
+  
+  List<Project> projectList = new ArrayList<>();
 
   private ResourceBundle rb;
   public static Socket socket;
@@ -58,11 +66,10 @@ public class IU_LogInController implements Initializable {
 
     try {
       socket = IO.socket("http://localhost:7000");
-      socket.connect();
-      System.err.println("logrado");
     } catch (URISyntaxException ex) {
       Logger.getLogger(IU_LogInController.class.getName()).log(Level.SEVERE, null, ex);
     }
+    
   }
 
   @FXML
@@ -116,7 +123,7 @@ public class IU_LogInController implements Initializable {
     JSONObject user = new JSONObject();
 
     String alias = tfUser.getText();
-    String password = getHashedPassword(pfPassword.getText());
+    String password = Tools.getHashedPassword(pfPassword.getText());
 
     try {
       user.accumulate("alias", alias);
@@ -125,6 +132,9 @@ public class IU_LogInController implements Initializable {
       Logger.getLogger(IU_LogInController.class.getName()).log(Level.SEVERE, null, ex);
     }
 
+    socket.connect();
+    System.err.println("logrado");
+
     socket.emit("access", user);
     socket.on("approved", new Emitter.Listener() {
       @Override
@@ -132,45 +142,40 @@ public class IU_LogInController implements Initializable {
         Platform.runLater(
             () -> {
               if ((boolean) os[0]) {
-                System.out.println("Si paso");
-                loadExplorer();
+                
+                User userReceived = createUser(os[1]);
+                System.out.println("usuario " + userReceived.getAlias());
+                Stage stage = (Stage) tfUser.getScene().getWindow();
+                IU_FileExplorerController newScene = new IU_FileExplorerController();
+                newScene.open_FileExplorer(stage, rb, userReceived);
+            
+                socket.disconnect();
               } else {
                 System.out.println((String) os[1]);
+                socket.disconnect();
               }
             }
         );
       }
     });
-
+ 
   }
 
-  public void loadExplorer() {
-    AnchorPane pane = null;
-    try {
-      pane = FXMLLoader.load(getClass().getResource("/graphics/fileExplorer/IU_FileExplorer.fxml"), rb);
-    } catch (IOException ex) {
-      Logger.getLogger(IU_LogInController.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    Scene scenePartida = new Scene(pane);
-    Stage stage = (Stage) drawerRegistrar.getScene().getWindow();
-    stage.setScene(scenePartida);
-    stage.show();
-  }
+  public User createUser(Object receivedObject) {
+    JSONArray listRecovered;
+    JSONObject objectRecovered;
+    String jsonString;
+    User receivedUser;
+    
+    listRecovered = (JSONArray) receivedObject;
+    objectRecovered = listRecovered.getJSONObject(0);
+    jsonString = objectRecovered.toString();
+    
+    Gson gson = new Gson();
 
-  private String getHashedPassword(String password) {
-    String result = null;
+    receivedUser = gson.fromJson(jsonString, User.class);
+    
+    return receivedUser;
 
-    try {
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      byte[] hash = digest.digest(password.getBytes("UTF-8"));
-      return bytesToHex(hash); // make it printable
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    return result;
-  }
-
-  private String bytesToHex(byte[] hash) {
-    return DatatypeConverter.printHexBinary(hash);
   }
 }

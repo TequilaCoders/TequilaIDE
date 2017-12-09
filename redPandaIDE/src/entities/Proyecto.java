@@ -24,7 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "proyecto")
 @XmlRootElement
 @NamedQueries({
-  
   @NamedQuery(name = "Proyecto.findAll", query = "SELECT p FROM Proyecto p"),
   @NamedQuery(name = "Proyecto.findByIdProyecto", query = "SELECT p FROM Proyecto p WHERE p.proyectoPK.idProyecto = :idProyecto"),
   @NamedQuery(name = "Proyecto.findByNombre", query = "SELECT p FROM Proyecto p WHERE p.nombre = :nombre"),
@@ -105,7 +104,7 @@ public class Proyecto implements Serializable {
 
   @Override
   public String toString() {
-    return "entidades.Proyecto[ proyectoPK=" + proyectoPK + " ]";
+    return "entities.Proyecto[ proyectoPK=" + proyectoPK + " ]";
   }
 
 }

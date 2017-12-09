@@ -6,8 +6,6 @@
 package graphics.textEditor;
 
 import com.jfoenix.controls.JFXTreeView;
-import entities.Archivo;
-import entities.Proyecto;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +17,8 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import logic.File;
+import logic.Project;
 
 /**
  * FXML Controller class
@@ -30,9 +30,9 @@ public class IU_FileTreeController implements Initializable {
   @FXML
   private JFXTreeView<String> treeViewProjectFiles;
   
-  private Proyecto selectedProject;
+  private Project selectedProject;
   
-  List<Archivo> fileList = new ArrayList<>();
+  List<File> fileList = new ArrayList<>();
   
   IU_EditorController editorController;
 
@@ -45,11 +45,11 @@ public class IU_FileTreeController implements Initializable {
     listenerSelectedFile();
   }
 
-  public void setSelectedProject(Proyecto selectedProject) {
+  public void setSelectedProject(Project selectedProject) {
     this.selectedProject = selectedProject;
   }
 
-  public void setFileList(List<Archivo> fileList) {
+  public void setFileList(List<File> fileList) {
     this.fileList = fileList;
   }
 
@@ -91,13 +91,14 @@ public class IU_FileTreeController implements Initializable {
         if (mouseEvent.getClickCount() == 2) {
           TreeItem<String> item = treeViewProjectFiles.getSelectionModel().getSelectedItem();
 
+          System.out.println("item value " + item.getValue());
           String fileName = item.getValue();
           //se busca el proyecto por su nombre
-          Archivo selectedFile = searchFileByName(fileName);
+          File selectedFile = searchFileByName(fileName);
           
           String name = selectedFile.getNombre();
           String content = selectedFile.getContenido();
-          int fileId = selectedFile.getArchivoPK().getIdArchivo();
+          int fileId = selectedFile.getIdArchivo();
 
           //se comprueba si la pestaña esta abierta en el editor
           if (tabIsOpened(name) == false) {
@@ -117,8 +118,8 @@ public class IU_FileTreeController implements Initializable {
    * @param name
    * @return 
    */
-  public Archivo searchFileByName(String name){
-    Archivo foundFile = null;
+  public File searchFileByName(String name){
+    File foundFile = null;
     for (int i = 0; i < fileList.size(); i++) {
       String auxFileName = fileList.get(i).getNombre();
       if (auxFileName.equals(name)) {

@@ -75,7 +75,7 @@ public class ProyectoPK implements Serializable {
 
   @Override
   public String toString() {
-    return "entidades.ProyectoPK[ idProyecto=" + idProyecto + ", usuarioidUsuario=" + usuarioidUsuario + " ]";
+    return "entities.ProyectoPK[ idProyecto=" + idProyecto + ", usuarioidUsuario=" + usuarioidUsuario + " ]";
   }
 
 }

@@ -12,6 +12,10 @@ and open the template in the editor.
     -fx-background-color: #0F1F38;
 }
 
+.tool-bar{
+  -fx-background-color: #0F1F38;
+}
+
 .menu-bar{
   -fx-background-color: #0F1F38;
   -fx-border-width: 2;
@@ -26,6 +30,30 @@ and open the template in the editor.
 .menu-item .label{
   -fx-font-size: 14px;
   -fx-label-line-length: 8;
+  -fx-text-fill: white;
+}
+
+.menu-item {
+     -fx-background-color: #0F1F38;
+}
+
+.menu-item:focused {
+     -fx-background-color: #7BA4A8;
+}
+
+.context-menu {
+  -fx-background-color: #0F1F38;
+}
+
+.tool-bar{
+  -fx-background-color: #0F1F38;
+  -fx-border-width: 2;
+}
+
+.tool-bar .label {
+    -fx-font-size: 16px;
+    -fx-font-family: "Proxima Nova Alt Rg";
+    -fx-text-fill: white;
 }
 
 .tab-pane {
@@ -55,15 +83,6 @@ and open the template in the editor.
 .tab{
     -fx-background-insets: 0 1 0 1,0,0;
 }
-
-.tab-pane > .tab-header-area > .headers-region > .tab {
-      -fx-shape: "M300,290 L310,168 L410,168 L421,290 L300,290 z";
-      -fx-text-fill: white;
-}
-
-.tab-pane:focused > .tab-header-area > .headers-region > .tab:selected .focus-indicator {
-    -fx-shape: "M300,290 L310,168 L410,168 L421,290 L300,290 z";
-}   
 
 .code-area{
     -fx-background-insets: 0;
@@ -112,19 +131,6 @@ VBox {
     -fx-text-fill: black;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 .keyword {
     -fx-fill: #4CB5F5;
     -fx-font-weight: bold;
@@ -147,3 +153,10 @@ VBox {
     -fx-font-weight: bold;
 }
 
+.menu-button > .arrow-button {
+    -fx-padding: 0;
+}
+
+.menu-button > .arrow-button > .arrow {
+    -fx-padding: 0;
+}

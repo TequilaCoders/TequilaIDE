@@ -8,9 +8,10 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="TequilaIDE.jar" size="92988" download="eager" />
+    <jar href="TequilaIDE.jar" size="116152" download="eager" />
     <jar href="lib\eclipselink.jar" size="8478776" download="eager" />
     <jar href="lib\engine.io-client-1.0.1-SNAPSHOT.jar" size="106098" download="eager" />
+    <jar href="lib\gson-2.8.2.jar" size="232932" download="eager" />
     <jar href="lib\javax.persistence_2.1.0.v201304241213.jar" size="164637" download="eager" />
     <jar href="lib\jfoenix.jar" size="2384520" download="eager" />
     <jar href="lib\json-20140107.jar" size="64952" download="eager" />

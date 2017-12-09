@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPaneMain" prefHeight="270.0" prefWidth="839.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.fileExplorer.IU_FileExplorerController">
+<AnchorPane id="AnchorPane" fx:id="anchorPaneMain" prefHeight="270.0" prefWidth="839.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <FlowPane fx:id="flowPaneProyectos" layoutX="199.0" layoutY="73.0" prefHeight="419.0" prefWidth="638.0" visible="false" />
       <Pane layoutX="690.0" layoutY="7.0" prefHeight="235.0" prefWidth="149.0">

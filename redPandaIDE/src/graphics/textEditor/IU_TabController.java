@@ -1,7 +1,6 @@
 package graphics.textEditor;
 
 import com.jfoenix.controls.JFXComboBox;
-import entities.Archivo;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +20,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import logic.File;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
@@ -63,7 +63,7 @@ public class IU_TabController implements Initializable {
       + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
   );
 
-  public void setFileList(List<Archivo> fileList) {
+  public void setFileList(List<File> fileList) {
     this.fileList = fileList;
   }
   
@@ -80,7 +80,7 @@ public class IU_TabController implements Initializable {
   
   String content;
 
-  List<Archivo> fileList = new ArrayList<>();
+  List<File> fileList = new ArrayList<>();
 
   Tab tab;
 

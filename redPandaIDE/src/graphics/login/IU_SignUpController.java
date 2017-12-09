@@ -2,12 +2,15 @@ package graphics.login;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
+import static graphics.login.IU_LogInController.socket;
 import com.jfoenix.controls.JFXTextField;
-import entities.Usuario;
+import graphics.tools.Tools;
+import io.socket.emitter.Emitter;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,10 +18,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Paint;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.xml.bind.DatatypeConverter;
+import javafx.stage.Stage;
+import org.json.JSONObject;
 
 /**
  * FXML Controller class
@@ -66,6 +67,9 @@ public class IU_SignUpController implements Initializable {
 
   /**
    * Initializes the controller class.
+   *
+   * @param url
+   * @param rb
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
@@ -74,6 +78,10 @@ public class IU_SignUpController implements Initializable {
 
   @FXML
   private void eventLogIn(ActionEvent event) throws InterruptedException {
+    parentController.closeDrawer();
+  }
+  
+  private void eventLogIn() throws InterruptedException {
     parentController.closeDrawer();
   }
 
@@ -94,7 +102,7 @@ public class IU_SignUpController implements Initializable {
     email = tfEmail.getText().toLowerCase();
     password = pfPassword.getText();
 
-    hashedPassword = getHashedPassword(password);
+    hashedPassword = Tools.getHashedPassword(password);
     createUser(name, alias, email, hashedPassword);
 
   }
@@ -113,19 +121,18 @@ public class IU_SignUpController implements Initializable {
     password = pfPassword.getText();
     confirmedPassword = pfConfirmPassword.getText();
 
-    boolean emptyStatus = thereAreEmptyFields(name, alias, email, password, confirmedPassword);;
+    boolean emptyStatus = areThereEmptyFields(name, alias, email, password, confirmedPassword);
     isAliasDuplicate();
     isEmailDuplicate();
 
     boolean passwordStatus = isPasswordConfirmationCorrect(password, confirmedPassword);
 
-    //A ELIMINAR!!------------------------
-    System.out.println("empty: " + emptyStatus);
+    //BLOQUE A ELIMINAR!!------------------------
+    /*System.out.println("empty: " + emptyStatus);
     System.out.println("alias: " + aliasStatus);
     System.out.println("email: " + emailStatus);
-    System.out.println("password: " + passwordStatus);
-    //_---------------------------------------------
-
+    System.out.println("password: " + passwordStatus);*/
+    //---------------------------------------------
     if (!emptyStatus && !aliasStatus && !emailStatus && passwordStatus) {
       buttonSignUp.setDisable(false);
     } else {
@@ -133,29 +140,46 @@ public class IU_SignUpController implements Initializable {
     }
   }
 
-  public Usuario createUser(String name, String alias, String email, String password) {
+  public void createUser(String name, String alias, String email, String password) {
 
-    Usuario newUser = new Usuario();
-    newUser.setNombres(name);
-    newUser.setAlias(alias);
-    newUser.setCorreo(email);
-    newUser.setClave(password);
+    JSONObject userToSend = new JSONObject();
 
-    EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
-    EntityManager entitymanager = emfactory.createEntityManager();
+    userToSend.accumulate("name", name);
+    userToSend.accumulate("alias", alias);
+    userToSend.accumulate("email", email);
+    userToSend.accumulate("password", password);
 
-    entitymanager.getTransaction().begin();
-    entitymanager.persist(newUser);
-    entitymanager.getTransaction().commit();
+    socket.connect();
+    System.err.println("logrado");
 
-    entitymanager.close();
+    socket.emit("saveUser", userToSend);
+    socket.on("registrationSuccesful", new Emitter.Listener() {
+      @Override
+      public void call(Object... os) {
+        Platform.runLater(
+            () -> {
+              if ((boolean) os[0]) {
+           
+                Stage stage = (Stage) botonIniciarSesion.getScene().getWindow();
+                Tools.displayConfirmationAlert(null, "Usuario registrado exitosamente");
+                try {
+                  eventLogIn();
+                } catch (InterruptedException ex) {
+                  Logger.getLogger(IU_SignUpController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+              } else {
+                System.out.println((String) os[1]);
+              }
+            }
+        );
+      }
 
-    System.out.println("se creo usuario");
-
-    return newUser;
+    });
+ 
   }
 
-  public boolean thereAreEmptyFields(String name, String alias, String email, String password, String confirmedPassword) {
+  public boolean areThereEmptyFields(String name, String alias, String email, String password, String confirmedPassword) {
     boolean isEmpty = true;
     if (!name.trim().isEmpty() && !alias.trim().isEmpty() && !email.trim().isEmpty()
         && !password.trim().isEmpty() && !confirmedPassword.trim().isEmpty()) {
@@ -166,69 +190,93 @@ public class IU_SignUpController implements Initializable {
 
   public void isAliasDuplicate() {
     tfAlias.setOnKeyTyped((KeyEvent event) -> {
+      JSONObject aliasToSend = new JSONObject();
 
-      String alias = tfAlias.getText() + event.getCharacter();
+      String alias = tfAlias.getText().toLowerCase() + event.getCharacter().toLowerCase();
 
-      List<Usuario> coincidenceList;
-      EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
-      EntityManager entitymanager = emfactory.createEntityManager();
+      aliasToSend.accumulate("alias", alias);
+      
+      socket.connect();
+      System.err.println("logrado");
+      
+      socket.emit("aliasChanged", aliasToSend);
 
-      coincidenceList = entitymanager.createNamedQuery("Usuario.compareAlias",
-          Usuario.class)
-          .setParameter("alias", alias)
-          .getResultList();
+      socket.on("aliasDuplicated", new Emitter.Listener() {
+        @Override
+        public void call(Object... os) {
+          Platform.runLater(
+              () -> {
+                if ((boolean) os[0]) {
 
-      if (coincidenceList.isEmpty() || tfAlias.getText().isEmpty()) { //esta duplicado
+                  System.out.println("esta duplicado");
+                  aliasStatus = true;
+                  tfAlias.setFocusColor(Paint.valueOf("orange"));
+                  tfAlias.setUnFocusColor(Paint.valueOf("orange"));
+                  tfAlias.setPromptText("Alias (ya existe el Alias)");
+                  tfAlias.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
+                  imAliasRedCross.setVisible(true);
+                } else {
+                  //System.out.println((String) os[1]);
 
-        aliasStatus = false;
-        tfAlias.setFocusColor(Paint.valueOf("#77d2ff"));
-        tfAlias.setUnFocusColor(Paint.valueOf("#17a589"));
+                  System.out.println("no esta duplicado");
+                  aliasStatus = false;
+                  tfAlias.setFocusColor(Paint.valueOf("#77d2ff"));
+                  tfAlias.setUnFocusColor(Paint.valueOf("#17a589"));
 
-        tfAlias.setPromptText("Alias");
-        tfAlias.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
-        imAliasRedCross.setVisible(false);
-      } else {
-        aliasStatus = true;
-        tfAlias.setFocusColor(Paint.valueOf("orange"));
-        tfAlias.setUnFocusColor(Paint.valueOf("orange"));
-        tfAlias.setPromptText("Alias (ya existe el Alias)");
-        tfAlias.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
-        imAliasRedCross.setVisible(true);
-      }
+                  tfAlias.setPromptText("Alias");
+                  tfAlias.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
+                  imAliasRedCross.setVisible(false);
+                }
+              }
+          );
+        }
+      });
     });
   }
 
   public void isEmailDuplicate() {
     tfEmail.setOnKeyTyped((KeyEvent event) -> {
+      JSONObject emailToSend = new JSONObject();
 
-      String email = tfEmail.getText() + event.getCharacter();
+      String email = tfEmail.getText().toLowerCase() + event.getCharacter().toLowerCase();
 
-      List<Usuario> coincidenceList;
-      EntityManagerFactory emfactory = Persistence.createEntityManagerFactory("redPandaIDEPU");
-      EntityManager entitymanager = emfactory.createEntityManager();
+      emailToSend.accumulate("email", email);
+      
+      socket.connect();
+      System.err.println("logrado");
+      
+      socket.emit("emailChanged", emailToSend);
 
-      coincidenceList = entitymanager.createNamedQuery("Usuario.compareEmail",
-          Usuario.class)
-          .setParameter("email", email)
-          .getResultList();
+      socket.on("emailDuplicated", new Emitter.Listener() {
+        @Override
+        public void call(Object... os) {
+          Platform.runLater(
+              () -> {
+                if ((boolean) os[0]) {
 
-      if (coincidenceList.isEmpty() || tfEmail.getText().isEmpty()) { // esta duplicado
-        emailStatus = false;
-        tfEmail.setFocusColor(Paint.valueOf("#77d2ff"));
-        tfEmail.setUnFocusColor(Paint.valueOf("#17a589"));
-        tfEmail.setPromptText("Email");
-        tfEmail.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
+                  System.out.println("esta duplicado");
+                  emailStatus = true;
+                  tfEmail.setFocusColor(Paint.valueOf("orange"));
+                  tfEmail.setUnFocusColor(Paint.valueOf("orange"));
+                  tfEmail.setPromptText("Email (ya existe el Email)");
+                  tfEmail.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
+                  imEmailRedCross.setVisible(true);
+                } else {
+                  //System.out.println((String) os[1]);
 
-        imEmailRedCross.setVisible(false);
-      } else {
-        emailStatus = true;
-        tfEmail.setFocusColor(Paint.valueOf("orange"));
-        tfEmail.setUnFocusColor(Paint.valueOf("orange"));
-        tfEmail.setPromptText("Email (ya existe el Email)");
-        tfEmail.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
-        imEmailRedCross.setVisible(true);
-      }
+                  System.out.println("no esta duplicado");
+                  emailStatus = false;
+                  tfEmail.setFocusColor(Paint.valueOf("#77d2ff"));
+                  tfEmail.setUnFocusColor(Paint.valueOf("#17a589"));
+                  tfEmail.setPromptText("Email");
+                  tfEmail.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
 
+                  imEmailRedCross.setVisible(false);
+                }
+              }
+          );
+        }
+      });
     });
   }
 
@@ -249,22 +297,5 @@ public class IU_SignUpController implements Initializable {
       imPasswordRedCross.setVisible(true);
     }
     return status;
-  }
-
-  private String getHashedPassword(String password) {
-    String result = null;
-
-    try {
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      byte[] hash = digest.digest(password.getBytes("UTF-8"));
-      return bytesToHex(hash); // make it printable
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    return result;
-  }
-
-  private String bytesToHex(byte[] hash) {
-    return DatatypeConverter.printHexBinary(hash);
   }
 }

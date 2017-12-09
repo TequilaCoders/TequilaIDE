@@ -5,6 +5,9 @@
     <class>entities.Archivo</class>
     <class>entities.Proyecto</class>
     <class>entities.Usuario</class>
+    <class>entities.Project</class>
+    <class>entities.File</class>
+    <class>entities.User</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/tequilaide?zeroDateTimeBehavior=convertToNull"/>
       <property name="javax.persistence.jdbc.user" value="tequiladmin"/>
