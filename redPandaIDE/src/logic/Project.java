@@ -9,6 +9,7 @@ public class Project {
   private int idUsuario; 
   private String nombre; 
   private String lenguaje; 
+  private boolean shared;
 
   public Project() {
   }
@@ -20,6 +21,7 @@ public class Project {
     this.lenguaje = lenguaje;
   }
 
+  
   public int getIdProyecto() {
     return idProyecto;
   }
@@ -51,6 +53,14 @@ public class Project {
   public void setLenguaje(String lenguaje) {
     this.lenguaje = lenguaje;
   }
-  
+
+  public boolean isShared() {
+    return shared;
+  }
+
+  public void setShared(boolean shared) {
+    this.shared = shared;
+  }
+
   
 }

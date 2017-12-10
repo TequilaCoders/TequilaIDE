@@ -1,6 +1,9 @@
 package graphics.textEditor;
 
 import com.jfoenix.controls.JFXComboBox;
+import static graphics.login.IU_LogInController.socket;
+import graphics.tools.Tools;
+import io.socket.emitter.Emitter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,21 +12,30 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import logic.File;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.json.JSONObject;
 
 /**
  * FXML Controller class
@@ -66,7 +78,7 @@ public class IU_TabController implements Initializable {
   public void setFileList(List<File> fileList) {
     this.fileList = fileList;
   }
-  
+
   @FXML
   private BorderPane borderPane;
   @FXML
@@ -77,24 +89,38 @@ public class IU_TabController implements Initializable {
   private CodeArea taEditor;
   @FXML
   private JFXComboBox<String> cbTextLanguage;
-  
+
   String content;
+  
+  ContextMenu contextMenu = new ContextMenu();
 
   List<File> fileList = new ArrayList<>();
 
   Tab tab;
+  
+  int fileID;
+
+  private int projectID;
 
   public void setTab(Tab tab) {
     this.tab = tab;
   }
 
+  public void setProjectID(int projectID) {
+    this.projectID = projectID;
+  }
+
+  public void setFile(int fileID) {
+    this.fileID = fileID;
+  }
+  
   /**
    * Initializes the controller class.
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
-    
-    
+
+    loadContextMenu();
     borderPane.prefHeightProperty().bind(scrollPane.heightProperty());
     borderPane.prefWidthProperty().bind(scrollPane.widthProperty());
 
@@ -115,8 +141,8 @@ public class IU_TabController implements Initializable {
   void setLanguageSintax(ActionEvent event) {
     cbTextLanguage = (JFXComboBox<String>) event.getSource();
     String selectedItem = cbTextLanguage.getSelectionModel().getSelectedItem();
-    
-    switch(selectedItem){
+
+    switch (selectedItem) {
       case "Texto":
         loadPlainText();
         System.out.println("seleccionaste texto");
@@ -133,12 +159,12 @@ public class IU_TabController implements Initializable {
 
   public void loadPlainText() {
     //String currentText = taEditor.getText().trim();
-    taEditor.getStyleSpans(0,taEditor.getLength()).getStyleSpan(0).getStyle().clear();
+    taEditor.getStyleSpans(0, taEditor.getLength()).getStyleSpan(0).getStyle().clear();
     //taEditor.replaceText(currentText);
-    
+
   }
-  
-  public void loadJavaText(){
+
+  public void loadJavaText() {
     taEditor.richChanges()
         .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
         .subscribe(change -> {
@@ -248,8 +274,8 @@ public class IU_TabController implements Initializable {
 
   public String getContent() {
     return taEditor.getText();
-  }  
-  
+  }
+
   public void loadComboBoxTextLanguages() {
     String[] textLanguagesList = {"Texto", "Java", "Python", "C++"};
 
@@ -268,25 +294,26 @@ public class IU_TabController implements Initializable {
 
         if (newValue.isEmpty()) {
           tab.setText("untitled");
-        } else
-        if (taEditor.getText().length() < 51) {
-          tab.setText(newValue);
-          int duplicateIndex = checkDuplicateTitle(newValue);
-
-          if (duplicateIndex == 0) {
-            tab.setText(newValue);
-          } else {
-            tab.setText(newValue + duplicateIndex);
-          }
-          
         } else {
-          String titleToBe = newValue.substring(0, 51);
-          int duplicateIndex = checkDuplicateTitle(titleToBe);
+          if (taEditor.getText().length() < 51) {
+            tab.setText(newValue);
+            int duplicateIndex = checkDuplicateTitle(newValue);
 
-          if (duplicateIndex == 0) {
-            tab.setText(titleToBe);
+            if (duplicateIndex == 0) {
+              tab.setText(newValue);
+            } else {
+              tab.setText(newValue + duplicateIndex);
+            }
+
           } else {
-            tab.setText(titleToBe + duplicateIndex);
+            String titleToBe = newValue.substring(0, 51);
+            int duplicateIndex = checkDuplicateTitle(titleToBe);
+
+            if (duplicateIndex == 0) {
+              tab.setText(titleToBe);
+            } else {
+              tab.setText(titleToBe + duplicateIndex);
+            }
           }
         }
       }
@@ -295,15 +322,16 @@ public class IU_TabController implements Initializable {
 
   /**
    * regrese 0 si no esta duplicado, en caso de estar duplicado regresa el indice de duplicidad.
+   *
    * @param title
-   * @return 
+   * @return
    */
   public int checkDuplicateTitle(String title) {
     int duplicateIndex = 0;
-    
+
     for (int i = 0; i < fileList.size(); i++) {
       String fileTitle = fileList.get(i).getNombre();
-      
+
       if (fileTitle.equals(title)) {
         String lastCharacter = fileTitle.substring(fileTitle.length() - 1);
         System.out.println("ultimo caracter" + lastCharacter);
@@ -315,6 +343,56 @@ public class IU_TabController implements Initializable {
       }
     }
     return duplicateIndex;
+  }
+
+  public void loadContextMenu() {
+    MenuItem menuItemCloseAndSave = new MenuItem("Guardar");
+    MenuItem menuItemDelete = new MenuItem("Eliminar");
+
+    contextMenu.getItems().addAll(menuItemCloseAndSave, menuItemDelete);
+
+    menuItemCloseAndSave.setOnAction(new EventHandler() {
+      @Override
+      public void handle(Event event) {
+        closeTab(tab);
+        tab.getTabPane().getTabs().remove(tab);
+        Tools.displayInformation("Confirmation", "Archivo guardado exitosamente!");
+      }
+
+    });
+    
+    menuItemDelete.setOnAction(new EventHandler() {
+      @Override
+      public void handle(Event event) {
+        tab.getTabPane().getTabs().remove(tab);
+        IU_EditorController controller = new IU_EditorController();
+        controller.deleteFile(fileID);
+        Tools.displayInformation("Archivo Eliminado", "El archivo seleccionado ha sido eliminado");  
+       }
+
+    });
+  }
+  
+  private void closeTab(Tab tab) {
+        EventHandler<Event> handler = tab.getOnClosed();
+        if (null != handler) {
+            handler.handle(null);
+        } else {
+            tab.getTabPane().getTabs().remove(tab);
+        }
+    }
+
+  @FXML
+  void loadContextMenu(ContextMenuEvent event) {
+    contextMenu.show(taEditor, event.getScreenX(), event.getScreenY());
+    event.consume();
+  }
+
+  @FXML
+  void hideContextMenu(MouseEvent event) {
+    contextMenu.hide();
+    
+    IU_EditorController controller = new IU_EditorController();
   }
 
 }

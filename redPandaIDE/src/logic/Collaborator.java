@@ -5,7 +5,7 @@ package logic;
  * @author Alan Yoset García Cruz
  */
 public class Collaborator {
-  private int Usuario_idUsuario; 
+  private int idUsuario; 
   private int idProyecto;
   private String alias;
   private String biografia;
@@ -14,7 +14,7 @@ public class Collaborator {
   }
 
   public Collaborator(int idUsuario, int idProyecto) {
-    this.Usuario_idUsuario = idUsuario;
+    this.idUsuario = idUsuario;
     this.idProyecto = idProyecto;
   }
 
@@ -35,11 +35,11 @@ public class Collaborator {
   }
 
   public int getIdUsuario() {
-    return Usuario_idUsuario;
+    return idUsuario;
   }
 
   public void setIdUsuario(int idUsuario) {
-    this.Usuario_idUsuario = idUsuario;
+    this.idUsuario = idUsuario;
   }
 
   public int getIdProyecto() {

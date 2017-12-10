@@ -160,7 +160,6 @@ public class IU_SignUpController implements Initializable {
             () -> {
               if ((boolean) os[0]) {
            
-                Stage stage = (Stage) botonIniciarSesion.getScene().getWindow();
                 Tools.displayConfirmationAlert(null, "Usuario registrado exitosamente");
                 try {
                   eventLogIn();

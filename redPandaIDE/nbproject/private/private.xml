@@ -5,9 +5,8 @@
         <group>
             <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/fileExplorer/IU_FileExplorerController.java</file>
             <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/textEditor/IU_EditorController.java</file>
-            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/logic/Collaborator.java</file>
             <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/fileExplorer/IU_FlowPaneMyProjectsController.java</file>
-            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/login/IU_LogInController.java</file>
+            <file>file:/C:/Users/Alex%20Cámara/Documents/GitHub/redPandaIDE/redPandaIDE/src/graphics/fileExplorer/IU_FlowPaneSharedProjectsController.java</file>
         </group>
     </open-files>
 </project-private>

@@ -160,3 +160,39 @@ VBox {
 .menu-button > .arrow-button > .arrow {
     -fx-padding: 0;
 }
+
+.text-area {
+    -fx-font-family: "Proxima Nova Alt Rg";
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+.dialog-pane > .button-bar > .container {
+  -fx-background-color:#77d2ff;
+}
+
+.dialog-pane:header .header-panel {
+  -fx-background-color: #77d2ff;
+}
+
+.dialog-pane > .content.label {
+   -fx-background-color: #1A405F;
+   -fx-text-fill:white;
+   -fx-font-size:14.0px;
+   -fx-font-family: "Proxima Nova Alt Rg";
+}
+
+.dialog-pane:header .header-panel .label{
+  -fx-background-color: #77d2ff;
+   -fx-text-fill:white;
+   -fx-font-size:14.0px;
+   -fx-font-family: "Proxima Nova Alt Rg";
+}
+
+.dialog-pane .button{
+   -fx-background-color: #228B22;
+   -fx-text-fill:white;
+   -fx-wrap-text: true;
+   -fx-cursor:hand;
+   -fx-background-radius: 8;
+ }

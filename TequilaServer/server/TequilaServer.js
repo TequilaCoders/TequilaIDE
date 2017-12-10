@@ -59,7 +59,27 @@ io.on("connection",function(socket) {
 
   socket.on("getCollaborators", function(projectID){
     getCollaborators(projectID, connection);
+  }); 
+
+  socket.on("searchUser", function(criteria){
+    searchUser(criteria, connection);
+  });
+
+  socket.on("saveCollaborator", function(collaboration){
+    saveCollaborator(collaboration, connection);
   });  
+
+  socket.on("deleteCollaborator", function(collaboration){
+    deleteCollaborator(collaboration, connection);
+  });  
+
+  socket.on("deleteFile", function(file){
+    deleteFile(file, connection);
+  }); 
+
+  socket.on("loadSharedProjects", function(user){
+    loadSharedProjects(user, connection);
+  }); 
 
   function logIn(user, connection) {
     console.log([user.alias]);
@@ -217,6 +237,80 @@ io.on("connection",function(socket) {
         throw error;
       } else {
         socket.emit("collaboratorsRecovered", result);
+      }
+    });
+  }
+
+  function searchUser(criteria, connection){
+    console.log([criteria.searchCriteria]);
+    var query = connection.query("select idUsuario, alias, biografia from Usuario where alias= ?",[criteria.searchCriteria],function(error,result){
+
+      if (error) {
+        throw error;
+      } else {
+        if (result.length > 0) {    
+          if(result[0].alias == criteria.searchCriteria){
+          socket.emit("searchFinalized",true, result);
+          } else {
+            socket.emit("searchFinalized", false, "no coincidences");
+          }
+          }else {
+          console.log("no entra");
+          socket.emit("searchFinalized", false, "no existe el usuario");
+        }
+        }
+    });
+  }
+
+  function saveCollaborator(collaboration, connection){
+    console.log([collaboration.collaboratorID]);
+    var values = [collaboration.collaboratorID, collaboration.projectID];
+    var query = connection.query("insert into colaborador(Usuario_idusuario, proyecto_idproyecto) values (?)",[values],function(error,result){
+
+      if (error) {
+        throw error;
+      } else {
+        socket.emit("collaborationSaved", true);
+      }
+    });
+  }
+
+  function deleteCollaborator(collaboration, connection){
+    console.log([collaboration.collaboratorID]);
+    var values = [collaboration.collaboratorID, collaboration.projectID];
+    var query = connection.query("delete from colaborador where Usuario_idusuario=? and proyecto_idproyecto=?",values,function(error,result){
+
+      if (error) {
+        throw error;
+      } else {
+        socket.emit("collaborationDeleted", true);
+      }
+    });
+  }
+
+  function deleteFile(file, connection){
+    console.log([file.fileID]);
+
+    var query = connection.query("delete from archivo where idArchivo =?",[file.fileID],function(error,result){
+
+      if (error) {
+        throw error;
+      } else {
+        socket.emit("fileDeleted", true);
+      }
+    });
+  }
+
+  function loadSharedProjects(user, connection){
+    console.log([user.userID]);
+
+    var query = connection.query("select idProyecto, p.nombre, p.lenguaje from proyecto p inner join colaborador c on idProyecto=proyecto_idproyecto where c.usuario_idusuario = ?",[user.userID],function(error,result){
+
+      if (error) {
+        throw error;
+      } else {
+        console.log(result);
+        socket.emit("sharedProjectsRecovered", true, result);
       }
     });
   }

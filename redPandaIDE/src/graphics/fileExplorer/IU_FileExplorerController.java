@@ -144,8 +144,13 @@ public class IU_FileExplorerController implements Initializable {
     load_FlowPaneMyProjects();
   }
 
+  @FXML
+  void sharedProjectsSelected(ActionEvent event) {
+    create_FlowPaneSharedProjects();
+  }
+
   /**
-   * 
+   *
    * @param event 
    */
   @FXML
@@ -358,6 +363,29 @@ public class IU_FileExplorerController implements Initializable {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneMyProjects.fxml"), rb);
       
       IU_FlowPaneMyProjectsController controller = new IU_FlowPaneMyProjectsController();
+      controller.setUser(user);
+      loader.setController(controller);
+
+      FlowPane newFlowPane = loader.load();
+      fpProjects = newFlowPane;
+      flowPaneProyectos.getChildren().setAll(fpProjects);
+     
+    } catch (IOException ex) {
+      Logger.getLogger(IU_FileExplorerController.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    flowPaneProyectos.getChildren().add(0, paneNewProject);
+    
+    flowPaneProyectos.setVisible(true);
+    paneNewProject.setVisible(true);
+    
+    return flowPaneProyectos;
+  }
+  
+  public FlowPane create_FlowPaneSharedProjects(){
+    try {
+      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/fileExplorer/IU_FlowPaneSharedProjects.fxml"), rb);
+      
+      IU_FlowPaneSharedProjectsController controller = new IU_FlowPaneSharedProjectsController();
       controller.setUser(user);
       loader.setController(controller);
 

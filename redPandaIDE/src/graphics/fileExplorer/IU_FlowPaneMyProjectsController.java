@@ -56,24 +56,7 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
 
     this.rb = rb;
-    loadProjects(1);
-
-    socket.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        System.out.println("desconectado del el servidor");
-        Platform.runLater(new Runnable() {
-          @Override
-          public void run() {
-            System.out.println("cargando iconos");
-            createIcons(projectList);
-            hoverListeners();
-            projectSelectedAction();
-          }
-
-        });
-      }
-    });
+    loadProjects(user.getIdUsuario());
 
   }
 
@@ -219,9 +202,18 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
 
           Project[] jsonProjectList = gson.fromJson(jsonString, Project[].class);
           projectList = Arrays.asList(jsonProjectList);
-          System.out.println("proyectos " + projectList.get(0).getNombre());
-
+        
           socket.disconnect();
+          Platform.runLater(new Runnable() {
+          @Override
+          public void run() {
+            System.out.println("cargando iconos");
+            createIcons(projectList);
+            hoverListeners();
+            projectSelectedAction();
+          }
+
+        });
         } else {
           System.out.println((String) os[1]);
         }
