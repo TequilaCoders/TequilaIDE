@@ -22,8 +22,8 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
-import logic.Project;
-import logic.User;
+import logic.domainClasses.Project;
+import logic.domainClasses.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 

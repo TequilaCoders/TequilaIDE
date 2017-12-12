@@ -27,7 +27,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import logic.Project;
+import logic.domainClasses.Project;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -120,7 +120,7 @@ public class IU_NewProjectController implements Initializable {
       @Override
       public void call(Object... os) {
         if ((boolean) os[0]) {
-          System.out.println("proyecto guardado exitosamente");
+          System.out.println("proyecto guardado exitosamente -- ");
           idProject = (int) os[1];
           
           Platform.runLater(new Runnable() {

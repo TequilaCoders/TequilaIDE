@@ -31,8 +31,8 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import logic.Project;
-import logic.User;
+import logic.domainClasses.Project;
+import logic.domainClasses.User;
 
 /**
  * FXML Controller class

@@ -2,9 +2,14 @@ package graphics.textEditor;
 
 import com.google.gson.Gson;
 import com.jfoenix.controls.JFXDrawer;
+import com.jfoenix.controls.JFXHamburger;
+import com.jfoenix.controls.JFXTreeView;
+import com.jfoenix.transitions.hamburger.HamburgerBackArrowBasicTransition;
 import graphics.fileExplorer.IU_FileExplorerController;
 import static graphics.login.IU_LogInController.socket;
+import graphics.tools.Tools;
 import io.socket.emitter.Emitter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,6 +29,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
@@ -35,22 +41,31 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import logic.Collaborator;
-import logic.File;
-import logic.Project;
-import logic.User;
+import logic.SocketFile;
+import logic.domainClasses.Collaborator;
+import logic.domainClasses.File;
+import logic.domainClasses.Project;
+import logic.domainClasses.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  * FXML Controller class
  *
- * @author alanc
+ * @author Alan Yoset García Cruz
+ * @author Miguel Alejandro Cámara Árciga
  */
 public class IU_EditorController implements Initializable {
+
+  @FXML
+  private HBox hBoxMenuBar;
+
+  @FXML
+  private MenuBar mbPrincipal;
 
   @FXML
   private TabPane tabPaneArchivos;
@@ -85,8 +100,11 @@ public class IU_EditorController implements Initializable {
   @FXML
   private ImageView imageVUser;
 
-      @FXML
-    private ToolBar tbCollaborators;
+  @FXML
+  private ToolBar tbCollaborators;
+  
+  @FXML
+  private JFXHamburger hamburgerButton;
 
   List<File> fileList = new ArrayList<>();
   
@@ -101,13 +119,49 @@ public class IU_EditorController implements Initializable {
   private int projectID;
 
   private ResourceBundle rb;
+  
+  private HamburgerBackArrowBasicTransition hamburgerTransition; 
 
   Stage mainStage;
   
   User user;
   
+  private String compilationResult = ""; 
+  
+  /**
+   * Initializes the controller class.
+   *
+   * @param url
+   * @param rb
+   */
+  @Override
+  public void initialize(URL url, ResourceBundle rb) {
+	hamburgerTransition = new HamburgerBackArrowBasicTransition(hamburgerButton);
+    hamburgerTransition.setRate(-1);
+	
+	this.rb = rb;
+	setProjectID();
+	loadFiles();
+	System.out.println("cargando id");
 
-  public void setSelectedProject(Project selectedProject) {
+	Platform.runLater(new Runnable() {
+	  @Override
+	  public void run() {
+		showFirstTab(checkNumberOfFiles());
+		loadCollaborators();
+	  }
+	});
+	
+	drawerFileTree.setOnDrawerClosed(event -> {
+      drawerFileTree.toBack();
+    });
+	
+	listeners();
+	setUserIcons();
+	System.out.println("id proyecto " + projectID);
+  }
+  
+   public void setSelectedProject(Project selectedProject) {
     this.selectedProject = selectedProject;
   }
 
@@ -125,7 +179,6 @@ public class IU_EditorController implements Initializable {
 
   /**
    * Método que cierra la ventana IU_Editor y abre IU_FileExplorer
-   *
    * @param event
    */
   @FXML
@@ -135,34 +188,6 @@ public class IU_EditorController implements Initializable {
     mainStage = (Stage) tabPaneArchivos.getScene().getWindow();
     IU_FileExplorerController explorador = new IU_FileExplorerController();
     explorador.open_FileExplorer(mainStage, rb, user);
-  }
-
-  /**
-   * Initializes the controller class.
-   *
-   * @param url
-   * @param rb
-   */
-  @Override
-  public void initialize(URL url, ResourceBundle rb) {
-
-    this.rb = rb;
-    setProjectID();
-    loadFiles();
-    System.out.println("cargando id");
-   
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        showFirstTab(checkNumberOfFiles());
-        loadCollaborators();
-      }
-
-    });
-
-    listeners();
-    setUserIcons();
-    System.out.println("id proyecto " + projectID);
   }
   
     
@@ -183,14 +208,13 @@ public class IU_EditorController implements Initializable {
       System.out.println("alias " + collaboratorAlias);
       System.out.println("id " + collaboratorsList.get(i).getIdUsuario());
       ImageView imagev = new ImageView();
-      imagev.setFitHeight(30);
+      imagev.setFitHeight(29);
       imagev.setFitWidth(29);
       imagev.setImage(new Image("/resources/icons/user_white.png"));
       
       MenuButton button = new MenuButton();
-      button.setPrefHeight(37);
-      button.setPrefWidth(45);
-
+      button.setMaxSize(40, 40);
+	  
       button.setStyle("-fx-background-color: transparent;");
 
       button.setGraphic(imagev);
@@ -250,35 +274,47 @@ public class IU_EditorController implements Initializable {
   void newTab(MouseEvent event) {
     if (event.getButton().equals(MouseButton.PRIMARY)) {
       if (event.getClickCount() == 2) {
-        addTab();
+        addTab(event);
       }
     }
   }
 
   /**
-   *
+   * Crea una nueva pestaña del editor 
    * @param event
    */
   @FXML
-  void addTab(ActionEvent event) {
-    try {
-      Tab tab = new Tab();
-      tab.setText("untitled");
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Tab.fxml"), rb);
+  void addTab(MouseEvent event) {
+	String className = Tools.displayTextInputDialog("Nueva clase", "Nombre de la clase: ");
+	if (!className.equals("")) {
+	  try {
+		Tab tab = new Tab();
+		tab.setText(className+"."+selectedProject.getLenguaje());
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Tab.fxml"), rb);
 
-      IU_TabController controller = new IU_TabController();
-      loader.setController(controller);
-      controller.setTab(tab);
-      controller.setFileList(fileList);
+		IU_TabController controller = new IU_TabController();
+		loader.setController(controller);
+		controller.setTab(tab);
+		controller.setFileList(fileList);
 
-      ScrollPane newFile = loader.load();
-      tab.setContent(newFile);
-      tabPaneArchivos.getTabs().add(tab);
-      tabPaneArchivos.getSelectionModel().selectLast();
-      listener_TabClosed(tab, controller, -1);
-    } catch (IOException ex) {
-      Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
-    }
+		ScrollPane newFile = loader.load();
+		tab.setContent(newFile);
+		tabPaneArchivos.getTabs().add(tab);
+		tabPaneArchivos.getSelectionModel().selectLast();
+		SocketFile socketFile = new SocketFile();
+		
+		//Se llama al método de la capa logica que crea archivos nuevos -- nota ¿por qué se requiere el contenido?
+		int fileId = socketFile.createNewFile(className, controller.getContent(), projectID, selectedProject.getLenguaje());
+		controller.setIdArchivo(fileId);
+		loadFiles();
+		
+		//Este ya no va a ser necesario --Eliminar (consultar con Ale)
+		//listener_TabClosed(tab, controller, -1);
+	  } catch (IOException ex) {
+		Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
+	  }
+	}
+    
   }
 
   /**
@@ -286,9 +322,11 @@ public class IU_EditorController implements Initializable {
    */
   @FXML
   void addTab() {
+	String className = selectedProject.getNombre();
+	System.out.println("El nombre del proyecto seleccionado es: "+className);
     try {
       Tab tab = new Tab();
-      tab.setText("untitled");
+      tab.setText(className+"."+selectedProject.getLenguaje());
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Tab.fxml"), rb);
 
       IU_TabController controller = new IU_TabController();
@@ -303,7 +341,12 @@ public class IU_EditorController implements Initializable {
       tabPaneArchivos.getTabs().add(tab);
 
       tabPaneArchivos.getSelectionModel().selectLast();
-      listener_TabClosed(tab, controller, -1);
+	  SocketFile socketFile = new SocketFile();
+	  //Se llama al método de la capa logica que crea archivos nuevos -- nota ¿por qué se requiere el contenido?
+	  int fileId = socketFile.createNewFile(className, controller.getContent(), projectID, selectedProject.getLenguaje());
+	  controller.setIdArchivo(fileId);
+	  loadFiles();
+      //listener_TabClosed(tab, controller, -1);
     } catch (IOException ex) {
       Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -316,7 +359,7 @@ public class IU_EditorController implements Initializable {
   void addTab(String title, String content, int fileId) {
     try {
       Tab tab = new Tab();
-      tab.setText(title);
+      tab.setText(title+"."+selectedProject.getLenguaje());
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Tab.fxml"), rb);
 
       IU_TabController controller = new IU_TabController();
@@ -331,9 +374,10 @@ public class IU_EditorController implements Initializable {
       tabPaneArchivos.getTabs().add(tab);
       //se agrega el titulo de la pestaña a la lista de pestañas abiertas actualmente
       currentTabs.add(title);
-
+	  
       tabPaneArchivos.getSelectionModel().selectLast();
-      listener_TabClosed(tab, controller, fileId);
+	  controller.setIdArchivo(fileId);
+      //listener_TabClosed(tab, controller, fileId);
     } catch (IOException ex) {
       Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -346,7 +390,8 @@ public class IU_EditorController implements Initializable {
    */
   @FXML
   void openDrawer(MouseEvent event) {
-    //loadFiles();
+    hamburgerTransition.setRate(hamburgerTransition.getRate()*-1);
+    hamburgerTransition.play();
     try {
 
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_FileTree.fxml"), rb);
@@ -358,19 +403,15 @@ public class IU_EditorController implements Initializable {
       controller.setFileList(fileList);
       controller.setEditorController(this);
 
-      VBox vbox = loader.load();
+      JFXTreeView pane = loader.load();
 
-      drawerFileTree.setSidePane(vbox);
+      drawerFileTree.setSidePane(pane);
 
       if (drawerFileTree.isShown()) {
-
         drawerFileTree.close();
-        drawerFileTree.toBack();
-
       } else {
         drawerFileTree.toFront();
         drawerFileTree.open();
-
       }
     } catch (IOException ex) {
       Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
@@ -418,7 +459,7 @@ public class IU_EditorController implements Initializable {
     fileToSave.accumulate("projectID", projectID);
 
     //------------VALOR TEMPORAL !!!--------------------
-    fileToSave.accumulate("fileType", "java");
+    fileToSave.accumulate("fileType", selectedProject.getIdProyecto());
     //--------------------------------------------------
 
     socket.connect();
@@ -507,7 +548,6 @@ public class IU_EditorController implements Initializable {
   public void open_Editor(Project selectedProject, Stage fileExplorerStage, ResourceBundle rb, User user) {
     //this.rb = rb;
     try {
-
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/graphics/textEditor/IU_Editor.fxml"), rb);
 
       IU_EditorController controller = new IU_EditorController();
@@ -584,7 +624,6 @@ public class IU_EditorController implements Initializable {
         collaboratorsList = Arrays.asList(jsonFileList);
 
         socket.disconnect();
-
         Platform.runLater(new Runnable() {
           @Override
           public void run() {
@@ -592,7 +631,6 @@ public class IU_EditorController implements Initializable {
             hoverListeners();
             menuItemsSelectedAction();
           }
-
         });
       }
 
@@ -604,17 +642,47 @@ public class IU_EditorController implements Initializable {
    * Métodos que estan a la escucha de eventos en los elementos paneHamburger y paneFileExplorer.
    */
   public void listeners() {
-
-    paneHamburger.setOnMouseEntered((e -> imageVHamburger.setImage(new Image("/resources/icons/hamburger_white.png"))));
-    paneHamburger.setOnMouseExited((e -> imageVHamburger.setImage(new Image("/resources/icons/hamburger_orange.png"))));
-
-    paneFileExplorer.setOnMouseEntered((e -> imageVFileExplorer.setImage(new Image("/resources/icons/proyecto_seleccionado.png"))));
-    paneFileExplorer.setOnMouseExited((e -> imageVFileExplorer.setImage(new Image("/resources/icons/proyecto.png"))));
-    
-    buttonNewCollaborator.setOnMouseEntered((e -> imageVNewCollaborator.setImage(new Image("/resources/icons/add_user_yellow.png"))));
-    buttonNewCollaborator.setOnMouseExited((e -> imageVNewCollaborator.setImage(new Image("/resources/icons/add_user_white.png"))));
-    
-    menuButtonUser.setOnMouseEntered((e -> imageVUser.setImage(new Image("/resources/icons/user_yellow.png"))));
-    menuButtonUser.setOnMouseExited((e -> imageVUser.setImage(new Image("/resources/icons/user_white.png"))));
+//	hamburgerButton.setOnMouseEntered(e -> {
+//	  hamburgerButton.setStyle("StackPane-background-color: white;");
+//	});
+	
+//	  hamburgerButton.setOnMouseExited(e -> {
+//		//hamburgerButton.setStyle
+//	  });
+//    paneHamburger.setOnMouseEntered((e -> imageVHamburger.setImage(new Image("/resources/icons/hamburger_white.png"))));
+//    paneHamburger.setOnMouseExited((e -> imageVHamburger.setImage(new Image("/resources/icons/hamburger_orange.png"))));
+//    paneFileExplorer.setOnMouseEntered((e -> imageVFileExplorer.setImage(new Image("/resources/icons/proyecto_seleccionado.png"))));
+//    paneFileExplorer.setOnMouseExited((e -> imageVFileExplorer.setImage(new Image("/resources/icons/proyecto.png"))));
+//    buttonNewCollaborator.setOnMouseEntered((e -> imageVNewCollaborator.setImage(new Image("/resources/icons/add_user_yellow.png"))));
+//    buttonNewCollaborator.setOnMouseExited((e -> imageVNewCollaborator.setImage(new Image("/resources/icons/add_user_white.png"))));
+//    menuButtonUser.setOnMouseEntered((e -> imageVUser.setImage(new Image("/resources/icons/user_yellow.png"))));
+//    menuButtonUser.setOnMouseExited((e -> imageVUser.setImage(new Image("/resources/icons/user_white.png"))));
   }
+  
+   @FXML
+    void compile(MouseEvent event) throws IOException {
+	  
+    }
+	
+	@FXML
+    void runCompiler(MouseEvent event) {
+	  compilationResult = ""; 
+	  JSONObject projectToSend = new JSONObject();
+	  projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
+	  projectToSend.accumulate("language", selectedProject.getLenguaje());
+	  socket.connect();
+	  socket.emit("runCompiler",projectToSend).on("runtimeCompile", new Emitter.Listener(){
+		@Override
+		public void call(Object... os) {
+		  compilationResult += os[0];
+		}
+	  }).on("compilationFinish", new Emitter.Listener(){
+		@Override
+		public void call(Object... os) {
+		  compilationResult += os[0];
+		}
+	  });
+	  
+	  
+    }
 }
