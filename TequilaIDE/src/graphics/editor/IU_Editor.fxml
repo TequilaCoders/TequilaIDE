@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXDrawer?>
+<?import com.jfoenix.controls.JFXHamburger?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="55.0" prefWidth="1366.0">
+         <children>
+            <JFXHamburger prefHeight="50.0" prefWidth="62.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
+            <MenuBar id="menuBarEditor" prefHeight="55.0" prefWidth="461.0" stylesheets="@../../resources/themes/theme_Tequila.css">
+               <menus>
+                  <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
+                     <items>
+                        <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addTab" text="%menuNew" />
+                     </items>
+                  </Menu>
+                  <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
+                     <items>
+                        <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="%menuOptions" />
+						<MenuItem fx:id="menuItemAddCollaborator" mnemonicParsing="false" onAction="#addNewCollaborator" text="%menuItemAddCollaborator" />
+                     </items>
+                  </Menu>
+                  <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
+                     <items>
+                        <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="%menuAbout" />
+                     </items>
+                  </Menu>
+               </menus>
+            </MenuBar>
+            <ToolBar fx:id="tbCollaborators" prefHeight="55.0" prefWidth="842.0" stylesheets="@../../resources/themes/theme_Tequila.css" HBox.hgrow="ALWAYS">
+               <items>
+                  <Label prefHeight="19.0" prefWidth="128.0" text="Colaboradores" />
+                  <MenuButton fx:id="menuButtonUser" disable="true" mnemonicParsing="false" prefHeight="23.0" prefWidth="36.0" style="-fx-background-color: transparent;" stylesheets="@../../resources/themes/theme_Tequila.css">
+                     <items>
+                        <MenuItem fx:id="menuItemCollaboratorInformation" mnemonicParsing="false" styleClass="..\..\resources\themes\theme_Tequila.css" />
+                        <MenuItem fx:id="menuItemDeleteCollaborator" disable="true" mnemonicParsing="false" text="Eliminar Colaborador" />
+                     </items>
+                     <graphic>
+                        <ImageView fx:id="imageVUser" fitHeight="42.0" fitWidth="29.0" focusTraversable="true" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../resources/icons/user_white.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </MenuButton>
+                  <ToolBar fx:id="tbAddedCollaborator" prefHeight="36.0" prefWidth="303.0" />
+               </items>
+            </ToolBar>
+         </children>
+      </HBox>
+      <Separator prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
+      <ToolBar prefHeight="50.0" prefWidth="1208.0" style="-fx-background-color: #0F1F38;" stylesheets="@../../resources/themes/theme_Tequila.css">
+         <items>
+            <ImageView fx:id="paneFileExplorer" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="10.0">
+               <image>
+                  <Image url="@../../resources/icons/proyecto.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="paneFileExplorer1" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="10.0" layoutY="13.0" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="35.0">
+               <image>
+                  <Image url="@../../resources/icons/icons8-add-file-40.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="paneFileExplorer11" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="45.0" layoutY="13.0" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="40.0">
+               <image>
+                  <Image url="@../../resources/icons/icon_compile.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="paneFileExplorer111" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="80.0" layoutY="13.0" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="45.0">
+               <image>
+                  <Image url="@../../resources/icons/icons8-play-50%20(1).png" />
+               </image>
+            </ImageView>
+         </items>
+      </ToolBar>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+         <children>
+            <TabPane fx:id="tabPaneArchivos" prefHeight="200.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <JFXDrawer fx:id="drawerFileTree" prefHeight="674.0" prefWidth="232.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>

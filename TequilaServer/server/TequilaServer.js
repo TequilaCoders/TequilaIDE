@@ -2,11 +2,16 @@
 *
 * @version 1.0
 * @author Alan Yoset García Cruz
+* @author Miguel Alejandro Cámara Árciga
 */
 
 var io = require("socket.io")(7000);
-
 var mysql = require("mysql");
+
+var roomno = 1;
+
+var users;
+var rooms = [];
 
 var connection = mysql.createConnection({
  	host: "127.0.0.1",
@@ -20,6 +25,9 @@ console.log("Corriendo en el puerto 7000");
 
 io.on("connection",function(socket) {
   console.log("conectado");
+
+   //clients++;
+   //io.sockets.emit('broadcast',{ description: clients + ' clients connected!'});
 
   socket.on("access", function(user){
     logIn(user, connection);
@@ -47,9 +55,18 @@ io.on("connection",function(socket) {
 
   socket.on("loadFiles", function(project){
     recoverFiles(project, connection);
-  });  
+  });
+
+  socket.on("joinRoom", function(connectedUser){
+    joinRoom(connectedUser, connection);
+  });
+
+  socket.on("leaveRoom", function(connectedUser){
+    leaveRoom(connectedUser, connection);
+  });
 
   socket.on("loadProjects", function(user){
+
     recoverProjects(user, connection);
   });  
 
@@ -91,7 +108,15 @@ io.on("connection",function(socket) {
         if (resultado.length > 0) {
           console.log("entra");
           if (resultado[0].alias == user.alias && resultado[0].clave == user.clave) {
-            socket.emit("approved", true, resultado);
+
+            var usuario = {
+
+            idUsuario: resultado[0].idUsuario,
+            alias: resultado[0].alias,
+            biografia: resultado[0].biografia
+          };
+
+            socket.emit("approved", true, usuario);
             console.log("Ingreso al sistema exitoso");
           } else {
             socket.emit("approved", false, "clave incorrecta");
@@ -161,6 +186,7 @@ io.on("connection",function(socket) {
       if (error) {
         throw error;
       } else {
+        console.log("Usuario registrado, se emitio respuesta");
         socket.emit("registrationSuccesful", true, "usuario registrado");
       }
     });
@@ -174,26 +200,29 @@ io.on("connection",function(socket) {
       if (error) {
         throw error;
       } else {
-        socket.emit("fileSaved", true, "archivo guardado exitosamente");
+        socket.emit("fileSaved", result.insertId, "archivo guardado exitosamente");
       }
     });
   }
 
   function updateFile(file, connection){
-    console.log([file.name]);
-    var values = [file.name, file.content, file.fileID];
-    var query = connection.query("update archivo set nombre = ?, contenido = ? where idarchivo = ?",[file.name, file.content, file.fileID],function(error,result){
-
+    console.log([file.content]);
+    var query = connection.query("update archivo set contenido = ? where idarchivo = ?",[file.content, file.fileID],function(error,result){
       if (error) {
         throw error;
       } else {
-        socket.emit("fileUpdated", true, "archivo actualizado exitosamente");
+        io.sockets.in(16).emit("fileUpdated", file.content, "archivo actualizado exitosamente");
+        console.log("Se emitio a todos en el room");
+        //socket.emit("fileUpdated", file.content, "archivo actualizado exitosamente");
       }
     });
   }
 
   function recoverFiles(project, connection){
-    console.log([project.projectID]);
+    //var room = project.projectID;
+   //socket.join(room);
+   //io.sockets.in(room).emit('connectToRoom', "You are in room no. "+room);
+
     var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
 
       if (error) {
@@ -202,6 +231,67 @@ io.on("connection",function(socket) {
         socket.emit("filesRecovered", true, result);
       }
     });
+  }
+
+  function joinRoom(connectedUser, connection){
+
+    var room = connectedUser.projectID;
+    var filtredRooms = [];
+
+      console.log("se unio al nuevo room que creo");
+        socket.join(room);
+        users = {
+          room: room,
+          idUsuario: connectedUser.userID
+        }
+        rooms.push(users);
+
+        for (var i = rooms.length - 1; i >= 0; i--) {
+          if (rooms[i].room == room) {
+            filtredRooms.push(rooms[i]);
+          }
+        }
+        console.log("se unio al nuevo room que creo" + JSON.stringify(rooms));
+        io.sockets.in(room).emit('connectToRoom', filtredRooms);  
+
+  }
+
+  function leaveRoom(connectedUser, connection){
+
+    var room = connectedUser.projectID;
+    var filteredRooms = [];
+
+      console.log("dejo el room");
+
+      console.log("rooms antes " + JSON.stringify(rooms));
+
+        socket.leave(room);
+
+        users = {
+          room: room,
+          idUsuario: connectedUser.userID
+        }
+
+        //var index = rooms.indexOf(users);
+        var index = rooms.findIndex(x => x.room==room & x.idUsuario == connectedUser.userID);
+
+        console.log("indice del usuario a eliminar " + index);
+
+        rooms.splice(index, 1);
+
+        console.log("rooms despues " + JSON.stringify(rooms));
+
+        for (var i = rooms.length - 1; i >= 0; i--) {
+          if (rooms[i].room == room) {
+            filteredRooms.push(rooms[i]);
+          }
+        }
+
+        console.log("rooms filtrados " + JSON.stringify(filteredRooms));
+        io.sockets.in(room).emit('disconnectFromRoom', filteredRooms);  
+
+        console.log("room = " + room);
+
   }
 
   function recoverProjects(user, connection){

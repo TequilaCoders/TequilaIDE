@@ -1,0 +1,178 @@
+/* 
+    Created on : 12/11/2017, 02:09:46 PM
+    Author     : Miguel Alejandro Cámara Árciga
+*/
+
+#paneEditor {
+  -fx-background-color: #0F1F38;
+}
+
+.tool-bar{
+  -fx-background-color: #0F1F38;
+}
+
+.menu-bar{
+  -fx-background-color: #0F1F38;
+  -fx-border-width: 2;
+  -fx-alignment: CENTER_LEFT; 
+}
+
+.menu-bar .label {
+  -fx-font-size: 16px;
+  -fx-font-family: "Proxima Nova Alt Rg";
+  -fx-text-fill: white;
+  -fx-text-alignment: center;
+}
+
+.menu-item .label{
+  -fx-font-size: 14px;
+  -fx-label-line-length: 8;
+  -fx-text-fill: white;
+}
+
+.menu-item {
+  -fx-background-color: #0F1F38;
+}
+
+.menu-item:focused {
+  -fx-background-color: #7BA4A8;
+}
+
+.context-menu {
+  -fx-background-color: #0F1F38;
+}
+
+.tool-bar{
+  -fx-background-color: #0F1F38;
+  -fx-border-width: 2;
+}
+
+.tool-bar .label {
+  -fx-font-size: 16px;
+  -fx-font-family: "Proxima Nova Alt Rg";
+  -fx-text-fill: white;
+}
+
+.tab-pane {
+  -fx-tab-min-width:130px;
+  -fx-tab-min-height: 30px;
+  -fx-background-color: #0F1F38;
+}
+
+.tab-pane .tab {
+  -fx-background-color: #7BA4A8;
+}
+
+.tab .tab-label { 
+  -fx-text-fill: white;
+}
+
+.tab-pane .tab:selected {
+  -fx-background-color:  #0F1F38;
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
+}
+
+.tab-content-area .text-field {
+  -fx-text-fill: white;
+}
+
+.tab{
+  -fx-background-insets: 0 1 0 1,0,0;
+}
+
+.code-area{
+  -fx-background-insets: 0;
+  -fx-background-color: transparent,  #0F1F38, transparent,  #0F1F38;
+  -fx-highlight-fill: #F0810F;
+  -fx-font-size: 20px;
+  -fx-font-family: "Courier New";
+}
+
+.tab-header-background{
+  -fx-background-color:  #336B87;
+}
+
+VBox {
+  -fx-background-color: #0F1F38;
+  -fx-fill: white;
+}
+
+.menu-bar{
+  -fx-background-color: #0F1F38;
+}
+
+
+.paragraph-box:has-caret {
+  -fx-background-color: #283747;
+}
+
+.paragraph-box:has-caret .text{
+  -fx-fill: black;
+}
+
+.paragraph-box .text{
+  -fx-fill: white;
+  -fx-font-family: "Courier New";
+}
+
+.combo-box .list-cell {
+  -fx-text-fill: black;
+}
+
+.combo-box .list-view .list-cell {
+  -fx-text-fill: black;
+}
+
+.combo-box .cell {
+  -fx-text-fill: black;
+}
+
+.keyword {
+  -fx-fill: #4CB5F5;
+  -fx-font-weight: bold;
+}
+.semicolon {
+  -fx-fill: #B7B8B6;
+  -fx-font-weight: bold;
+}
+
+.paren {
+  -fx-fill: #B3C100;
+  -fx-font-weight: bold;
+}
+.bracket {
+  -fx-fill: #B3C100;
+  -fx-font-weight: bold;
+}
+.brace {
+  -fx-fill: #B3C100;
+  -fx-font-weight: bold;
+}
+
+.menu-button > .arrow-button {
+  -fx-padding: 0;
+}
+
+.menu-button > .arrow-button > .arrow {
+  -fx-padding: 0;
+}
+
+.jfx-hamburger {
+  -fx-background-color: #0F1F38;
+}
+
+.jfx-hamburger StackPane {
+  -fx-background-color: #48C9B0;
+}
+
+.separator *.line { 
+  -fx-border-style: solid;
+  -fx-border-width: 0 0 1 0; /* its make really one-pixel-border */
+  -fx-border-color: #1c365a;
+}
+
+.text-area .content{
+  -fx-background-color: #1A405F;
+  -fx-text-fill: #48C9B0;
+}
