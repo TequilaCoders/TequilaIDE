@@ -1,7 +1,8 @@
 package logic.sockets;
 
-import static graphics.login.IU_LogInController.socket;
+
 import org.json.JSONObject;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  *

@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
-import static graphics.login.IU_LogInController.socket;
 import graphics.tools.Tools;
 import io.socket.emitter.Emitter;
 import java.net.URL;
@@ -22,6 +21,7 @@ import logic.domain.Collaborator;
 import logic.domain.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class

@@ -1,7 +1,6 @@
 package graphics.explorer;
 
 import com.google.gson.Gson;
-import static graphics.login.IU_LogInController.socket;
 import graphics.editor.IU_EditorController;
 import io.socket.emitter.Emitter;
 import java.net.URL;
@@ -25,6 +24,7 @@ import logic.domain.Project;
 import logic.domain.User;
 import logic.sockets.SocketProject;
 import org.json.JSONArray;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class

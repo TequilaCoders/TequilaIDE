@@ -1,6 +1,9 @@
 package tequilaide;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,13 +19,14 @@ import javafx.stage.Stage;
  * @author Alan Yoset García Cruz
  */
 public class TequilaIDE extends Application {
-
+  public static Socket socket;
   private Stage stagePrincipal;
   private AnchorPane rootPane;
 
   @Override
   public void start(Stage stagePrincipal) throws Exception {
 	this.stagePrincipal = stagePrincipal;
+	openConnection();
 	showMainWindows();
   }
 
@@ -42,6 +46,18 @@ public class TequilaIDE extends Application {
 
 	stagePrincipal.setScene(scene);
 	stagePrincipal.show();
+  }
+  
+  /**
+   * Abre la conexión entre el cliente y el servidor
+   */
+  public void openConnection(){
+    try {
+      socket = IO.socket("http://localhost:7000");
+	  socket.connect();
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(TequilaIDE.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   /**

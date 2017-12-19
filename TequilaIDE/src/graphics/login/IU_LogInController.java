@@ -34,6 +34,7 @@ import logic.domain.Project;
 import logic.domain.User;
 import org.json.JSONException;
 import org.json.JSONObject;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class
@@ -52,7 +53,6 @@ public class IU_LogInController implements Initializable {
   List<Project> projectList = new ArrayList<>();
 
   private ResourceBundle rb;
-  public static Socket socket;
 
   /**
    * Inicia la clase controller
@@ -64,22 +64,16 @@ public class IU_LogInController implements Initializable {
       drawerRegistrar.toBack();
     });
 
-    try {
-      socket = IO.socket("http://localhost:7000");
-	  socket.connect();
-    } catch (URISyntaxException ex) {
-      Logger.getLogger(IU_LogInController.class.getName()).log(Level.SEVERE, null, ex);
-    }
     
-    socket.on("connectToRoom", new Emitter.Listener(){
-            @Override                        
-            public void call(Object... os) {
-              System.out.println("usuario " + tfUser.getText());
-                System.out.println("conectado a cuarto");
-                System.out.println("objeto recibido " + Arrays.toString(os));
-            }                                            
-        });
-    
+	socket.on("connectToRoom", new Emitter.Listener() {
+	  @Override
+	  public void call(Object... os) {
+		System.out.println("usuario " + tfUser.getText());
+		System.out.println("conectado a cuarto");
+		System.out.println("objeto recibido " + Arrays.toString(os));
+	  }
+	});
+
   }
 
   @FXML

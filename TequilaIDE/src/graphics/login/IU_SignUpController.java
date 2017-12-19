@@ -2,7 +2,6 @@ package graphics.login;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
-import static graphics.login.IU_LogInController.socket;
 import com.jfoenix.controls.JFXTextField;
 import graphics.tools.Tools;
 import io.socket.emitter.Emitter;
@@ -19,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Paint;
 import logic.sockets.SocketUser;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class

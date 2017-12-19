@@ -1,10 +1,7 @@
 package logic.sockets;
 
-import static graphics.login.IU_LogInController.socket;//este socket global se debe mover a la capa de red
-import io.socket.emitter.Emitter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONObject;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * Provee métodos que interactuan con el servidor
@@ -26,8 +23,6 @@ public class SocketFile {
     fileToSave.accumulate("content", content);
     fileToSave.accumulate("projectID", projectID);
     fileToSave.accumulate("fileType", language);
-
-    socket.connect();
     socket.emit("saveFile", fileToSave);
 	
 	/*
@@ -41,8 +36,6 @@ public class SocketFile {
     fileToSave.accumulate("name", name);
     fileToSave.accumulate("projectID", projectID);
     fileToSave.accumulate("fileType", language);
-
-    socket.connect();
     socket.emit("saveFile", fileToSave);
 	
 	/*
@@ -55,10 +48,6 @@ public class SocketFile {
 
     fileToUpdate.accumulate("fileID", fileId);
     fileToUpdate.accumulate("content", content);
-
-    socket.connect();
-    System.err.println("logrado");
-
     socket.emit("updateFile", fileToUpdate);
   }
 }

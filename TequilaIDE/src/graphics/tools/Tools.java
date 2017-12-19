@@ -22,6 +22,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javax.xml.bind.DatatypeConverter;
+import logic.domain.File;
 
 /**
  *
@@ -93,13 +94,13 @@ public class Tools {
   }
  
   public static String displayChoiceDialog(String title, String content, List choices) {
-	ChoiceDialog<String> dialog = new ChoiceDialog<>(choices.get(0), choices);
+	ChoiceDialog<File> dialog = new ChoiceDialog<>(choices.get(0), choices);
 	dialog.setTitle(title);
 	dialog.setContentText(content);
 
-	Optional<String> result = dialog.showAndWait();
+	Optional<File> result = dialog.showAndWait();
 	if (result.isPresent()) {
-	  return result.get();
+	  return result.get().getNombre();
 	} else {
 	  return ""; 
 	}

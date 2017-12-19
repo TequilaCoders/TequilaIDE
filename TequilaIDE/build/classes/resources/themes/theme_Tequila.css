@@ -176,3 +176,25 @@ VBox {
   -fx-background-color: #1A405F;
   -fx-text-fill: #48C9B0;
 }
+
+.tree-view {
+    -fx-background-color: #1995AD;
+}
+
+.tree-cell {
+    -fx-background-color: #1995AD; 
+}
+
+.tree-view:focused .tree-cell:filled:selected {
+    -fx-background-color: #A1D6E2;
+    -fx-text-fill:black;
+}
+
+.tree-cell:filled:selected{
+    -fx-background-color:  #A1D6E2;
+}
+
+.tree-cell:filled:hover {
+    -fx-background-color:  #A1D6E2;
+   
+}

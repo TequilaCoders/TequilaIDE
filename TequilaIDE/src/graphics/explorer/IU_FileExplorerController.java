@@ -2,7 +2,6 @@ package graphics.explorer;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXNodesList;
-import static graphics.login.IU_LogInController.socket;
 import graphics.editor.IU_EditorController;
 import java.io.IOException;
 import java.net.URL;

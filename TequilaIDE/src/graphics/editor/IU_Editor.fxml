@@ -20,7 +20,7 @@
    <children>
       <HBox prefHeight="55.0" prefWidth="1366.0">
          <children>
-            <JFXHamburger prefHeight="50.0" prefWidth="62.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
+            <JFXHamburger fx:id="hamburgerButton" onMouseClicked="#openDrawer" prefHeight="50.0" prefWidth="62.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
             <MenuBar id="menuBarEditor" prefHeight="55.0" prefWidth="461.0" stylesheets="@../../resources/themes/theme_Tequila.css">
                <menus>
                   <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
@@ -70,17 +70,17 @@
                   <Image url="@../../resources/icons/proyecto.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="paneFileExplorer1" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="10.0" layoutY="13.0" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="35.0">
+            <ImageView fx:id="paneFileExplorer1" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="10.0" layoutY="13.0" onMouseClicked="#addTab" pickOnBounds="true" preserveRatio="true" translateX="35.0">
                <image>
                   <Image url="@../../resources/icons/icons8-add-file-40.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="paneFileExplorer11" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="45.0" layoutY="13.0" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="40.0">
+            <ImageView fx:id="paneFileExplorer11" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="45.0" layoutY="13.0" onMouseClicked="#runCompiler" pickOnBounds="true" preserveRatio="true" translateX="40.0">
                <image>
                   <Image url="@../../resources/icons/icon_compile.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="paneFileExplorer111" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="80.0" layoutY="13.0" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="45.0">
+            <ImageView fx:id="paneFileExplorer111" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="80.0" layoutY="13.0" onMouseClicked="#runProgram" pickOnBounds="true" preserveRatio="true" translateX="45.0">
                <image>
                   <Image url="@../../resources/icons/icons8-play-50%20(1).png" />
                </image>
@@ -89,8 +89,8 @@
       </ToolBar>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <children>
-            <TabPane fx:id="tabPaneArchivos" prefHeight="200.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <JFXDrawer fx:id="drawerFileTree" prefHeight="674.0" prefWidth="232.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <JFXDrawer fx:id="drawerFileTree" defaultDrawerSize="500.0" overLayVisible="false" prefHeight="674.0" prefWidth="219.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <TabPane fx:id="tabPaneArchivos" onMouseClicked="#newTab" prefHeight="200.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
    </children>

@@ -98,6 +98,106 @@ io.on("connection",function(socket) {
     loadSharedProjects(user, connection);
   }); 
 
+  socket.on("runCompiler", function(project){ 
+    runCompiler(project, connection);
+  }); 
+
+  socket.on("runProgram", function(project){
+    runProgram(project, connection);
+  });
+
+  function runProgram(project, connection){
+    runCompiler(project, connection); 
+    switch(project.language) {
+      case 'Java':
+        console.log("Se va a ejecutar un programa java");
+        runJava(project.mainClass);
+        break;
+      case 'C++':
+        console.log("Se va a ejecutar un programa C++");
+        
+        break;
+    }
+  }
+
+  function runCompiler(project,connection){
+    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
+      if (error) {
+        throw error;
+      } else {
+        var files = result; 
+        for (var i = 0; i < files.length; i++) {
+          createProgramFile(files[i]);
+        }
+
+        switch(project.language) {
+          case 'Java':
+            console.log("Se va a compilar con Java");
+            compileJava(project.mainClass);
+            break;
+          case 'C++':
+            console.log("Se va a compilar C++");
+            
+            break;
+        }
+      }
+    });
+  }
+
+  function createProgramFile(file){
+    var fs = require('fs');
+    fs.writeFile(file.nombre+"."+file.tipo, file.contenido, function(err) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log("Se genero el archivo de programa");
+    });
+  }
+
+  function compileJava(mainClass){
+    var operationResult = "";  
+    var spawn = require('child_process').spawn;
+    var compile = spawn('javac', [mainClass+'.java']);
+    
+    compile.stdout.on('data', function (data) {
+      operationResult = operationResult.concat("BUILD SUCCESSFUL");
+    });
+
+    compile.stderr.on('data', function (data) {
+      operationResult = operationResult.concat(String(data));
+    });
+
+    setTimeout(function() {
+      if (operationResult == "") {
+        operationResult = "BUILD SUCCESSFUL";
+      }
+      socket.emit("operationFinish", operationResult);
+    }, 500);
+    
+  }
+
+  function runJava(mainClass){
+    var spawn = require('child_process').spawn;
+    var run = spawn('java', [mainClass]);
+    var operationResult = ""; 
+    
+    run.stdout.on('data', function (output) {
+      operationResult = operationResult.concat(String(output));
+    });
+    
+    run.stderr.on('data', function (output) {
+      operationResult = operationResult.concat(String(output));
+    });
+    
+    run.on('close', function (output) {
+      operationResult = operationResult.concat("Código de salida: "+String(output));
+    }); 
+
+    setTimeout(function() {
+      socket.emit("operationFinish", operationResult);
+    }, 500);
+  }
+
   function logIn(user, connection) {
     console.log([user.alias]);
     var query = connection.query("select * from usuario where alias=?",[user.alias],function(error,result){
@@ -200,7 +300,7 @@ io.on("connection",function(socket) {
       if (error) {
         throw error;
       } else {
-        socket.emit("fileSaved", result.insertId, "archivo guardado exitosamente");
+        socket.emit("fileSaved", result.insertId, file.name);
       }
     });
   }

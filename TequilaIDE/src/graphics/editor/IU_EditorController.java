@@ -2,8 +2,10 @@ package graphics.editor;
 
 import com.google.gson.Gson;
 import com.jfoenix.controls.JFXDrawer;
+import com.jfoenix.controls.JFXHamburger;
+import com.jfoenix.controls.JFXTreeView;
+import com.jfoenix.transitions.hamburger.HamburgerBackArrowBasicTransition;
 import graphics.explorer.IU_FileExplorerController;
-import static graphics.login.IU_LogInController.socket;
 import graphics.tools.Tools;
 import io.socket.emitter.Emitter;
 import java.io.IOException;
@@ -36,7 +38,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -47,6 +48,7 @@ import logic.domain.User;
 import logic.sockets.SocketFile;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class
@@ -92,6 +94,8 @@ public class IU_EditorController implements Initializable {
   private TabPane tabPaneArchivos;
   @FXML
   private JFXDrawer drawerFileTree;
+  @FXML
+  private JFXHamburger hamburgerButton;
 
   List<File> fileList = new ArrayList<>();
 
@@ -116,6 +120,52 @@ public class IU_EditorController implements Initializable {
   AnchorPane anchorAddCollaborator;
 
   private boolean savedStatus;
+  
+  private HamburgerBackArrowBasicTransition hamburgerTransition; 
+  
+    /**
+   * Initializes the controller class.
+   *
+   * @param url
+   * @param rb
+   */
+  @Override
+  public void initialize(URL url, ResourceBundle rb) {
+	hamburgerTransition = new HamburgerBackArrowBasicTransition(hamburgerButton);
+	hamburgerTransition.setRate(-1);
+	this.rb = rb;
+	setProjectID();
+	loadFiles();
+	this.projectID = selectedProject.getIdProyecto();
+
+	if (!selectedProject.isShared()) {
+	  setUserIcons();
+	}
+
+	Platform.runLater(new Runnable() {
+	  @Override
+	  public void run() {
+		showFirstTab(checkNumberOfFiles());
+		loadCollaborators();
+
+		Platform.runLater(new Runnable() {
+		  @Override
+		  public void run() {
+			joinProjectRoom();
+		  }
+
+		});
+	  }
+
+	});
+	
+	drawerFileTree.setOnDrawerClosed(event -> {
+	  drawerFileTree.toBack();
+	});
+
+	listeners();
+	listenServer();
+  }
 
   public void setSelectedProject(Project selectedProject) {
     this.selectedProject = selectedProject;
@@ -147,74 +197,6 @@ public class IU_EditorController implements Initializable {
     explorador.open_FileExplorer(mainStage, rb, user);
   }
 
-  /**
-   * Initializes the controller class.
-   *
-   * @param url
-   * @param rb
-   */
-  @Override
-  public void initialize(URL url, ResourceBundle rb) {
-
-    this.rb = rb;
-    setProjectID();
-    loadFiles();
-    this.projectID = selectedProject.getIdProyecto();
-
-    if (!selectedProject.isShared()) {
-      setUserIcons();
-    }
-
-    Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        showFirstTab(checkNumberOfFiles());
-        loadCollaborators();
-        
-        Platform.runLater(new Runnable() {
-          @Override
-          public void run() {
-   
-            joinProjectRoom();
-          }
-
-        });
-      }
-
-    });
-
-    listeners();
-
-    socket.on("disconnectFromRoom", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        
-        JSONArray receivedList = (JSONArray) os[0];
-        String jsonString = receivedList.toString();
-
-        Gson gson = new Gson();
-
-        Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
-        System.out.println("NUEVA lista recuperada de colaboradores: (un usuario se desconecto) " + jsonString);
-        collaboratorsConnected = Arrays.asList(jsonFileList);
-        collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
-        
-        Platform.runLater(new Runnable() {
-          @Override
-          public void run() {  
-            
-            System.out.println("SE ACTIVA LA RECARGA DE ICONOS DE COLABORADORES");
-            collaboratorsButtons.clear();
-            setCollaboratorsIcons();
-            hoverListeners();
-            menuItemsSelectedAction();
-          }
-
-        });
-      }
-    });
-  }
-
   public void setUserIcons() {
     String alias = user.getAlias();
     Tooltip tootTip = new Tooltip();
@@ -228,7 +210,6 @@ public class IU_EditorController implements Initializable {
   }
 
   public void setCollaboratorsIcons() {
-
     for (int i = 0; i < collaboratorsList.size(); i++) {
       Collaborator collaborator = collaboratorsList.get(i);
       String collaboratorAlias = collaborator.getAlias();
@@ -360,7 +341,7 @@ public class IU_EditorController implements Initializable {
   void newTab(MouseEvent event) {
     if (event.getButton().equals(MouseButton.PRIMARY)) {
       if (event.getClickCount() == 2) {
-        addTab();
+        addTab(event);
       }
     }
   }
@@ -370,32 +351,12 @@ public class IU_EditorController implements Initializable {
    * @param event
    */
   @FXML
-  void addTab(ActionEvent event) {
-    try {
-      Tab tab = new Tab();
-      tab.setText("untitled");
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/IU_Tab.fxml"), rb);
-
-      IU_TabController controller = new IU_TabController();
-      loader.setController(controller);
-      controller.setTab(tab);
-      controller.setFileList(fileList);
-
-      ScrollPane newFile = loader.load();
-      tab.setContent(newFile);
-      tabPaneArchivos.getTabs().add(tab);
-      tabPaneArchivos.getSelectionModel().selectLast();
-      
-      Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        listener_TabClosed(tab, controller, -1);
-      }
-
-    });
-    } catch (IOException ex) {
-      Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
-    }
+  void addTab(MouseEvent event) {
+	String className = Tools.displayTextInputDialog("Nueva clase", "Nombre de la clase: ");
+	if (!className.equals("")) {
+	  SocketFile socketFile = new SocketFile();
+	  socketFile.createNewFile(className, "", projectID, selectedProject.getLenguaje());
+	}
   }
 
   /**
@@ -461,14 +422,6 @@ public class IU_EditorController implements Initializable {
       currentTabs.add(title);
 
       tabPaneArchivos.getSelectionModel().selectLast();
-      
-      Platform.runLater(new Runnable() {
-      @Override
-      public void run() {
-        listener_TabClosed(tab, controller, fileId);
-      }
-
-    });
     } catch (IOException ex) {
       Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -481,118 +434,36 @@ public class IU_EditorController implements Initializable {
    */
   @FXML
   void openDrawer(MouseEvent event) {
-    loadFiles();
-    try {
+	hamburgerTransition.setRate(hamburgerTransition.getRate() * -1);
+	hamburgerTransition.play();
+	try {
 
-      FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/IU_FileTree.fxml"), rb);
-      IU_FileTreeController controller = new IU_FileTreeController();
+	  FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/IU_FileTree.fxml"), rb);
+	  IU_FileTreeController controller = new IU_FileTreeController();
 
-      loader.setController(controller);
+	  loader.setController(controller);
 
-      controller.setSelectedProject(selectedProject);
-      controller.setFileList(fileList);
-      controller.setEditorController(this);
+	  controller.setSelectedProject(selectedProject);
+	  controller.setFileList(fileList);
+	  controller.setEditorController(this);
 
-      VBox vbox = loader.load();
+	  JFXTreeView pane = loader.load();
 
-      drawerFileTree.setSidePane(vbox);
+	  drawerFileTree.setSidePane(pane);
 
-      if (drawerFileTree.isShown()) {
-
-        drawerFileTree.close();
-        drawerFileTree.toBack();
-
-      } else {
-        drawerFileTree.toFront();
-        drawerFileTree.open();
-
-      }
-    } catch (IOException ex) {
-      Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
-  
-  /**
-   * Método que esta a la escucha del evento de cierre de una pestaña.
-   *
-   * @param tab
-   * @param controller
-   * @param fileId
-   */
-  public void listener_TabClosed(Tab tab, IU_TabController controller, int fileId) {
-    
-    tab.setOnClosed(e -> {
-      if (controller.getContent().trim().isEmpty() == false) {
-
-        //se elimina la pestaña de la lista de pestañas abiertas actuales
-        String title = tab.getText();
-        currentTabs.remove(title);
-
-        if (fileId != -1) {
-          updateFile(tab, controller, fileId);
-        } else {
-          createNewFile(tab, controller);
-        }
-      }
-    });
-  }
-
-  public void createNewFile(Tab tab, IU_TabController controller) {
-    String content = controller.getContent();
-    String name = tab.getText();
-
-    JSONObject fileToSave = new JSONObject();
-
-    fileToSave.accumulate("name", name);
-    fileToSave.accumulate("content", content);
-    fileToSave.accumulate("projectID", projectID);
-
-    //------------VALOR TEMPORAL !!!--------------------
-    fileToSave.accumulate("fileType", "java");
-    //--------------------------------------------------
-
-    //socket.connect();
-   
-    socket.emit("saveFile", fileToSave);
-
-    socket.on("fileSaved", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        System.out.println("file succesfully saved");
-        //socket.close();
-        loadFiles();
-      }
-    });
-
-  }
-
-  public void updateFile(Tab tab, IU_TabController controller, int fileId) {
-    String content = controller.getContent();
-    String name = tab.getText();
-
-    JSONObject fileToUpdate = new JSONObject();
-
-    fileToUpdate.accumulate("fileID", fileId);
-    fileToUpdate.accumulate("name", name);
-    fileToUpdate.accumulate("content", content);
-
-    //socket.connect();
-
-    socket.emit("updateFile", fileToUpdate);
-
-    socket.on("fileUpdated", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        System.out.println("file succesfully updated");
-        //socket.close();
-        loadFiles();
-      }
-
-    });
+	  if (drawerFileTree.isShown()) {
+		drawerFileTree.close();
+	  } else {
+		drawerFileTree.toFront();
+		drawerFileTree.open();
+	  }
+	} catch (IOException ex) {
+	  Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
+	}
   }
 
   /**
-   * Method used to see when to open a new tab, and when to open an existing file
+   * Método utilizado para ver cuándo abrir una nueva pestaña y cuándo abrir un archivo existente
    *
    * @return
    */
@@ -853,22 +724,8 @@ public class IU_EditorController implements Initializable {
   
   public void deleteFile(int fileID) {
     JSONObject fileToSend = new JSONObject();
-
     fileToSend.accumulate("fileID", fileID);
-
-    //socket.connect();
-    
     socket.emit("deleteFile", fileToSend);
-
-    socket.on("fileDeleted", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        System.out.println("file deleted");
-        //socket.close();
-        loadFiles();
-      }
-
-    });
   }
 
   /**
@@ -911,5 +768,101 @@ public class IU_EditorController implements Initializable {
         }
       }
     });
+  }
+  
+  public void listenServer() {
+	socket.on("fileSaved", new Emitter.Listener() {
+	  @Override
+	  public void call(Object... os) {
+		Platform.runLater(() -> {
+		  try {
+			Tab tab = new Tab();
+			tab.setText(os[1] + "." + selectedProject.getLenguaje());
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/IU_Tab.fxml"), rb);
+			IU_TabController controller = new IU_TabController();
+			loader.setController(controller);
+			controller.setTab(tab);
+			controller.setFileList(fileList);
+			controller.setFile((int) os[0]);
+			ScrollPane newFile = loader.load();
+			tab.setContent(newFile);
+			tabPaneArchivos.getTabs().add(tab);
+			tabPaneArchivos.getSelectionModel().selectLast();
+			loadFiles();
+		  } catch (IOException ex) {
+			Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
+		  }
+		});
+	  }
+	});
+
+	socket.on("disconnectFromRoom", new Emitter.Listener() {
+	  @Override
+	  public void call(Object... os) {
+
+		JSONArray receivedList = (JSONArray) os[0];
+		String jsonString = receivedList.toString();
+
+		Gson gson = new Gson();
+
+		Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
+		System.out.println("NUEVA lista recuperada de colaboradores: (un usuario se desconecto) " + jsonString);
+		collaboratorsConnected = Arrays.asList(jsonFileList);
+		collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
+
+		Platform.runLater(new Runnable() {
+		  @Override
+		  public void run() {
+			System.out.println("SE ACTIVA LA RECARGA DE ICONOS DE COLABORADORES");
+			collaboratorsButtons.clear();
+			setCollaboratorsIcons();
+			hoverListeners();
+			menuItemsSelectedAction();
+		  }
+
+		});
+	  }
+	});
+	
+	socket.on("fileDeleted", new Emitter.Listener() {
+      @Override
+      public void call(Object... os) {
+        System.out.println("file deleted");
+		Platform.runLater(()->{
+		  loadFiles();
+		});
+      }
+    });
+	
+	socket.on("operationFinish", new Emitter.Listener(){
+		@Override
+		public void call(Object... os) {
+		  Platform.runLater(()->{
+			Tools.displayInformation("Resultado de la compilación", (String) os[0]);
+		  });
+		}
+	  });
+  }
+  
+  @FXML
+  void runCompiler(MouseEvent event) {
+	String mainClass = Tools.displayChoiceDialog("Compilar", "Selecciona la clase principal", fileList);
+	JSONObject projectToSend = new JSONObject();
+	projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
+	projectToSend.accumulate("language", selectedProject.getLenguaje());
+	projectToSend.accumulate("mainClass", mainClass);
+
+	socket.emit("runCompiler",projectToSend);
+  }
+  
+  @FXML
+  void runProgram(MouseEvent event) {
+	String mainClass = Tools.displayChoiceDialog("Compilar", "Selecciona la clase principal", fileList);
+	JSONObject projectToSend = new JSONObject();
+	projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
+	projectToSend.accumulate("language", selectedProject.getLenguaje());
+	projectToSend.accumulate("mainClass", mainClass);
+
+	socket.emit("runProgram",projectToSend);
   }
 }

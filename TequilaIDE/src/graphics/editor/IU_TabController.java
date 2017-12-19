@@ -1,6 +1,5 @@
 package graphics.editor;
 
-import static graphics.login.IU_LogInController.socket;
 import graphics.tools.Tools;
 import io.socket.emitter.Emitter;
 import java.net.URL;
@@ -31,6 +30,7 @@ import logic.sockets.SocketFile;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class
@@ -294,13 +294,15 @@ public class IU_TabController implements Initializable {
   
   public void refreshCodeArea(){
 	socket.on("fileUpdated", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
+	  @Override
+	  public void call(Object... os) {
 		Platform.runLater(()->{
 		  taEditor.replaceText((String) os[0]);
+		  addNumberLines();
+		  System.out.println("file succesfully updated");
 		});
-        System.out.println("file succesfully updated");
-      }
-    });
+		
+	  }
+	});
   }
 }

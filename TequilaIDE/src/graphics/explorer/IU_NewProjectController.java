@@ -3,7 +3,6 @@ package graphics.explorer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-import static graphics.login.IU_LogInController.socket;
 import io.socket.emitter.Emitter;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import logic.sockets.SocketProject;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class
