@@ -103,20 +103,20 @@ io.on("connection",function(socket) {
   }); 
 
   socket.on("runProgram", function(project){
-    runProgram(project, connection);
+    runProgram(project,connection);
   });
 
   function runProgram(project, connection){
-    runCompiler(project, connection); 
     switch(project.language) {
       case 'Java':
-        console.log("Se va a ejecutar un programa java");
         runJava(project.mainClass);
         break;
       case 'C++':
-        console.log("Se va a ejecutar un programa C++");
-        
+        runCpp(project.mainClass);
         break;
+      case 'py':
+        runPython(project, connection, project.mainClass);
+        break; 
     }
   }
 
@@ -132,12 +132,12 @@ io.on("connection",function(socket) {
 
         switch(project.language) {
           case 'Java':
-            console.log("Se va a compilar con Java");
             compileJava(project.mainClass);
             break;
           case 'C++':
-            console.log("Se va a compilar C++");
-            
+            compileCpp(project.mainClass);
+            break;
+          case 'Python':
             break;
         }
       }
@@ -150,52 +150,87 @@ io.on("connection",function(socket) {
       if (err) {
         return console.log(err);
       }
-      console.log("Se genero el archivo de programa");
     });
   }
 
   function compileJava(mainClass){
-    var operationResult = "";  
     var spawn = require('child_process').spawn;
-    var compile = spawn('javac', [mainClass+'.java']);
+    var compile = spawn('javac', ['*'+'.java']);
+
+    compile.stderr.on('data', function (data) {
+      socket.emit("operationFinish", String(data));
+    });
+
+    compile.on('close', function (code) {
+      if (code == 0) {
+        socket.emit("operationFinish", "BUILD SUCCESSFUL, CODE: " + String(code));
+      } else{
+        socket.emit("operationFinish", "BUILD FAILED, CODE: " + String(code));
+      }
+      
+    });
+  }
+
+  function compileCpp(mainClass){
+    var spawn = require('child_process').spawn;
+    var compile = spawn('g++', [mainClass+'.cpp']);
     
     compile.stdout.on('data', function (data) {
-      operationResult = operationResult.concat("BUILD SUCCESSFUL");
+      socket.emit("operationFinish", "BUILD SUCCESSFUL");
     });
 
     compile.stderr.on('data', function (data) {
-      operationResult = operationResult.concat(String(data));
+      socket.emit("operationFinish", String(data));
     });
-
-    setTimeout(function() {
-      if (operationResult == "") {
-        operationResult = "BUILD SUCCESSFUL";
-      }
-      socket.emit("operationFinish", operationResult);
-    }, 500);
-    
   }
 
   function runJava(mainClass){
     var spawn = require('child_process').spawn;
     var run = spawn('java', [mainClass]);
-    var operationResult = ""; 
     
     run.stdout.on('data', function (output) {
-      operationResult = operationResult.concat(String(output));
+      socket.emit("operationFinish", String(output));
     });
     
     run.stderr.on('data', function (output) {
-      operationResult = operationResult.concat(String(output));
+      socket.emit("operationFinish", String(output));
     });
     
     run.on('close', function (output) {
-      operationResult = operationResult.concat("Código de salida: "+String(output));
+      socket.emit("operationFinish", String(output));
     }); 
+  }
 
-    setTimeout(function() {
-      socket.emit("operationFinish", operationResult);
-    }, 500);
+  function runCpp(mainClass){
+    
+  }
+
+  function runPython(project,connection, mainClass){
+    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
+      if (error) {
+        throw error;
+      } else {
+        var files = result; 
+        for (var i = 0; i < files.length; i++) {
+          createProgramFile(files[i]);
+        }
+      }
+    });
+
+    var spawn = require('child_process').spawn;
+    var run = spawn('python', [mainClass+"."+"py"]);
+    
+    run.stdout.on('data', function (output) {
+      socket.emit("operationFinish", String(output));
+    });
+    
+    run.stderr.on('data', function (output) {
+      socket.emit("operationFinish", String(output));
+    });
+    
+    run.on('close', function (output) {
+      socket.emit("operationFinish", String(output));
+    }); 
   }
 
   function logIn(user, connection) {
@@ -306,14 +341,11 @@ io.on("connection",function(socket) {
   }
 
   function updateFile(file, connection){
-    console.log([file.content]);
     var query = connection.query("update archivo set contenido = ? where idarchivo = ?",[file.content, file.fileID],function(error,result){
       if (error) {
         throw error;
       } else {
         io.sockets.in(16).emit("fileUpdated", file.content, "archivo actualizado exitosamente");
-        console.log("Se emitio a todos en el room");
-        //socket.emit("fileUpdated", file.content, "archivo actualizado exitosamente");
       }
     });
   }

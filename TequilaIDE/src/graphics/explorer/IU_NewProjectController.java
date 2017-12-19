@@ -96,10 +96,21 @@ public class IU_NewProjectController implements Initializable {
   void createProject(ActionEvent event) {
     estatusDeGuardado = true;
     String name;
-    String programmingLanguage;
+    String programmingLanguage = "";
 	
     name = tfName.getText();
-    programmingLanguage = (String) cbLanguages.getSelectionModel().getSelectedItem();
+	
+	switch((String) cbLanguages.getSelectionModel().getSelectedItem()){
+	  case "Java":
+		programmingLanguage = "java";
+		break;
+	  case "C++":
+		programmingLanguage = "cpp";
+		break;
+	  case "Python":
+		programmingLanguage = "py";
+		break; 	
+	}
     
 	projectName = name; 
 	projectType = programmingLanguage;

@@ -834,35 +834,46 @@ public class IU_EditorController implements Initializable {
       }
     });
 	
-	socket.on("operationFinish", new Emitter.Listener(){
-		@Override
-		public void call(Object... os) {
-		  Platform.runLater(()->{
-			Tools.displayInformation("Resultado de la compilación", (String) os[0]);
-		  });
-		}
-	  });
+	
   }
   
   @FXML
   void runCompiler(MouseEvent event) {
 	String mainClass = Tools.displayChoiceDialog("Compilar", "Selecciona la clase principal", fileList);
-	JSONObject projectToSend = new JSONObject();
-	projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
-	projectToSend.accumulate("language", selectedProject.getLenguaje());
-	projectToSend.accumulate("mainClass", mainClass);
+	if (!mainClass.equals("")) {
+	  JSONObject projectToSend = new JSONObject();
+	  projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
+	  projectToSend.accumulate("language", selectedProject.getLenguaje());
+	  projectToSend.accumulate("mainClass", mainClass);
 
-	socket.emit("runCompiler",projectToSend);
+	  socket.emit("runCompiler", projectToSend);
+	  openConsole();
+	}
   }
   
   @FXML
   void runProgram(MouseEvent event) {
 	String mainClass = Tools.displayChoiceDialog("Compilar", "Selecciona la clase principal", fileList);
-	JSONObject projectToSend = new JSONObject();
-	projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
-	projectToSend.accumulate("language", selectedProject.getLenguaje());
-	projectToSend.accumulate("mainClass", mainClass);
+	
+	if (!mainClass.equals("")) {
+	  JSONObject projectToSend = new JSONObject();
+	  projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
+	  projectToSend.accumulate("language", selectedProject.getLenguaje());
+	  projectToSend.accumulate("mainClass", mainClass);
+	 
+	  socket.emit("runProgram", projectToSend);
 
-	socket.emit("runProgram",projectToSend);
+	  //AQUI ABRIR LA TERMINAL 
+	  openConsole();
+	}
+	
+  }
+  
+  public void openConsole(){
+	FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/GUIConsole.fxml"), rb);
+	GUIConsoleController controller = new GUIConsoleController();
+	loader.setController(controller);
+	mainStage = (Stage) tabPaneArchivos.getScene().getWindow();
+	controller.openConsole(mainStage, rb);
   }
 }

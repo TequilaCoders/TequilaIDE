@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.editor.GUIConsoleController">
+   <children>
+      <TextArea fx:id="taConsole" editable="false" layoutX="100.0" layoutY="34.0" prefHeight="366.0" prefWidth="600.0" style="-fx-text-fill: white;" stylesheets="@../../resources/themes/theme_Tequila.css" text="Tequila IDE" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <font>
+            <Font name="Courier New" size="18.0" />
+         </font>
+      </TextArea>
+   </children>
+</AnchorPane>
