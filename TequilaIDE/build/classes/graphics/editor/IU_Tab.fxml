@@ -5,14 +5,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.fxmisc.richtext.CodeArea?>
 
-<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="480.0" prefWidth="754.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" nodeOrientation="LEFT_TO_RIGHT" prefHeight="480.0" prefWidth="754.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <content>
       <BorderPane fx:id="borderPane" prefHeight="400.0" prefWidth="600.0">
          <left>
             <VBox fx:id="vboxNumberLines" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="40.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER" />
          </left>
          <center>
-            <CodeArea id="codeArea" fx:id="taEditor" autoScrollOnDragDesired="false" onContextMenuRequested="#loadContextMenu" onKeyPressed="#braceOpenedListener" onKeyReleased="#updateFile" onKeyTyped="#addNumberLines" onMousePressed="#hideContextMenu" prefHeight="192.0" prefWidth="558.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER" />
+            <CodeArea id="codeArea" fx:id="taEditor" autoScrollOnDragDesired="false" onContextMenuRequested="#loadContextMenu" onKeyReleased="#updateFile" onKeyTyped="#addNumberLines" onMousePressed="#hideContextMenu" prefHeight="192.0" prefWidth="558.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER" />
          </center>
       </BorderPane>
    </content>

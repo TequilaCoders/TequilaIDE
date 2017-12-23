@@ -43,11 +43,40 @@ public class SocketFile {
 	*/
   }
 
-  public void updateFile(String content, int fileId) {
+  public void updateFile(String content, int fileId, int room) {
     JSONObject fileToUpdate = new JSONObject();
 
     fileToUpdate.accumulate("fileID", fileId);
     fileToUpdate.accumulate("content", content);
+    fileToUpdate.accumulate("room", room);
     socket.emit("updateFile", fileToUpdate);
+  }
+  
+  public void deleteFile(int fileID) {
+    JSONObject fileToSend = new JSONObject();
+    
+    fileToSend.accumulate("fileID", fileID);
+    socket.emit("deleteFile", fileToSend);
+  }
+  
+  public void loadFiles(int projectID) {
+    JSONObject projectIDToSend = new JSONObject();
+    
+    projectIDToSend.accumulate("projectID", projectID);
+    socket.emit("loadFiles", projectIDToSend);
+  }
+  
+  public void joinFilesRoom(int fileID) {
+    JSONObject fileToJoin = new JSONObject();
+    
+    fileToJoin.accumulate("fileID", fileID);
+    socket.emit("joinFilesRoom", fileToJoin);
+  }
+  
+  public void leaveFilesRoom(int fileID) {
+    JSONObject fileToLeave = new JSONObject();
+    
+    fileToLeave.accumulate("fileID", fileID);
+    socket.emit("leaveFilesRoom", fileToLeave);
   }
 }

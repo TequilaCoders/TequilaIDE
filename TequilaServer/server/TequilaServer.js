@@ -8,10 +8,11 @@
 var io = require("socket.io")(7000);
 var mysql = require("mysql");
 
-var roomno = 1;
+var room;
 
 var users;
-var rooms = [];
+var projectsRooms = [];
+var filesRooms = [];
 
 var connection = mysql.createConnection({
  	host: "127.0.0.1",
@@ -25,6 +26,12 @@ console.log("Corriendo en el puerto 7000");
 
 io.on("connection",function(socket) {
   console.log("conectado");
+
+  socket.on("disconnect", (reason) => {
+    console.log("desconectado");
+    projectsRooms = [];
+    filesRooms = [];
+  });
 
    //clients++;
    //io.sockets.emit('broadcast',{ description: clients + ' clients connected!'});
@@ -57,12 +64,20 @@ io.on("connection",function(socket) {
     recoverFiles(project, connection);
   });
 
-  socket.on("joinRoom", function(connectedUser){
-    joinRoom(connectedUser, connection);
+  socket.on("joinProjectRoom", function(connectedUser){
+    joinProjectRoom(connectedUser, connection);
   });
 
-  socket.on("leaveRoom", function(connectedUser){
-    leaveRoom(connectedUser, connection);
+  socket.on("leaveProjectRoom", function(connectedUser){
+    leaveProjectRoom(connectedUser, connection);
+  });
+
+  socket.on("joinFilesRoom", function(file){
+    joinFilesRoom(file,connection);
+  });
+
+  socket.on("leaveFilesRoom", function(file){
+    leaveFilesRoom(file,connection);
   });
 
   socket.on("loadProjects", function(user){
@@ -345,15 +360,14 @@ io.on("connection",function(socket) {
       if (error) {
         throw error;
       } else {
-        io.sockets.in(16).emit("fileUpdated", file.content, "archivo actualizado exitosamente");
+
+        console.log("broadcasting al room = " + "room-" + file.fileID);
+        socket.broadcast.to("room-" + file.fileID).emit("fileUpdated", file.content, file.fileID);
       }
     });
   }
 
   function recoverFiles(project, connection){
-    //var room = project.projectID;
-   //socket.join(room);
-   //io.sockets.in(room).emit('connectToRoom', "You are in room no. "+room);
 
     var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
 
@@ -365,10 +379,42 @@ io.on("connection",function(socket) {
     });
   }
 
-  function joinRoom(connectedUser, connection){
+  function joinFilesRoom(file, connection){
 
-    var room = connectedUser.projectID;
-    var filtredRooms = [];
+    room = "room-" + file.fileID;
+
+    socket.leave(filesRooms[0]);
+    filesRooms = [];
+
+        socket.join(room);
+
+        filesRooms.push(room);
+
+        console.log("se unio al nuevo room de archivos que creo" + JSON.stringify(filesRooms));
+        io.sockets.in(room).emit('connectToFilesRoom', filesRooms[0]);  
+
+  }
+
+  function leaveFilesRoom(file, connection){
+
+    //var room = file.fileID;
+
+        socket.leave(filesRooms[0]);
+        console.log("rooms archivos antes " + JSON.stringify(filesRooms));
+        //var index = filesRooms.findIndex(x => x.room==room);
+        //filesRooms.splice(index, 1);
+
+        filesRooms = [];
+
+console.log("rooms archivos despues " + JSON.stringify(filesRooms));
+        //io.sockets.in(room).emit('disconnectFromFilesRoom', filesRooms);  
+
+  }
+
+  function joinProjectRoom(connectedUser, connection){
+
+    room = connectedUser.projectID;
+    var filteredRooms = [];
 
       console.log("se unio al nuevo room que creo");
         socket.join(room);
@@ -376,26 +422,26 @@ io.on("connection",function(socket) {
           room: room,
           idUsuario: connectedUser.userID
         }
-        rooms.push(users);
+        projectsRooms.push(users);
 
-        for (var i = rooms.length - 1; i >= 0; i--) {
-          if (rooms[i].room == room) {
-            filtredRooms.push(rooms[i]);
+        for (var i = projectsRooms.length - 1; i >= 0; i--) {
+          if (projectsRooms[i].room == room) {
+            filteredRooms.push(projectsRooms[i]);
           }
         }
-        console.log("se unio al nuevo room que creo" + JSON.stringify(rooms));
-        io.sockets.in(room).emit('connectToRoom', filtredRooms);  
+        console.log("se unio al nuevo room que creo" + JSON.stringify(projectsRooms));
+        io.sockets.in(room).emit('connectToProjectRoom', filteredRooms);  
 
   }
 
-  function leaveRoom(connectedUser, connection){
+  function leaveProjectRoom(connectedUser, connection){
 
-    var room = connectedUser.projectID;
+    room = connectedUser.projectID;
     var filteredRooms = [];
 
       console.log("dejo el room");
 
-      console.log("rooms antes " + JSON.stringify(rooms));
+      console.log("rooms antes " + JSON.stringify(projectsRooms));
 
         socket.leave(room);
 
@@ -405,22 +451,22 @@ io.on("connection",function(socket) {
         }
 
         //var index = rooms.indexOf(users);
-        var index = rooms.findIndex(x => x.room==room & x.idUsuario == connectedUser.userID);
+        var index = projectsRooms.findIndex(x => x.room==room & x.idUsuario == connectedUser.userID);
 
         console.log("indice del usuario a eliminar " + index);
 
-        rooms.splice(index, 1);
+        projectsRooms.splice(index, 1);
 
-        console.log("rooms despues " + JSON.stringify(rooms));
+        console.log("rooms despues " + JSON.stringify(projectsRooms));
 
-        for (var i = rooms.length - 1; i >= 0; i--) {
-          if (rooms[i].room == room) {
-            filteredRooms.push(rooms[i]);
+        for (var i = projectsRooms.length - 1; i >= 0; i--) {
+          if (projectsRooms[i].room == room) {
+            filteredRooms.push(projectsRooms[i]);
           }
         }
 
         console.log("rooms filtrados " + JSON.stringify(filteredRooms));
-        io.sockets.in(room).emit('disconnectFromRoom', filteredRooms);  
+        io.sockets.in(room).emit('disconnectFromProjectRoom', filteredRooms);  
 
         console.log("room = " + room);
 
@@ -492,7 +538,7 @@ io.on("connection",function(socket) {
       if (error) {
         throw error;
       } else {
-        socket.emit("collaborationSaved", true);
+        io.sockets.in(room).emit("collaborationSaved", collaboration.collaboratorID);
       }
     });
   }
@@ -505,7 +551,7 @@ io.on("connection",function(socket) {
       if (error) {
         throw error;
       } else {
-        socket.emit("collaborationDeleted", true);
+        io.sockets.in(room).emit("collaborationDeleted", collaboration.collaboratorID);
       }
     });
   }

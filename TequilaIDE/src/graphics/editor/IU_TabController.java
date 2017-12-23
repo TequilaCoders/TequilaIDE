@@ -4,6 +4,7 @@ import graphics.tools.Tools;
 import io.socket.emitter.Emitter;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +31,7 @@ import logic.sockets.SocketFile;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.json.JSONObject;
 import static tequilaide.TequilaIDE.socket;
 
 /**
@@ -94,6 +96,8 @@ public class IU_TabController implements Initializable {
   int fileID;
 
   private int projectID;
+  
+  private int caretPosition;
 
   private static final String NUMBER_LINES_FORMAT = "-fx-font-size: 20px; -fx-font-family: \"Courier New\"; -fx-text-fill: #90908A;";
 
@@ -114,6 +118,7 @@ public class IU_TabController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+
 	loadContextMenu();
 	borderPane.prefHeightProperty().bind(scrollPane.heightProperty());
 	borderPane.prefWidthProperty().bind(scrollPane.widthProperty());
@@ -129,8 +134,8 @@ public class IU_TabController implements Initializable {
 
   @FXML
   private void addNumberLines(KeyEvent event) {
-	int currentLines = vboxNumberLines.getChildren().size();
-	int numberLines = taEditor.getParagraphs().size();
+    int currentLines = vboxNumberLines.getChildren().size();
+    int numberLines = taEditor.getParagraphs().size();
 
 	//autoComplete(event);
 	if (numberLines > currentLines) {
@@ -167,15 +172,6 @@ public class IU_TabController implements Initializable {
 	}
   }
 
-  //METODO PENDIENTE
-  @FXML
-  void braceOpenedListener(KeyEvent event) {
-	/*System.out.println(event.getCharacter());
-    if (event.getCharacter().equals("a")) {
-      System.out.println("se aumento cuenta");
-    }*/
-  }
-
   private static StyleSpans<Collection<String>> computeHighlighting(String text) {
 	Matcher matcher = PATTERN.matcher(text);
 	int lastKwEnd = 0;
@@ -202,37 +198,14 @@ public class IU_TabController implements Initializable {
 
   public void setContent(String content) {
 	this.content = content;
+    taEditor.replaceText("");
+    
 	taEditor.replaceText(content);
 	addNumberLines();
   }
 
   public String getContent() {
 	return taEditor.getText();
-  }
-
-  /**
-   * Regresa 0 si no esta duplicado, en caso de estar duplicado regresa el indice de duplicidad.
-   *
-   * @param title
-   * @return
-   */
-  public int checkDuplicateTitle(String title) {
-	int duplicateIndex = 0;
-
-	for (int i = 0; i < fileList.size(); i++) {
-	  String fileTitle = fileList.get(i).getNombre();
-
-	  if (fileTitle.equals(title)) {
-		String lastCharacter = fileTitle.substring(fileTitle.length() - 1);
-		System.out.println("ultimo caracter" + lastCharacter);
-		try {
-		  duplicateIndex = Integer.parseInt(lastCharacter) + 1;
-		} catch (NumberFormatException e) {
-		  duplicateIndex = 1;
-		}
-	  }
-	}
-	return duplicateIndex;
   }
 
   public void loadContextMenu() {
@@ -253,14 +226,14 @@ public class IU_TabController implements Initializable {
 
 	menuItemDelete.setOnAction(new EventHandler() {
 	  @Override
-	  public void handle(Event event) {
-		tab.getTabPane().getTabs().remove(tab);
-		IU_EditorController controller = new IU_EditorController();
-		controller.deleteFile(fileID);
-		Tools.displayInformation("Archivo Eliminado", "El archivo seleccionado ha sido eliminado");
-	  }
+      public void handle(Event event) {
+        tab.getTabPane().getTabs().remove(tab);
+        SocketFile socketFile = new SocketFile();
+        socketFile.deleteFile(fileID);
+        Tools.displayInformation("Archivo Eliminado", "El archivo seleccionado ha sido eliminado");
+      }
 
-	});
+    });
   }
 
   private void closeTab(Tab tab) {
@@ -281,28 +254,42 @@ public class IU_TabController implements Initializable {
   @FXML
   void hideContextMenu(MouseEvent event) {
 	contextMenu.hide();
-
-	IU_EditorController controller = new IU_EditorController();
   }
   
   @FXML
   void updateFile(KeyEvent event) {
+    int roomNumber = projectID;
 	SocketFile socketFile = new SocketFile();
 	System.out.println("Actualizando el id: " + fileID);
-	socketFile.updateFile(taEditor.getText(), fileID);
+    caretPosition = taEditor.getCaretPosition();
+    System.out.println("caret position: "+ caretPosition);
+        
+	socketFile.updateFile(taEditor.getText(), fileID, roomNumber);
   }
   
-  public void refreshCodeArea(){
-	socket.on("fileUpdated", new Emitter.Listener() {
-	  @Override
-	  public void call(Object... os) {
-		Platform.runLater(()->{
-		  taEditor.replaceText((String) os[0]);
-		  addNumberLines();
-		  System.out.println("file succesfully updated");
-		});
-		
-	  }
-	});
+  public void refreshCodeArea() {
+    socket.on("fileUpdated", new Emitter.Listener() {
+      @Override
+      public void call(Object... os) {
+        Platform.runLater(() -> {
+          int fileIdBroadcasted = (int) os[1];
+          if (fileIdBroadcasted == fileID) {
+
+            String newContent = (String) os[0];
+            setContent(newContent);
+            taEditor.replaceText(newContent);
+            addNumberLines();
+            if (caretPosition <= taEditor.getLength()) {
+              taEditor.moveTo(caretPosition);
+            } else {
+              taEditor.moveTo(taEditor.getLength());
+            }
+            
+            System.out.println("file succesfully updated");
+          }
+        });
+
+      }
+    });
   }
 }
