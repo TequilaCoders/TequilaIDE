@@ -123,14 +123,14 @@ io.on("connection",function(socket) {
 
   function runProgram(project, connection){
     switch(project.language) {
-      case 'Java':
-        runJava(project.mainClass);
+      case 'java':
+        runJava(project.mainClass,project.projectID);
         break;
-      case 'C++':
-        runCpp(project.mainClass);
+      case 'cpp':
+        runCpp(project.mainClass,project.projectID);
         break;
       case 'py':
-        runPython(project, connection, project.mainClass);
+        runPython(project, project.mainClass,connection);
         break; 
     }
   }
@@ -140,37 +140,43 @@ io.on("connection",function(socket) {
       if (error) {
         throw error;
       } else {
+        
         var files = result; 
+        var fs = require('fs');
+    	var dirname = ""+project.projectID;
+
+	    if (!fs.existsSync(dirname)) {
+	      fs.mkdirSync(dirname);
+	    }
+
         for (var i = 0; i < files.length; i++) {
-          createProgramFile(files[i]);
+          createProgramFile(files[i],project.projectID);
         }
 
         switch(project.language) {
-          case 'Java':
-            compileJava(project.mainClass);
+          case 'java':
+            compileJava(project.projectID);
             break;
-          case 'C++':
-            compileCpp(project.mainClass);
-            break;
-          case 'Python':
+          case 'cpp':
+            compileCpp(project.projectID);
             break;
         }
       }
     });
   }
 
-  function createProgramFile(file){
+  function createProgramFile(file, projectID){
     var fs = require('fs');
-    fs.writeFile(file.nombre+"."+file.tipo, file.contenido, function(err) {
+    fs.writeFile(projectID + "/" + file.nombre + "." + file.tipo, file.contenido, function(err) {
       if (err) {
         return console.log(err);
       }
     });
   }
 
-  function compileJava(mainClass){
+  function compileJava(directory){
     var spawn = require('child_process').spawn;
-    var compile = spawn('javac', ['*'+'.java']);
+    var compile = spawn('javac', [directory+'/*.java']);
 
     compile.stderr.on('data', function (data) {
       socket.emit("operationFinish", String(data));
@@ -186,9 +192,9 @@ io.on("connection",function(socket) {
     });
   }
 
-  function compileCpp(mainClass){
+  function compileCpp(directory){
     var spawn = require('child_process').spawn;
-    var compile = spawn('g++', [mainClass+'.cpp']);
+    var compile = spawn('gcc', [directory+'/*.cpp']);
     
     compile.stdout.on('data', function (data) {
       socket.emit("operationFinish", "BUILD SUCCESSFUL");
@@ -199,9 +205,9 @@ io.on("connection",function(socket) {
     });
   }
 
-  function runJava(mainClass){
+  function runJava(mainClass, directory){
     var spawn = require('child_process').spawn;
-    var run = spawn('java', [mainClass]);
+    var run = spawn('java', ['-cp', directory, mainClass]);
     
     run.stdout.on('data', function (output) {
       socket.emit("operationFinish", String(output));
@@ -220,20 +226,28 @@ io.on("connection",function(socket) {
     
   }
 
-  function runPython(project,connection, mainClass){
+  function runPython(project, mainClass, connection){
     var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
       if (error) {
         throw error;
       } else {
+        
         var files = result; 
+        var fs = require('fs');
+    	var dirname = ""+project.projectID;
+
+	    if (!fs.existsSync(dirname)) {
+	      fs.mkdirSync(dirname);
+	    }
+
         for (var i = 0; i < files.length; i++) {
-          createProgramFile(files[i]);
+          createProgramFile(files[i], project.projectID);
         }
       }
     });
 
     var spawn = require('child_process').spawn;
-    var run = spawn('python', [mainClass+"."+"py"]);
+    var run = spawn('python', [project.projectID+'/'+mainClass+".py"]);
     
     run.stdout.on('data', function (output) {
       socket.emit("operationFinish", String(output));

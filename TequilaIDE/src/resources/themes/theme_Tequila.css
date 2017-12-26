@@ -108,7 +108,7 @@ VBox {
 }
 
 .paragraph-box:has-caret .text{
-  -fx-fill: black;
+  -fx-fill: white;
 }
 
 .paragraph-box .text{

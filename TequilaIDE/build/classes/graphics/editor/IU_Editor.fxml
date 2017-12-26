@@ -2,6 +2,7 @@
 
 <?import com.jfoenix.controls.JFXDrawer?>
 <?import com.jfoenix.controls.JFXHamburger?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -16,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="55.0" prefWidth="1366.0">
          <children>
@@ -69,21 +70,33 @@
                <image>
                   <Image url="@../../resources/icons/proyecto.png" />
                </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </ImageView>
             <ImageView fx:id="paneFileExplorer1" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="10.0" layoutY="13.0" onMouseClicked="#addTab" pickOnBounds="true" preserveRatio="true" translateX="35.0">
                <image>
                   <Image url="@../../resources/icons/icons8-add-file-40.png" />
                </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </ImageView>
             <ImageView fx:id="paneFileExplorer11" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="45.0" layoutY="13.0" onMouseClicked="#runCompiler" pickOnBounds="true" preserveRatio="true" translateX="40.0">
                <image>
                   <Image url="@../../resources/icons/icon_compile.png" />
                </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </ImageView>
             <ImageView fx:id="paneFileExplorer111" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="80.0" layoutY="13.0" onMouseClicked="#runProgram" pickOnBounds="true" preserveRatio="true" translateX="45.0">
                <image>
                   <Image url="@../../resources/icons/icons8-play-50%20(1).png" />
                </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
             </ImageView>
          </items>
       </ToolBar>

@@ -84,13 +84,13 @@ public class IU_EditorController implements Initializable {
   @FXML
   private ToolBar tbAddedCollaborator;
   @FXML
-  private ImageView paneFileExplorer;
+  private ImageView buttonFileExplorer;
   @FXML
-  private ImageView paneFileExplorer1;
+  private ImageView buttonNewFile;
   @FXML
-  private ImageView paneFileExplorer11;
+  private ImageView buttonCompile;
   @FXML
-  private ImageView paneFileExplorer111;
+  private ImageView buttonRun;
   @FXML
   private TabPane tabPaneArchivos;
   @FXML
@@ -158,6 +158,11 @@ public class IU_EditorController implements Initializable {
 
     menuButtonUser.setOnMouseEntered((e -> imageVUser.setImage(new Image("/resources/icons/user_yellow.png"))));
     menuButtonUser.setOnMouseExited((e -> imageVUser.setImage(new Image("/resources/icons/user_white.png"))));
+	
+	if (selectedProject.getLenguaje().equals("py")) {
+	  //buttonCompile.setDisable(true);
+	  //buttonCompile.setOpacity(0.50);
+	}
     listenServer();
   }
 
@@ -822,21 +827,18 @@ public class IU_EditorController implements Initializable {
   
   @FXML
   void runCompiler(MouseEvent event) {
-	String mainClass = Tools.displayChoiceDialog("Compilar", "Selecciona la clase principal", fileList);
-	if (!mainClass.equals("")) {
-	  JSONObject projectToSend = new JSONObject();
-	  projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
-	  projectToSend.accumulate("language", selectedProject.getLenguaje());
-	  projectToSend.accumulate("mainClass", mainClass);
+	JSONObject projectToSend = new JSONObject();
+	projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
+	projectToSend.accumulate("language", selectedProject.getLenguaje());
 
-	  socket.emit("runCompiler", projectToSend);
-	  openConsole();
-	}
+	socket.emit("runCompiler", projectToSend);
+	openConsole();
+
   }
   
   @FXML
   void runProgram(MouseEvent event) {
-	String mainClass = Tools.displayChoiceDialog("Compilar", "Selecciona la clase principal", fileList);
+	String mainClass = Tools.displayChoiceDialog("Ejecutar el programa", "Selecciona la clase principal", fileList);
 	
 	if (!mainClass.equals("")) {
 	  JSONObject projectToSend = new JSONObject();
