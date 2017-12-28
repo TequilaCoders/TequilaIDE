@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="55.0" prefWidth="1366.0">
          <children>
@@ -44,7 +44,7 @@
             </MenuBar>
             <ToolBar fx:id="tbCollaborators" prefHeight="55.0" prefWidth="842.0" stylesheets="@../../resources/themes/theme_Tequila.css" HBox.hgrow="ALWAYS">
                <items>
-                  <Label prefHeight="19.0" prefWidth="128.0" text="Colaboradores" />
+                  <Label prefHeight="19.0" prefWidth="128.0" text="%labelCollaborators" />
                   <MenuButton fx:id="menuButtonUser" disable="true" mnemonicParsing="false" prefHeight="23.0" prefWidth="36.0" style="-fx-background-color: transparent;" stylesheets="@../../resources/themes/theme_Tequila.css">
                      <items>
                         <MenuItem fx:id="menuItemCollaboratorInformation" mnemonicParsing="false" styleClass="..\..\resources\themes\theme_Tequila.css" />

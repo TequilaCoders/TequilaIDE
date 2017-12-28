@@ -45,16 +45,22 @@ public class IU_NewProjectController implements Initializable {
 
   /**
    * Initializes the controller class.
+   * @param url
+   * @param rb
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     estatusDeGuardado = false;
     loadComboBoxProgramingLanguages();
-	listenServer();
+    listenServer();
+  }
+
+  void setUserId(int idUsuario) {
+    this.userId = idUsuario;
   }
 
   public String getProjectName() {
-	return projectName;
+    return projectName;
   }
 
   public String getProjectType() {
@@ -123,27 +129,16 @@ public class IU_NewProjectController implements Initializable {
    * Activa la escucha de llamadas por parte del servidor
    */
   public void listenServer(){
-	socket.on("projectSaved", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        if ((boolean) os[0]) {
-          System.out.println("proyecto guardado exitosamente");
-          idProject = (int) os[1];
-          Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-              Stage stage = (Stage) paneNewProject.getScene().getWindow();
-              stage.close();
-            }
-          });
-        } else {
-          System.out.println((String) os[1]);
-        }
+	socket.on("projectSaved", (Object... os) -> {
+      if ((boolean) os[0]) {
+        idProject = (int) os[1];
+        Platform.runLater(() -> {
+          Stage stage = (Stage) paneNewProject.getScene().getWindow();
+          stage.close();
+        });
+      } else {
+        System.out.println((String) os[1]);
       }
     });
-  }
-
-  void setUserId(int idUsuario) {
-	this.userId = idUsuario;
   }
 }

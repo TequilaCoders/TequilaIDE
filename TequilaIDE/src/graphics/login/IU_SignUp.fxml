@@ -10,13 +10,38 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="470.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.login.IU_SignUpController">
+<Pane fx:id="paneSignUp" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="470.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="graphics.login.IU_SignUpController">
    <children>
       <Label layoutX="85.0" layoutY="68.0" text="%labelSignUp" textFill="WHITE">
          <font>
             <Font name="Proxima Nova ScOsf Th Regular" size="24.0" />
          </font>
       </Label>
+      <JFXTextField fx:id="tfName" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="134.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%promptName" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="tfAlias" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="205.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%promptAlias" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="tfEmail" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="276.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%promptEmail" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </JFXTextField>
+      <JFXPasswordField fx:id="pfPassword" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="347.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%promptPassword" style="-fx-text-fill: #FFFFFF; -fx-prompt-text-fill: #6494ed;" unFocusColor="#77d2ff">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </JFXPasswordField>
+      <JFXPasswordField fx:id="pfConfirmPassword" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="418.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%promptConfirmPassword" style="-fx-text-fill: #FFFFFF; -fx-prompt-text-fill: #6494ed;" unFocusColor="#77d2ff">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </JFXPasswordField>
       <JFXButton fx:id="buttonSignUp" disable="true" layoutX="85.0" layoutY="489.0" onAction="#registerUser" prefHeight="35.0" prefWidth="300.0" style="-fx-background-color: #228B22;" text="%buttonSignUp" textFill="WHITE">
          <font>
             <Font name="Proxima Nova Alt Rg Bold" size="14.0" />
@@ -27,31 +52,6 @@
             <Font name="Proxima Nova Alt Rg Bold" size="15.0" />
          </font>
       </Hyperlink>
-      <JFXTextField fx:id="tfAlias" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="205.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%tfAlias" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
-         <font>
-            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
-         </font>
-      </JFXTextField>
-      <JFXTextField fx:id="tfEmail" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="276.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%tfEmail" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
-         <font>
-            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
-         </font>
-      </JFXTextField>
-      <JFXPasswordField fx:id="pfPassword" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="347.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%tfPassword" style="-fx-text-fill: #FFFFFF; -fx-prompt-text-fill: #6494ed;" unFocusColor="#77d2ff">
-         <font>
-            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
-         </font>
-      </JFXPasswordField>
-      <JFXPasswordField fx:id="pfConfirmPassword" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="418.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%tfConfirmPassword" style="-fx-text-fill: #FFFFFF; -fx-prompt-text-fill: #6494ed;" unFocusColor="#77d2ff">
-         <font>
-            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
-         </font>
-      </JFXPasswordField>
-      <JFXTextField fx:id="tfName" focusColor="#17a589" labelFloat="true" layoutX="85.0" layoutY="134.0" onKeyReleased="#verifyFieldsListener" prefHeight="35.0" prefWidth="300.0" promptText="%tfName" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
-         <font>
-            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
-         </font>
-      </JFXTextField>
       <ImageView fx:id="imAliasRedCross" fitHeight="26.0" fitWidth="26.0" layoutX="391.0" layoutY="210.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
             <Image url="@../../resources/icons/orange_cross.png" />
@@ -62,7 +62,22 @@
             <Image url="@../../resources/icons/orange_cross.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="imPasswordRedCross" fitHeight="26.0" fitWidth="26.0" layoutX="391.0" layoutY="427.0" pickOnBounds="true" preserveRatio="true" visible="false">
+      <ImageView fx:id="imConfirmPasswordRedCross" fitHeight="26.0" fitWidth="26.0" layoutX="391.0" layoutY="427.0" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../../resources/icons/orange_cross.png" />
+         </image>
+      </ImageView>
+      <Label fx:id="lAliasMessage" layoutX="85.0" layoutY="250.0" prefHeight="20.0" prefWidth="300.0" textFill="ORANGE">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="imNameRedCross" fitHeight="26.0" fitWidth="26.0" layoutX="391.0" layoutY="156.0" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@../../resources/icons/orange_cross.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="imPasswordRedCross" fitHeight="26.0" fitWidth="26.0" layoutX="391.0" layoutY="352.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
             <Image url="@../../resources/icons/orange_cross.png" />
          </image>

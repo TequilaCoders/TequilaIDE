@@ -30,4 +30,21 @@ public class SocketProject {
 
     socket.emit("saveProject", projectToSend);
   }
+  
+  public void joinProjectRoom(int projectID, int userID){
+	JSONObject membershipToSend = new JSONObject();
+    
+    membershipToSend.accumulate("projectID", projectID);
+    membershipToSend.accumulate("userID", userID);
+
+    socket.emit("joinProjectRoom", membershipToSend);
+  }
+  
+  public void leaveProjectRoom(int projectID, int userID){
+    JSONObject membershipToSend = new JSONObject();
+    membershipToSend.accumulate("projectID", projectID);
+    membershipToSend.accumulate("userID", userID);
+    
+    socket.emit("leaveProjectRoom", membershipToSend);
+  }
 }

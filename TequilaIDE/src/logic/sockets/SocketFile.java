@@ -66,6 +66,13 @@ public class SocketFile {
     socket.emit("loadFiles", projectIDToSend);
   }
   
+  public void reloadFiles(int projectID) {
+    JSONObject projectIDToSend = new JSONObject();
+    
+    projectIDToSend.accumulate("projectID", projectID);
+    socket.emit("reloadFiles", projectIDToSend);
+  }
+  
   public void joinFilesRoom(int fileID) {
     JSONObject fileToJoin = new JSONObject();
     
@@ -73,10 +80,7 @@ public class SocketFile {
     socket.emit("joinFilesRoom", fileToJoin);
   }
   
-  public void leaveFilesRoom(int fileID) {
-    JSONObject fileToLeave = new JSONObject();
-    
-    fileToLeave.accumulate("fileID", fileID);
-    socket.emit("leaveFilesRoom", fileToLeave);
+  public void leaveFilesRoom() {
+    socket.emit("leaveFilesRoom");
   }
 }

@@ -7,6 +7,10 @@
   -fx-background-color: #0F1F38;
 }
 
+.text-area {
+    -fx-text-fill: white;
+}
+
 .tool-bar{
   -fx-background-color: #0F1F38;
 }
@@ -105,6 +109,7 @@ VBox {
 
 .paragraph-box:has-caret {
   -fx-background-color: #283747;
+  -fx-fill: white;
 }
 
 .paragraph-box:has-caret .text{

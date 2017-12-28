@@ -2,6 +2,7 @@ package graphics.explorer;
 
 import com.google.gson.Gson;
 import graphics.editor.IU_EditorController;
+import graphics.tools.Tools;
 import io.socket.emitter.Emitter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,13 +51,16 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
 
   /**
    * Initializes the controller class.
+   *
+   * @param url
+   * @param rb
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     this.rb = rb;
-	listenServer();
-	SocketProject socketProject = new SocketProject();
-	socketProject.loadProjects(user.getIdUsuario());
+    createIcons(projectList);
+    hoverListeners();
+    projectSelectedAction();
 
   }
 
@@ -95,7 +99,7 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
         @Override
         public void handle(MouseEvent e) {
           im1.setImage(new Image("/resources/icons/proyecto_clic.png"));
-          Project selectedProject = searchProjectByName(name.getText());
+          Project selectedProject = Tools.searchProjectByName(name.getText(), projectList);
           open_EditorWindow(selectedProject);
         }
       }));
@@ -131,27 +135,6 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
     }
     flowPaneMyProjects.getChildren().clear();
     flowPaneMyProjects.getChildren().addAll(projectPanes);
-
-    System.out.println("iconos creados");
-  }
-
-  /**
-   * Método que regresa el proyecto cuyo nombre coincida con el parametro de entrada
-   *
-   * @param name
-   * @return
-   */
-  public Project searchProjectByName(String name) {
-
-    Project proyectoAuxiliar;
-    Project selectedProject = null;
-    for (int i = 0; i < projectList.size(); i++) {
-      proyectoAuxiliar = projectList.get(i);
-      if (proyectoAuxiliar.getNombre().equals(name)) {
-        selectedProject = proyectoAuxiliar;
-      }
-    }
-    return selectedProject;
   }
 
   /**
@@ -163,39 +146,5 @@ public class IU_FlowPaneMyProjectsController implements Initializable {
     fileExplorerStage = (Stage) flowPaneMyProjects.getScene().getWindow();
     IU_EditorController controllerObject = new IU_EditorController();
     controllerObject.open_Editor(selectedProject, fileExplorerStage, rb, user);
-  }
-
-  public void listenServer(){
-	socket.on("projectsRecovered", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        projectRecovered((boolean) os[0], os[1]);
-      }
-    });
-  }
-  
-  public void projectRecovered(boolean projectRecovered, Object lista) {
-	if (projectRecovered) {
-	  System.out.println("recuperando archivos");
-	  JSONArray receivedList = (JSONArray) lista;
-	  String jsonString = receivedList.toString();
-
-	  Gson gson = new Gson();
-
-	  Project[] jsonProjectList = gson.fromJson(jsonString, Project[].class);
-	  projectList = Arrays.asList(jsonProjectList);
-	  Platform.runLater(new Runnable() {
-		@Override
-		public void run() {
-		  System.out.println("cargando iconos");
-		  createIcons(projectList);
-		  hoverListeners();
-		  projectSelectedAction();
-		}
-
-	  });
-	} else {
-	  System.out.println((String) lista);
-	}
   }
 }

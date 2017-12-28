@@ -8,9 +8,17 @@ import static tequilaide.TequilaIDE.socket;
  * @author Alan Yoset García C
  */
 public class SocketUser {
+  
+  public void accesUser(String alias, String password) {
+    JSONObject user = new JSONObject();
+    user.accumulate("alias", alias);
+    user.accumulate("clave", password);
+
+    socket.emit("access", user);
+  }
 
   public void createUser(String name, String alias, String email, String password) {
-	JSONObject userToSend = new JSONObject();
+    JSONObject userToSend = new JSONObject();
 	userToSend.accumulate("name", name);
 	userToSend.accumulate("alias", alias);
 	userToSend.accumulate("email", email);

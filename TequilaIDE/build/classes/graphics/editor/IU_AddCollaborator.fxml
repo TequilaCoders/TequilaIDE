@@ -7,24 +7,24 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="351.0" prefWidth="294.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="351.0" prefWidth="294.0" style="-fx-background-color: #1A405F;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <JFXTextField fx:id="tfSearch" focusColor="#17a589" labelFloat="true" layoutX="54.0" layoutY="75.0" onKeyPressed="#searchListener" prefHeight="25.0" prefWidth="186.0" promptText="Ingresa un alias" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
+      <JFXTextField fx:id="tfSearch" focusColor="#17a589" labelFloat="true" layoutX="54.0" layoutY="75.0" onKeyPressed="#searchListener" prefHeight="25.0" prefWidth="186.0" promptText="%promptAlias" style="-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF;" unFocusColor="#77d2ff">
          <font>
             <Font name="Proxima Nova Alt Rg Regular" size="15.0" />
          </font>
       </JFXTextField>
-      <Label layoutX="51.0" layoutY="34.0" text="Agregar Colaborador" textFill="WHITE">
+      <Label layoutX="51.0" layoutY="34.0" text="%labelAddCollaborator" textFill="WHITE">
          <font>
             <Font name="Proxima Nova ScOsf Th Regular" size="18.0" />
          </font>
       </Label>
-      <JFXButton fx:id="buttonAddCollaborator" disable="true" layoutX="19.0" layoutY="303.0" onAction="#addCollaborator" prefHeight="25.0" prefWidth="83.0" style="-fx-background-color: #228B22;" text="Agregar" textFill="WHITE">
+      <JFXButton fx:id="buttonAddCollaborator" disable="true" layoutX="19.0" layoutY="303.0" onAction="#addCollaborator" prefHeight="25.0" prefWidth="83.0" style="-fx-background-color: #228B22;" text="%buttonAdd" textFill="WHITE">
          <font>
             <Font name="Proxima Nova Alt Rg Regular" size="13.0" />
          </font>
       </JFXButton>
-      <JFXButton cancelButton="true" layoutX="193.0" layoutY="303.0" onAction="#closeWindow" prefHeight="25.0" prefWidth="83.0" style="-fx-background-color: #228B22;" text="Cancelar" textFill="WHITE">
+      <JFXButton cancelButton="true" layoutX="193.0" layoutY="303.0" onAction="#closeWindow" prefHeight="25.0" prefWidth="83.0" style="-fx-background-color: #228B22;" text="%buttonCancel" textFill="WHITE">
          <font>
             <Font name="Proxima Nova Alt Rg Regular" size="13.0" />
          </font>

@@ -26,7 +26,7 @@ public class TequilaIDE extends Application {
   @Override
   public void start(Stage stagePrincipal) throws Exception {
 	this.stagePrincipal = stagePrincipal;
-	openConnection();
+	//openConnection();
 	showMainWindows();
   }
 
@@ -46,18 +46,6 @@ public class TequilaIDE extends Application {
 
 	stagePrincipal.setScene(scene);
 	stagePrincipal.show();
-  }
-  
-  /**
-   * Abre la conexión entre el cliente y el servidor
-   */
-  public void openConnection(){
-    try {
-      socket = IO.socket("http://localhost:7000");
-	  socket.connect();
-    } catch (URISyntaxException ex) {
-      Logger.getLogger(TequilaIDE.class.getName()).log(Level.SEVERE, null, ex);
-    }
   }
 
   /**

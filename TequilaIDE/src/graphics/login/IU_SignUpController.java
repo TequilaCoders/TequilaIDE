@@ -4,11 +4,12 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
 import graphics.tools.Tools;
-import io.socket.emitter.Emitter;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -59,10 +60,16 @@ public class IU_SignUpController implements Initializable {
   private ImageView imEmailRedCross;
 
   @FXML
+  private ImageView imConfirmPasswordRedCross;
+
+  @FXML
   private ImageView imPasswordRedCross;
 
-  boolean emailStatus = false;
-  boolean aliasStatus = false;
+  @FXML
+  private ImageView imNameRedCross;
+
+  boolean emailDuplicated = false;
+  boolean aliasDuplicated = false;
 
   /**
    * Initializes the controller class.
@@ -73,14 +80,14 @@ public class IU_SignUpController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     this.rb = rb;
-	listenServer();
+    listenServer();
   }
 
   @FXML
   public void eventLogIn(ActionEvent event) throws InterruptedException {
     parentController.closeDrawer();
   }
-  
+
   public void eventLogIn() throws InterruptedException {
     parentController.closeDrawer();
   }
@@ -91,21 +98,21 @@ public class IU_SignUpController implements Initializable {
 
   @FXML
   public void registerUser(ActionEvent event) {
-	String name;
-	String alias;
-	String email;
-	String password;
-	String hashedPassword;
+    String name;
+    String alias;
+    String email;
+    String password;
+    String hashedPassword;
 
-	name = tfName.getText();
-	alias = tfAlias.getText().toLowerCase();
-	email = tfEmail.getText().toLowerCase();
-	password = pfPassword.getText();
+    name = tfName.getText();
+    alias = tfAlias.getText().toLowerCase();
+    email = tfEmail.getText().toLowerCase();
+    password = pfPassword.getText();
 
-	hashedPassword = Tools.getHashedPassword(password);
+    hashedPassword = Tools.getHashedPassword(password);
 
-	SocketUser socketUser = new SocketUser();
-	socketUser.createUser(name, alias, email, hashedPassword);
+    SocketUser socketUser = new SocketUser();
+    socketUser.createUser(name, alias, email, hashedPassword);
   }
 
   @FXML
@@ -121,13 +128,20 @@ public class IU_SignUpController implements Initializable {
     email = tfEmail.getText().toLowerCase();
     password = pfPassword.getText();
     confirmedPassword = pfConfirmPassword.getText();
-
+    
     boolean emptyStatus = areThereEmptyFields(name, alias, email, password, confirmedPassword);
-    isAliasDuplicate();
-    isEmailDuplicate();
+
+    boolean nameIsReady = checkName(name, rb);
+
+    boolean emailIsReady = checkEmail(email, rb);
+
+    boolean aliasIsReady = checkAlias(alias, rb);
+
+    boolean passwordIsReady = checkPassword(password, rb);
 
     boolean passwordStatus = isPasswordConfirmationCorrect(password, confirmedPassword);
-    if (!emptyStatus && !aliasStatus && !emailStatus && passwordStatus) {
+    
+    if (!emptyStatus && aliasIsReady && emailIsReady && passwordStatus && nameIsReady && passwordIsReady) {
       buttonSignUp.setDisable(false);
     } else {
       buttonSignUp.setDisable(true);
@@ -143,19 +157,110 @@ public class IU_SignUpController implements Initializable {
     return isEmpty;
   }
 
+  public boolean checkName(String name, ResourceBundle rb) {
+    boolean nameIsReady = false;
+    boolean hasNameSpecialCharacters = Tools.applyRegularExpression(name, "^[\\p{L} .'-]+$");
+    if (!hasNameSpecialCharacters) {
+      String intStringNameWithSimbols = rb.getString("intStringNameWithSimbols");
+      showTextFieldMessage(intStringNameWithSimbols, tfName, imNameRedCross);
+    }
+
+    boolean isLenghtOk = Tools.checkLenght(name, 5, 30);
+    if (!isLenghtOk) {
+      String intStringNameLenghtWrong = rb.getString("intStringNameLenghtWrong");
+      showTextFieldMessage(intStringNameLenghtWrong, tfName, imNameRedCross);
+    }
+
+    if (hasNameSpecialCharacters && isLenghtOk) {
+      String intStringPromtName = rb.getString("promptName");
+      resetTextFieldMessage(intStringPromtName, tfName, imNameRedCross);
+      nameIsReady = true;
+    }
+    return nameIsReady;
+  }
+
+  public boolean checkAlias(String alias, ResourceBundle rb) {
+    boolean aliasIsReady = false;
+    boolean hasAliasSpecialCharacters = Tools.applyRegularExpression(alias, "[^A-Za-z0-9]");
+    if (hasAliasSpecialCharacters) {
+      String intStringAliasWithSimbols = rb.getString("intStringAliasWithSimbols");
+      showTextFieldMessage(intStringAliasWithSimbols, tfAlias, imAliasRedCross);
+    }
+
+    boolean isLenghtOk = Tools.checkLenght(alias, 2, 15);
+    if (!isLenghtOk) {
+      String intStringAliasLenghtWrong = rb.getString("intStringAliasLenghtWrong");
+      showTextFieldMessage(intStringAliasLenghtWrong, tfAlias, imAliasRedCross);
+    }
+
+    isAliasDuplicate();
+
+    if (!aliasDuplicated && !hasAliasSpecialCharacters && isLenghtOk) {
+      String intStringPromtAlias = rb.getString("promptAlias");
+      resetTextFieldMessage(intStringPromtAlias, tfAlias, imAliasRedCross);
+      aliasIsReady = true;
+    }
+    return aliasIsReady;
+  }
+
+  public boolean checkEmail(String email, ResourceBundle rb) {
+    boolean emailIsReady = false;
+
+    boolean formatIsOk = validateEmailFormat(email);
+    if (!formatIsOk) {
+      String intStringWrongEmailFormat = rb.getString("intStringWrongEmailFormat");
+      showTextFieldMessage(intStringWrongEmailFormat, tfEmail, imEmailRedCross);
+    }
+
+    boolean isLenghtOk = Tools.checkLenght(email, 7, 30);
+    if (!isLenghtOk) {
+      String intStringEmailLenghtWrong = rb.getString("intStringEmailLenghtWrong");
+      showTextFieldMessage(intStringEmailLenghtWrong, tfEmail, imEmailRedCross);
+    }
+
+    isEmailDuplicate();
+
+    if (!emailDuplicated && formatIsOk && isLenghtOk) {
+      String intStringPromtEmail = rb.getString("promptEmail");
+      resetTextFieldMessage(intStringPromtEmail, tfEmail, imEmailRedCross);
+      emailIsReady = true;
+    }
+    return emailIsReady;
+  }
+
+  public boolean checkPassword(String password, ResourceBundle rb) {
+    boolean passwordIsReady = false;
+
+    boolean hasNumber = Tools.applyRegularExpression(password, "(?=.*[0-9])");
+    if (!hasNumber) {
+      String intStringPasswordWithoutNumber = rb.getString("intStringPasswordWithoutNumber");
+      showPasswordMessage(intStringPasswordWithoutNumber);
+    }
+
+    boolean isLenghtOk = Tools.checkLenght(password, 8, 40);
+    if (!isLenghtOk) {
+      String intStringPasswordLenghtWrong = rb.getString("intStringPasswordLenghtWrong");
+      showPasswordMessage(intStringPasswordLenghtWrong);
+    }
+
+    if (isLenghtOk && hasNumber) {
+      resetPasswordMessage();
+      passwordIsReady = true;
+    }
+    return passwordIsReady;
+  }
+
   public void isAliasDuplicate() {
-    tfAlias.setOnKeyTyped((KeyEvent event) -> {
-	  String alias = tfAlias.getText().toLowerCase() + event.getCharacter().toLowerCase();
+    tfAlias.textProperty().addListener((observable, oldValue, newValue) -> {
       SocketUser socketUser = new SocketUser();
-	  socketUser.checkAlias(alias);
+      socketUser.checkAlias(newValue);
     });
   }
 
   public void isEmailDuplicate() {
-    tfEmail.setOnKeyTyped((KeyEvent event) -> {
-	  String email = tfEmail.getText().toLowerCase() + event.getCharacter().toLowerCase();
-	  SocketUser socketUser = new SocketUser();
-	  socketUser.checkEmail(email);
+    tfEmail.textProperty().addListener((observable, oldValue, newValue) -> {
+      SocketUser socketUser = new SocketUser();
+      socketUser.checkEmail(newValue);
     });
   }
 
@@ -165,98 +270,114 @@ public class IU_SignUpController implements Initializable {
       status = true;
       pfConfirmPassword.setFocusColor(Paint.valueOf("#77d2ff"));
       pfConfirmPassword.setUnFocusColor(Paint.valueOf("#77d2ff"));
-      pfConfirmPassword.setPromptText("Confirmar Contraseña");
+      
+      String intStringResetPassword = rb.getString("promptConfirmPassword");
+      
+      pfConfirmPassword.setPromptText(intStringResetPassword);
       pfConfirmPassword.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
-      imPasswordRedCross.setVisible(false);
+      imConfirmPasswordRedCross.setVisible(false);
     } else {
       pfConfirmPassword.setFocusColor(Paint.valueOf("orange"));
       pfConfirmPassword.setUnFocusColor(Paint.valueOf("orange"));
-      pfConfirmPassword.setPromptText("Confirm Password (las claves no coinciden)");
+      
+      String intStringWrongPasswordConfirmation = rb.getString("intStringWrongPasswordConfirmation");
+      
+      pfConfirmPassword.setPromptText(intStringWrongPasswordConfirmation);
       pfConfirmPassword.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
-      imPasswordRedCross.setVisible(true);
+      imConfirmPasswordRedCross.setVisible(true);
     }
     return status;
   }
-  
-  public void listenServer() {
-	socket.on("registrationSuccesful", new Emitter.Listener() {
-	  @Override
-	  public void call(Object... os) {
-		Platform.runLater(() -> {
-		  registrationSuccesful((boolean) os[0]);
-		}
-		);
-	  }
-	});
 
-	socket.on("aliasDuplicated", new Emitter.Listener() {
-	  @Override
-	  public void call(Object... os) {
-		Platform.runLater(() -> {
-		  aliasDuplicated((boolean) os[0]);
-		}
-		);
-	  }
-	});
-	
-	socket.on("emailDuplicated", new Emitter.Listener() {
-	  @Override
-	  public void call(Object... os) {
-		Platform.runLater(() -> {
-		  emailDuplicated((boolean) os[0]);
-		}
-		);
-	  }
-	});
+  public boolean validateEmailFormat(String emailField) {
+    Pattern pattern = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+    Matcher matcher = pattern.matcher(emailField);
+    return matcher.find();
   }
-  
-  public void aliasDuplicated(boolean duplicated) {
-	if (duplicated) {
-	  aliasStatus = true;
-	  tfAlias.setFocusColor(Paint.valueOf("orange"));
-	  tfAlias.setUnFocusColor(Paint.valueOf("orange"));
-	  tfAlias.setPromptText("Alias (ya existe el Alias)");
-	  tfAlias.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
-	  imAliasRedCross.setVisible(true);
-	} else {
-	  aliasStatus = false;
-	  tfAlias.setFocusColor(Paint.valueOf("#77d2ff"));
-	  tfAlias.setUnFocusColor(Paint.valueOf("#17a589"));
-	  tfAlias.setPromptText("Alias");
-	  tfAlias.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
-	  imAliasRedCross.setVisible(false);
-	}
+
+  public void listenServer() {
+    socket.on("registrationSuccesful", (Object... os) -> {
+      Platform.runLater(() -> {
+        registrationSuccesful((boolean) os[0]);
+      }
+      );
+    }).on("aliasDuplicated", (Object... os) -> {
+      Platform.runLater(() -> {
+        if ((boolean) os[0]) {
+          aliasDuplicated = true;
+          String intStringAliasDuplicated = rb.getString("intStringAliasDuplicated");
+          
+          showTextFieldMessage(intStringAliasDuplicated, tfAlias, imAliasRedCross);
+        } else {
+          aliasDuplicated = false;
+        }
+      }
+      );
+    }).on("emailDuplicated", (Object... os) -> {
+      Platform.runLater(() -> {
+        if ((boolean) os[0]) {
+          emailDuplicated = true;
+          String intStringEmailDuplicated = rb.getString("intStringEmailDuplicated");
+          
+          showTextFieldMessage(intStringEmailDuplicated, tfEmail, imEmailRedCross);
+        } else {
+          emailDuplicated = false;
+        }
+      }
+      );
+    });
   }
-  
-  public void emailDuplicated(boolean duplicated) {
-	if (duplicated) {
-	  emailStatus = true;
-	  tfEmail.setFocusColor(Paint.valueOf("orange"));
-	  tfEmail.setUnFocusColor(Paint.valueOf("orange"));
-	  tfEmail.setPromptText("Email (ya existe el Email)");
-	  tfEmail.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
-	  imEmailRedCross.setVisible(true);
-	} else {
-	  emailStatus = false;
-	  tfEmail.setFocusColor(Paint.valueOf("#77d2ff"));
-	  tfEmail.setUnFocusColor(Paint.valueOf("#17a589"));
-	  tfEmail.setPromptText("Email");
-	  tfEmail.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
-	  imEmailRedCross.setVisible(false);
-	}
+
+  public void showTextFieldMessage(String message, JFXTextField textField, ImageView ivRedCross) {
+    textField.setFocusColor(Paint.valueOf("orange"));
+    textField.setUnFocusColor(Paint.valueOf("orange"));
+    textField.setPromptText(message);
+    textField.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
+    ivRedCross.setVisible(true);
+  }
+
+  public void resetTextFieldMessage(String message, JFXTextField textField, ImageView ivRedCross) {
+    textField.setFocusColor(Paint.valueOf("#77d2ff"));
+    textField.setUnFocusColor(Paint.valueOf("#17a589"));
+    textField.setPromptText(message);
+    textField.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
+    ivRedCross.setVisible(false);
+
+  }
+
+  public void showPasswordMessage(String message) {
+    pfPassword.setFocusColor(Paint.valueOf("orange"));
+    pfPassword.setUnFocusColor(Paint.valueOf("orange"));
+    pfPassword.setPromptText(message);
+    pfPassword.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
+    imPasswordRedCross.setVisible(true);
+  }
+
+  public void resetPasswordMessage() {
+    pfPassword.setFocusColor(Paint.valueOf("#77d2ff"));
+    pfPassword.setUnFocusColor(Paint.valueOf("#17a589"));
+    
+    String intStringPromptPassword = rb.getString("promptPassword");
+    
+    pfPassword.setPromptText(intStringPromptPassword);
+    pfPassword.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
+    imPasswordRedCross.setVisible(false);
+
   }
 
   public void registrationSuccesful(boolean registration) {
-	if (registration) {
-	  Tools.displayConfirmationAlert(null, "Usuario registrado exitosamente");
-	  try {
-		eventLogIn();
-	  } catch (InterruptedException ex) {
-		Logger.getLogger(IU_SignUpController.class.getName()).log(Level.SEVERE, null, ex);
-	  }
-	} else {
-	  //CAMBIAR
-	  System.out.println("Eror al registrar");
-	}
+    if (registration) {
+      String intStringRegistrationSuccesful = rb.getString("intStringRegistrationSuccesful");
+      Tools.displayConfirmationAlert(intStringRegistrationSuccesful, rb);
+      try {
+        eventLogIn();
+      } catch (InterruptedException ex) {
+        Logger.getLogger(IU_SignUpController.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    } else {
+      //CAMBIAR
+      System.out.println("Error al registrar");
+    }
   }
 }

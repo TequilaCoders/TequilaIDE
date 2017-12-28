@@ -8,26 +8,26 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="anchorPaneNuevoProyecto" prefHeight="192.0" prefWidth="366.0" style="-fx-background-color: #1995AD;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" fx:id="anchorPaneNuevoProyecto" prefHeight="192.0" prefWidth="366.0" style="-fx-background-color: #1995AD;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Pane fx:id="paneNewProject" prefHeight="210.0" prefWidth="388.0">
          <children>
-            <Label layoutX="118.0" layoutY="8.0" text="Nuevo Proyecto">
+            <Label layoutX="118.0" layoutY="8.0" text="%labelNewProject">
                <font>
                   <Font name="Proxima Nova ScOsf Th Regular" size="19.0" />
                </font>
             </Label>
-            <JFXButton fx:id="buttonCreate" layoutX="41.0" layoutY="166.0" onAction="#createProject" prefHeight="28.0" prefWidth="100.0" style="-fx-background-color: #1A405F;" text="Crear" textFill="WHITE">
+            <JFXButton fx:id="buttonCreate" layoutX="41.0" layoutY="166.0" onAction="#createProject" prefHeight="28.0" prefWidth="100.0" style="-fx-background-color: #1A405F;" text="%buttonCreate" textFill="WHITE">
                <font>
                   <Font name="Proxima Nova Alt Rg Bold" size="15.0" />
                </font></JFXButton>
-            <JFXTextField fx:id="tfName" focusColor="BLACK" labelFloat="true" layoutX="41.0" layoutY="54.0" prefHeight="28.0" prefWidth="302.0" promptText="Nombre proyecto" unFocusColor="#0f1f38">
+            <JFXTextField fx:id="tfName" focusColor="BLACK" labelFloat="true" layoutX="41.0" layoutY="54.0" prefHeight="28.0" prefWidth="302.0" promptText="%promptName" unFocusColor="#0f1f38">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
                </font>
             </JFXTextField>
-            <JFXComboBox fx:id="cbLanguages" focusColor="BLACK" labelFloat="true" layoutX="41.0" layoutY="105.0" prefHeight="28.0" prefWidth="302.0" promptText="Lenguaje programación" unFocusColor="#0f1f38" />
-            <JFXButton fx:id="buttonCancel" layoutX="243.0" layoutY="166.0" onAction="#closeWindow" prefHeight="28.0" prefWidth="100.0" style="-fx-background-color: #1A405F;" text="Cancelar" textFill="WHITE">
+            <JFXComboBox fx:id="cbLanguages" focusColor="BLACK" labelFloat="true" layoutX="41.0" layoutY="105.0" prefHeight="28.0" prefWidth="302.0" promptText="%promptProgrammingLanguage" unFocusColor="#0f1f38" />
+            <JFXButton fx:id="buttonCancel" layoutX="243.0" layoutY="166.0" onAction="#closeWindow" prefHeight="28.0" prefWidth="100.0" style="-fx-background-color: #1A405F;" text="%buttonCancel" textFill="WHITE">
                <font>
                   <Font name="Proxima Nova Alt Rg Bold" size="15.0" />
                </font></JFXButton>

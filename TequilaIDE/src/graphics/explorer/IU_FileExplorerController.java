@@ -1,15 +1,20 @@
 package graphics.explorer;
 
+import com.google.gson.Gson;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXNodesList;
+import com.jfoenix.controls.JFXTextField;
 import graphics.editor.IU_EditorController;
+import graphics.login.IU_LogInController;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,6 +33,9 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import logic.domain.Project;
 import logic.domain.User;
+import logic.sockets.SocketProject;
+import org.json.JSONArray;
+import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class
@@ -49,7 +57,7 @@ public class IU_FileExplorerController implements Initializable {
   ImageView imageVUserImage;
 
   @FXML
-  private JFXButton buttonHelp;
+  private JFXButton buttonLogOut;
 
   @FXML
   private JFXButton buttonSetUp;
@@ -67,14 +75,17 @@ public class IU_FileExplorerController implements Initializable {
   private JFXButton buttonAllProjects;
 
   @FXML
-  private FlowPane flowPaneProyectos;
+  private FlowPane flowPaneProjects;
 
   @FXML
   private Pane paneNewProject;
 
   @FXML
   private ImageView imageVNewProject;
-  
+
+  @FXML
+  private JFXTextField tfSearchProject;
+
   AnchorPane anchorPaneNewProject;
 
   boolean estatusDeGuardado;
@@ -87,7 +98,8 @@ public class IU_FileExplorerController implements Initializable {
   
   User user;
   
-  List<Project> projectList = new ArrayList<>();
+  List<Project> myProjectsList = new ArrayList<>();
+  List<Project> sharedProjectsList = new ArrayList<>();
   
 
   /**
@@ -99,33 +111,52 @@ public class IU_FileExplorerController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     this.rb = rb;
-    create_FlowPaneMyProjects();
+    SocketProject socketProject = new SocketProject();
     
-    listeners();
-    loadProfileMenu_Buttons();
+    socketProject.loadProjects(user.getIdUsuario());
+    socketProject.loadSharedProjects(user.getIdUsuario());
+    
+    listenServer();
+    searchProject();
 
-  }
-  
-  public void setProjectList(List<Project> projectList) {
-    this.projectList = projectList;
+    Platform.runLater(() -> {
+      createFlowPaneMyProjects(myProjectsList);
+
+      listeners();
+      loadProfileMenuButtons();
+      setProfileButton();
+    });
+
   }
 
   public void setUser(User user) {
     this.user = user;
   }
-  
+
+  public void setProfileButton() {
+    buttonProfile.setText(user.getAlias());
+  }
+
+  @FXML
+  void logOut(ActionEvent event) {
+    Stage mainStage = (Stage) anchorPaneMain.getScene().getWindow();;
+    IU_LogInController logIn = new IU_LogInController();
+    logIn.openLogIn(mainStage, rb);
+  }
+
   /**
    * Cuando le dan clic a crear nuevo proyecto, o sea, no tiene sentido el nombre de este método :L
-   * @param event 
+   *
+   * @param event
    */
   @FXML
   void projectSelected(MouseEvent event) {
     imageVNewProject.setImage(new Image("/resources/icons/nuevo_proyectoClic.png"));
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("IU_NewProject.fxml"));
-    Stage iuCreate_NewProject;
-    iuCreate_NewProject = window_NewProject_DataInput(loader);
-    iuCreate_NewProject.show();
-    listener_WindowNewProject_Closed(loader, iuCreate_NewProject);
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("IU_NewProject.fxml"), rb);
+    Stage iuCreateNewProject;
+    iuCreateNewProject = windowNewProjectDataInput(loader);
+    iuCreateNewProject.show();
+    listenerWindowNewProjectClosed(loader, iuCreateNewProject);
   }
 
   /**
@@ -134,12 +165,12 @@ public class IU_FileExplorerController implements Initializable {
    */
   @FXML
   void myProjectsSelected(ActionEvent event) {
-    load_FlowPaneMyProjects();
+    loadFlowPaneMyProjects();
   }
 
   @FXML
   void sharedProjectsSelected(ActionEvent event) {
-    create_FlowPaneSharedProjects();
+    createFlowPaneSharedProjects(sharedProjectsList);
   }
 
   /**
@@ -203,11 +234,11 @@ public class IU_FileExplorerController implements Initializable {
    * @param event 
    */
   @FXML
-  void buttonHelpMouseEntered(MouseEvent event) {
-    buttonHelp.setStyle("-fx-background-color:white;");
-    buttonHelp.setPrefHeight(36);
-    buttonHelp.setMaxHeight(36);
-    buttonHelp.setMinHeight(36);
+  void buttonLogOutMouseEntered(MouseEvent event) {
+    buttonLogOut.setStyle("-fx-background-color:white;");
+    buttonLogOut.setPrefHeight(36);
+    buttonLogOut.setMaxHeight(36);
+    buttonLogOut.setMinHeight(36);
   }
 
   /**
@@ -215,11 +246,11 @@ public class IU_FileExplorerController implements Initializable {
    * @param event 
    */
   @FXML
-  void buttonHelpMouseExited(MouseEvent event) {
-    buttonHelp.setStyle("-fx-background-color:#A1D6E2;");
-    buttonHelp.setPrefHeight(32);
-    buttonHelp.setMaxHeight(32);
-    buttonHelp.setMinHeight(32);
+  void buttonLogOutMouseExited(MouseEvent event) {
+    buttonLogOut.setStyle("-fx-background-color:#A1D6E2;");
+    buttonLogOut.setPrefHeight(32);
+    buttonLogOut.setMaxHeight(32);
+    buttonLogOut.setMinHeight(32);
   }
 
   /**
@@ -270,15 +301,46 @@ public class IU_FileExplorerController implements Initializable {
     buttonSetUp.setMinHeight(32);
   }
 
+
+    public void searchProject() {
+      
+      tfSearchProject.textProperty().addListener((observable, oldValue, newValue) -> {
+        boolean flag = false;
+        for (int i = 0; i < myProjectsList.size(); i++) {
+          if (myProjectsList.get(i).getNombre().toLowerCase().equals(newValue.toLowerCase())) {
+            List<Project> aux = new ArrayList<>();
+            aux.add(myProjectsList.get(i));
+            createFlowPaneMyProjects(aux);
+            flag = true;
+          } else {
+            createFlowPaneMyProjects(myProjectsList);
+            flag = false;
+          }
+        }
+        
+        if (!flag) {
+          for (int i = 0; i < sharedProjectsList.size(); i++) {
+          if (sharedProjectsList.get(i).getNombre().toLowerCase().equals(newValue.toLowerCase())) {
+            List<Project> aux = new ArrayList<>();
+            aux.add(sharedProjectsList.get(i));
+            createFlowPaneSharedProjects(aux);
+          } else {
+            createFlowPaneMyProjects(myProjectsList);
+          }
+        }
+        }
+    });
+    }
+
   /**
-   * Método que agrega los elementos buttonProfile,buttonProfileOptions,buttonSetUp y buttonHelp
-   * a un NodeList.
+   * Método que agrega los elementos buttonProfile,buttonProfileOptions,buttonSetUp y buttonHelp a
+   * un NodeList.
    */
-  private void loadProfileMenu_Buttons() {
+  private void loadProfileMenuButtons() {
     nodeListProfile.addAnimatedNode(buttonProfile);
     nodeListProfile.addAnimatedNode(buttonProfileOptions);
     nodeListProfile.addAnimatedNode(buttonSetUp);
-    nodeListProfile.addAnimatedNode(buttonHelp);
+    nodeListProfile.addAnimatedNode(buttonLogOut);
     nodeListProfile.setSpacing(15);
   }
 
@@ -290,7 +352,7 @@ public class IU_FileExplorerController implements Initializable {
     buttonProfile.setOnMouseExited((e -> imageVUserImage.setImage(new Image("/resources/icons/Male_User_Filled.png"))));
     paneNewProject.setOnMouseEntered((e -> imageVNewProject.setImage(new Image("/resources/icons/nuevo_proyectoSeleccionado.png"))));
     paneNewProject.setOnMouseExited((e -> imageVNewProject.setImage(new Image("/resources/icons/nuevo_proyecto.png"))));
-    buttonProjects.setOnAction((e-> create_FlowPaneMyProjects()));
+    buttonProjects.setOnAction((e-> createFlowPaneMyProjects(myProjectsList)));
   }
 
   /**
@@ -298,7 +360,7 @@ public class IU_FileExplorerController implements Initializable {
    * @param crearProyecto
    * @return 
    */
-  public Stage window_NewProject_DataInput(FXMLLoader crearProyecto) {
+  public Stage windowNewProjectDataInput(FXMLLoader crearProyecto) {
 	IU_NewProjectController controller = new IU_NewProjectController();
 	crearProyecto.setController(controller);
     try {
@@ -321,10 +383,10 @@ public class IU_FileExplorerController implements Initializable {
    * Metodo que esta a la escucha del evento de cierre de la ventana IU_NewProject, cuando se active
    * se recuperara el estatusGuardado para saber si un proyecto fue creado o no en dicha ventana.
    * @param loader
-   * @param iuCreate_NewProject 
+   * @param iuCreateNewProject
    */
-  public void listener_WindowNewProject_Closed(FXMLLoader loader, Stage iuCreate_NewProject){
-    iuCreate_NewProject.setOnHiding(new EventHandler<WindowEvent>() {
+  public void listenerWindowNewProjectClosed(FXMLLoader loader, Stage iuCreateNewProject){
+    iuCreateNewProject.setOnHiding(new EventHandler<WindowEvent>() {
       int idProject;
       @Override
       public void handle(WindowEvent we) {
@@ -348,58 +410,62 @@ public class IU_FileExplorerController implements Initializable {
   
   /**
    * Reemplaza el FXMLoader del FlowPane actual por IU_FlowPaneMyProjects.fxml
+   * @param myProjectsList
    * @return 
    */
-  public FlowPane create_FlowPaneMyProjects(){
+  public FlowPane createFlowPaneMyProjects(List<Project> myProjectsList){
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/explorer/IU_FlowPaneMyProjects.fxml"), rb);
       
       IU_FlowPaneMyProjectsController controller = new IU_FlowPaneMyProjectsController();
       controller.setUser(user);
+      controller.setProjectList(myProjectsList);
       loader.setController(controller);
 
       FlowPane newFlowPane = loader.load();
       fpProjects = newFlowPane;
-      flowPaneProyectos.getChildren().setAll(fpProjects);
+      flowPaneProjects.getChildren().setAll(fpProjects);
      
     } catch (IOException ex) {
       Logger.getLogger(IU_FileExplorerController.class.getName()).log(Level.SEVERE, null, ex);
     }
     
-    flowPaneProyectos.setVisible(true);
+    flowPaneProjects.setVisible(true);
     paneNewProject.setVisible(true);
     
-    return flowPaneProyectos;
+    return flowPaneProjects;
   }
   
-  public FlowPane create_FlowPaneSharedProjects(){
+  
+  public FlowPane createFlowPaneSharedProjects(List<Project> sharedProjectsList){
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/explorer/IU_FlowPaneSharedProjects.fxml"), rb);
       
       IU_FlowPaneSharedProjectsController controller = new IU_FlowPaneSharedProjectsController();
       controller.setUser(user);
+      controller.setProjectList(sharedProjectsList);
       loader.setController(controller);
 
       FlowPane newFlowPane = loader.load();
       fpProjects = newFlowPane;
-      flowPaneProyectos.getChildren().setAll(fpProjects);
+      flowPaneProjects.getChildren().setAll(fpProjects);
      
     } catch (IOException ex) {
       Logger.getLogger(IU_FileExplorerController.class.getName()).log(Level.SEVERE, null, ex);
     }
     
-    flowPaneProyectos.setVisible(true);
+    flowPaneProjects.setVisible(true);
     
-    return flowPaneProyectos;
+    return flowPaneProjects;
   }
   
-  public void load_FlowPaneMyProjects(){
+  public void loadFlowPaneMyProjects(){
     
-    flowPaneProyectos.getChildren().setAll(fpProjects);
+    flowPaneProjects.getChildren().setAll(fpProjects);
     
-    flowPaneProyectos.getChildren().add(0, paneNewProject);
+    flowPaneProjects.getChildren().add(0, paneNewProject);
     
-    flowPaneProyectos.setVisible(true);
+    flowPaneProjects.setVisible(true);
     paneNewProject.setVisible(true);
   }
   
@@ -407,23 +473,76 @@ public class IU_FileExplorerController implements Initializable {
    * Metodo que abre la ventana IU_FileExplorer.fxml
    * @param fileExplorerStage
    * @param rb 
+   * @param user 
    */
-  public void open_FileExplorer(Stage fileExplorerStage, ResourceBundle rb, User user){
+  public void openFileExplorer(Stage fileExplorerStage, ResourceBundle rb, User user){
 	try {
 	  FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/graphics/explorer/IU_FileExplorer.fxml"), rb);
 	  IU_FileExplorerController controller = new IU_FileExplorerController();
 	  controller.setUser(user);
 	  fxmlLoader.setController(controller);
 	  Parent root1 = (Parent) fxmlLoader.load();
+      Scene scene = new Scene(root1);
 	  
 	  fileExplorerStage.setMaximized(false);
-	  fileExplorerStage.setScene(new Scene(root1));
+      
+	  fileExplorerStage.setScene(scene);
 	  
-	  System.out.println("cargando explorador");
 	  fileExplorerStage.show();
-	  fileExplorerStage.setMaximized(true);
+      fileExplorerStage.setMaximized(true);
 	} catch (IOException ex) {
 	  Logger.getLogger(IU_FileExplorerController.class.getName()).log(Level.SEVERE, null, ex);
 	}
   }
+  
+  public void listenServer(){
+	socket.on("projectsRecovered", (Object... os) -> {
+      projectsRecovered((boolean) os[0], os[1]);
+    }).on("sharedProjectsRecovered", (Object... os) -> {
+      sharedProjectsRecovered((boolean) os[0], os[1]);
+    });
+  }
+  
+  public void projectsRecovered(boolean projectRecovered, Object lista) {
+	if (projectRecovered) {
+	  JSONArray receivedList = (JSONArray) lista;
+	  String jsonString = receivedList.toString();
+
+	  Gson gson = new Gson();
+
+	  Project[] jsonProjectList = gson.fromJson(jsonString, Project[].class);
+	  myProjectsList = Arrays.asList(jsonProjectList);
+	} else {
+	  System.out.println((String) lista);
+	}
+  }
+  
+  public void sharedProjectsRecovered(boolean projectRecovered, Object receivedObject) {
+	if (projectRecovered) {
+	  JSONArray receivedList = (JSONArray) receivedObject;
+      String jsonString = receivedList.toString();
+      
+      Gson gson = new Gson();
+      
+      Project[] jsonProjectList = gson.fromJson(jsonString, Project[].class);
+      sharedProjectsList = Arrays.asList(jsonProjectList);
+      sharedProjectsList = markProjectsAsShared(sharedProjectsList);
+	} else {
+	  System.out.println((String) receivedObject);
+	}
+  }
+  
+  /**
+   * Marca el atributo "shared" de cada elemento de la lista como true 
+   * @param projectList
+   * @return 
+   */
+  public List<Project> markProjectsAsShared(List<Project> projectList){
+    for (int i = 0; i < projectList.size(); i++) {
+      Project aux = projectList.get(i);
+      aux.setShared(true);
+    }
+    return projectList;
+  }
+  
 }

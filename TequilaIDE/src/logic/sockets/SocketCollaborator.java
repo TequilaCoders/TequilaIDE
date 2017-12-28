@@ -25,4 +25,20 @@ public class SocketCollaborator {
 
     socket.emit("deleteCollaborator", collaborationToSend);
   }
+  
+  public void searchCollaborator(String searchCriteria) {
+    JSONObject searchCriteriaToSend = new JSONObject();
+    
+    searchCriteriaToSend.accumulate("searchCriteria", searchCriteria);
+
+    socket.emit("searchUser", searchCriteriaToSend);
+  }
+  
+  public void addCollaborator(int collaboratorID, int projectID) {
+    JSONObject collaborationToSend = new JSONObject();
+    collaborationToSend.accumulate("collaboratorID", collaboratorID);
+    collaborationToSend.accumulate("projectID", projectID);
+
+    socket.emit("saveCollaborator", collaborationToSend);
+  }
 }

@@ -5,20 +5,20 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import graphics.tools.Tools;
-import io.socket.emitter.Emitter;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import logic.domain.Collaborator;
 import logic.domain.User;
+import logic.sockets.SocketCollaborator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import static tequilaide.TequilaIDE.socket;
@@ -48,15 +48,29 @@ public class IU_AddCollaboratorController implements Initializable {
   User collaboratorToSave;
 
   int projectID;
-  
+
   private boolean savedStatus;
+
+  List<Collaborator> collaboratorsList = new ArrayList<>();
+  
+  private User user;
+  
+  private ResourceBundle rb;
+
   /**
    * Initializes the controller class.
+   * @param url
+   * @param rb
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+    this.rb = rb;
     savedStatus = false;
-  }  
+  }
+
+  public void setCollaboratorsList(List<Collaborator> collaboratorsList) {
+    this.collaboratorsList = collaboratorsList;
+  }
 
   public void setProjectID(int projectID) {
     this.projectID = projectID;
@@ -69,7 +83,11 @@ public class IU_AddCollaboratorController implements Initializable {
   public User getCollaboratorToSave() {
     return collaboratorToSave;
   }
- 
+
+  public void setUser(User user) {
+    this.user = user;
+  }
+
   /**
    * Metodo llamado al accionar el elemento buttonCancel
    *
@@ -89,73 +107,48 @@ public class IU_AddCollaboratorController implements Initializable {
   }
 
   public void searchCollaborator(String searchCriteria) {
+    SocketCollaborator socketCollaborator = new SocketCollaborator();
+    socketCollaborator.searchCollaborator(searchCriteria);
 
-    JSONObject searchCriteriaToSend = new JSONObject();
-    searchCriteriaToSend.accumulate("searchCriteria", searchCriteria);
+    socket.on("searchFinalized", (Object... os) -> {
+      if ((boolean) os[0]) {
+  
+        JSONArray listRecovered;
+        JSONObject objectRecovered;
+        String jsonString;
+        User receivedUser;
 
-    //socket.connect();
+        listRecovered = (JSONArray) os[1];
+        objectRecovered = listRecovered.getJSONObject(0);
+        jsonString = objectRecovered.toString();
 
-    socket.emit("searchUser", searchCriteriaToSend);
+        Gson gson = new Gson();
 
-    socket.on("searchFinalized", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        if ((boolean) os[0]) {
-          System.out.println("resultado " + Arrays.toString(os));
+        receivedUser = gson.fromJson(jsonString, User.class);
+        Platform.runLater(() -> {
+          loadInformation(receivedUser);
+        });
 
-          JSONArray listRecovered;
-          JSONObject objectRecovered;
-          String jsonString;
-          User receivedUser;
-
-          listRecovered = (JSONArray) os[1];
-          objectRecovered = listRecovered.getJSONObject(0);
-          jsonString = objectRecovered.toString();
-
-          Gson gson = new Gson();
-
-          receivedUser = gson.fromJson(jsonString, User.class);
-          System.out.println(receivedUser.getAlias());
-          //socket.disconnect();
-          Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-              loadInformation(receivedUser);
-            }
-
-          });
-
-        } else {
-          Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-             loadNoMatchMessage();
-            }
-
-          });
-          System.out.println("no se encontraron resultado");
-          
-          //socket.disconnect();
-        }
-
+      } else {
+        Platform.runLater(() -> {
+          loadNoMatchMessage();
+        });
       }
-
     });
   }
-  
-  public void loadInformation(User userFound){
+
+  public void loadInformation(User userFound) {
     String name = userFound.getAlias();
-    System.out.println("id usuario : " + userFound.getIdUsuario());
     String biography = userFound.getBiografia();
-    
+
     labelAlias.setText(name);
     taBiography.setText(biography);
     labelError.setText("");
     buttonAddCollaborator.setDisable(false);
     collaboratorToSave = userFound;
   }
-  
-  public void loadNoMatchMessage(){
+
+  public void loadNoMatchMessage() {
     String noMatchMessage = "No hay coincidencias";
     labelError.setText(noMatchMessage);
     labelAlias.setText("");
@@ -166,36 +159,49 @@ public class IU_AddCollaboratorController implements Initializable {
   @FXML
   void addCollaborator(ActionEvent event) {
     int collaboratorID = collaboratorToSave.getIdUsuario();
-    
-    JSONObject collaborationToSend = new JSONObject();
-    collaborationToSend.accumulate("collaboratorID", collaboratorID);
-    collaborationToSend.accumulate("projectID", projectID);
 
-    System.out.println(collaborationToSend);
-    //socket.connect();
+    boolean isCollaboratorRepeated = searchCollaboratorInList(collaboratorID, collaboratorsList);
+    boolean isCollaboratorAndUserTheSame = isCollaboratorAndUserTheSame(collaboratorID);
 
-    socket.emit("saveCollaborator", collaborationToSend);
-    
-    socket.on("collaborationSaved", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        System.out.println("entro a guardar colaborador");
-        Platform.runLater(new Runnable() {
-          @Override
-          public void run() {
-            //socket.close();
-            savedStatus = true;
+    if (isCollaboratorRepeated) {
+      String intStringRepeatedCollaborator = rb.getString("repeatedCollaborator");
+      Tools.displayWarningAlert(intStringRepeatedCollaborator, rb);
+    } else if (isCollaboratorAndUserTheSame) {
+      String intStringCollaboratorAndUserSame = rb.getString("collaboratorAndUserSame");
+      Tools.displayWarningAlert(intStringCollaboratorAndUserSame, rb);
+    } else {
+      SocketCollaborator socketCollaborator = new SocketCollaborator();
+      socketCollaborator.addCollaborator(collaboratorID, projectID);
 
-            Stage stage = (Stage) labelAlias.getScene().getWindow();
-            stage.close();
-            
-            Tools.displayInformation("Guardado", "Colaboración guardada exitosamente!");
-          }
+      socket.on("collaborationSaved", (Object... os) -> {
+        Platform.runLater(() -> {
+          savedStatus = true;
 
+          Stage stage = (Stage) labelAlias.getScene().getWindow();
+          stage.close();
+
+          Tools.displayInformation("Guardado", "Colaboración guardada exitosamente!");
         });
+      });
+    }
 
+  }
+  
+  private boolean searchCollaboratorInList(int collaboratorID, List<Collaborator> collaboratorsList){
+    boolean flag = false;
+    for (int i = 0; i < collaboratorsList.size(); i++) {
+      if (collaboratorsList.get(i).getIdUsuario() == collaboratorID) {
+        flag = true;
       }
-
-    });
+    }
+    return flag;
+  }
+  
+  public boolean isCollaboratorAndUserTheSame(int collaboratorID){
+    boolean flag = false;
+    if (user.getIdUsuario() == collaboratorID) {
+      flag = true;
+    }
+    return flag;
   }
 }

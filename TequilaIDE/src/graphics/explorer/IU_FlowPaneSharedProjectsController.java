@@ -1,14 +1,11 @@
 package graphics.explorer;
 
-import com.google.gson.Gson;
 import graphics.editor.IU_EditorController;
-import io.socket.emitter.Emitter;
+import graphics.tools.Tools;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,10 +19,6 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import logic.domain.Project;
 import logic.domain.User;
-import logic.sockets.SocketProject;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import static tequilaide.TequilaIDE.socket;
 
 /**
  * FXML Controller class
@@ -50,66 +43,26 @@ public class IU_FlowPaneSharedProjectsController implements Initializable {
   private ResourceBundle rb;
   /**
    * Initializes the controller class.
+   * @param url
+   * @param rb
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
-	this.rb = rb;
-	SocketProject socketProject = new SocketProject();
-	socketProject.loadSharedProjects(user.getIdUsuario());
-	
-	Platform.runLater(new Runnable() {
-	  @Override
-	  public void run() {
-		loadSharedProjects();
-	  }
-	});
+    this.rb = rb;
 
+    createIcons(projectList);
+    hoverListeners();
+    projectSelectedAction();
   }
-  
+
   public void setUser(User user) {
     this.user = user;
   }  
   
-  public List<Project> loadSharedProjects() {
-	socket.on("sharedProjectsRecovered", new Emitter.Listener() {
-	  @Override
-	  public void call(Object... os) {
-		JSONArray receivedList = (JSONArray) os[1];
-		String jsonString = receivedList.toString();
-		Gson gson = new Gson();
-		System.out.println("proyetos recuperados (json) " + jsonString);
-		Project[] jsonProjectList = gson.fromJson(jsonString, Project[].class);
-		projectList = Arrays.asList(jsonProjectList);
-		projectList = markProjectsAsShared(projectList);
-		System.out.println("proyetos convertidos (java) " + projectList.get(0).getIdProyecto());
-
-		Platform.runLater(new Runnable() {
-		  @Override
-		  public void run() {
-			System.out.println("lista proyectos " + projectList);
-			createIcons(projectList);
-			hoverListeners();
-			projectSelectedAction();
-		  }
-
-		});
-	  }
-
-	});
-	//NO VA A FUNCIONAR PORQUE LA LISTA QUE REGRESA NO ES IGUAL A LA QUE TIENE DESPUÉS DEL PLATFORM RUN LATER
-	return projectList;
+  public void setProjectList(List<Project> projectList) {
+    this.projectList = projectList;
   }
-  
-  public List<Project> markProjectsAsShared(List<Project> projectList){
-    for (int i = 0; i < projectList.size(); i++) {
-      Project aux = projectList.get(i);
-      aux.setShared(true);
-    }
-    
-    return projectList;
-  }
-
-
+ 
   /**
    * Método que crea iconos para cada elementos de la lista recibida como entrada
    *
@@ -119,7 +72,6 @@ public class IU_FlowPaneSharedProjectsController implements Initializable {
     flowPaneSharedProjects.setHgap(7);
     for (int i = 0; i < listaProyectos.size(); i++) {
 
-      System.out.println("creando panes");
       pane = new Pane();
       pane.setPrefHeight(90);
       pane.setPrefWidth(90);
@@ -141,8 +93,6 @@ public class IU_FlowPaneSharedProjectsController implements Initializable {
     }
     flowPaneSharedProjects.getChildren().clear();
     flowPaneSharedProjects.getChildren().addAll(projectPanes);
-
-    System.out.println("iconos creados");
   }
   
   /**
@@ -173,7 +123,7 @@ public class IU_FlowPaneSharedProjectsController implements Initializable {
         public void handle(MouseEvent e) {
 
           im1.setImage(new Image("/resources/icons/proyecto_clic.png"));
-          Project selectedProject = searchProjectByName(name.getText());
+          Project selectedProject = Tools.searchProjectByName(name.getText(), projectList);
 
           open_EditorWindow(selectedProject);
         }
@@ -191,27 +141,5 @@ public class IU_FlowPaneSharedProjectsController implements Initializable {
     fileExplorerStage = (Stage) flowPaneSharedProjects.getScene().getWindow();
     IU_EditorController controllerObject = new IU_EditorController();
     controllerObject.open_Editor(selectedProject, fileExplorerStage, rb, user);
-  }
-  
-  /**
-   * Método que regresa el proyecto cuyo nombre coincida con el parametro de entrada
-   *
-   * @param name
-   * @return
-   */
-  public Project searchProjectByName(String name) {
-
-    Project proyectoAuxiliar;
-    Project selectedProject = null;
-    for (int i = 0; i < projectList.size(); i++) {
-      proyectoAuxiliar = projectList.get(i);
-      if (proyectoAuxiliar.getNombre().equals(name)) {
-        selectedProject = proyectoAuxiliar;
-        System.out.println("el proyecto encontrado por nombre es " + selectedProject.getIdProyecto());
-      }
-    }
-    return selectedProject;
-  }
-
-  
+  }  
 }

@@ -13,6 +13,7 @@ var room;
 var users;
 var projectsRooms = [];
 var filesRooms = [];
+var user;
 
 var connection = mysql.createConnection({
  	host: "127.0.0.1",
@@ -29,8 +30,10 @@ io.on("connection",function(socket) {
 
   socket.on("disconnect", (reason) => {
     console.log("desconectado");
-    projectsRooms = [];
     filesRooms = [];
+    if (user != null) {
+    leaveProjectRoom(user, connection);
+  }
   });
 
    //clients++;
@@ -64,6 +67,10 @@ io.on("connection",function(socket) {
     recoverFiles(project, connection);
   });
 
+  socket.on("reloadFiles", function(project){
+    reloadFiles(project, connection);
+  }); 
+
   socket.on("joinProjectRoom", function(connectedUser){
     joinProjectRoom(connectedUser, connection);
   });
@@ -76,18 +83,22 @@ io.on("connection",function(socket) {
     joinFilesRoom(file,connection);
   });
 
-  socket.on("leaveFilesRoom", function(file){
-    leaveFilesRoom(file,connection);
+  socket.on("leaveFilesRoom", function(){
+    leaveFilesRoom(connection);
   });
 
   socket.on("loadProjects", function(user){
 
     recoverProjects(user, connection);
-  });  
+  }); 
 
   socket.on("saveProject", function(project){
     saveProject(project, connection);
   }); 
+
+  socket.on("searchProject", function(criteria){
+    searchProject(criteria, connection);
+  });
 
   socket.on("getCollaborators", function(projectID){
     getCollaborators(projectID, connection);
@@ -393,8 +404,19 @@ io.on("connection",function(socket) {
     });
   }
 
-  function joinFilesRoom(file, connection){
+  function reloadFiles(project, connection){
 
+    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
+
+      if (error) {
+        throw error;
+      } else {
+        socket.emit("filesReloaded", true, result);
+      }
+    });
+  }
+
+  function joinFilesRoom(file, connection){
     room = "room-" + file.fileID;
 
     socket.leave(filesRooms[0]);
@@ -409,7 +431,7 @@ io.on("connection",function(socket) {
 
   }
 
-  function leaveFilesRoom(file, connection){
+  function leaveFilesRoom(connection){
 
     //var room = file.fileID;
 
@@ -427,6 +449,7 @@ console.log("rooms archivos despues " + JSON.stringify(filesRooms));
 
   function joinProjectRoom(connectedUser, connection){
 
+    user = connectedUser;
     room = connectedUser.projectID;
     var filteredRooms = [];
 
@@ -444,7 +467,7 @@ console.log("rooms archivos despues " + JSON.stringify(filesRooms));
           }
         }
         console.log("se unio al nuevo room que creo" + JSON.stringify(projectsRooms));
-        io.sockets.in(room).emit('connectToProjectRoom', filteredRooms);  
+        io.sockets.in(room).emit('connectedToProjectRoom', filteredRooms);  
 
   }
 
@@ -480,7 +503,7 @@ console.log("rooms archivos despues " + JSON.stringify(filesRooms));
         }
 
         console.log("rooms filtrados " + JSON.stringify(filteredRooms));
-        io.sockets.in(room).emit('disconnectFromProjectRoom', filteredRooms);  
+        io.sockets.in(room).emit('disconnectedFromProjectRoom', filteredRooms);  
 
         console.log("room = " + room);
 

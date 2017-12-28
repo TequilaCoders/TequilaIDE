@@ -91,6 +91,8 @@ public class IU_TabController implements Initializable {
 
   List<File> fileList = new ArrayList<>();
 
+  private ResourceBundle rb;
+  
   Tab tab;
 
   int fileID;
@@ -115,10 +117,12 @@ public class IU_TabController implements Initializable {
 
   /**
    * Initializes the controller class.
+   * @param url
+   * @param rb
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
-
+    this.rb = rb;
 	loadContextMenu();
 	borderPane.prefHeightProperty().bind(scrollPane.heightProperty());
 	borderPane.prefWidthProperty().bind(scrollPane.widthProperty());
@@ -209,40 +213,23 @@ public class IU_TabController implements Initializable {
   }
 
   public void loadContextMenu() {
-	MenuItem menuItemCloseAndSave = new MenuItem("Guardar");
-	MenuItem menuItemDelete = new MenuItem("Eliminar");
-
-	contextMenu.getItems().addAll(menuItemCloseAndSave, menuItemDelete);
-
-	menuItemCloseAndSave.setOnAction(new EventHandler() {
-	  @Override
-	  public void handle(Event event) {
-		closeTab(tab);
-		tab.getTabPane().getTabs().remove(tab);
-		Tools.displayInformation("Confirmation", "Archivo guardado exitosamente!");
-	  }
-
-	});
-
+    String intStringDeleteFile = rb.getString("deleteFile");
+	MenuItem menuItemDelete = new MenuItem(intStringDeleteFile);
+    
+    contextMenu.getItems().addAll(menuItemDelete);
+    
 	menuItemDelete.setOnAction(new EventHandler() {
 	  @Override
       public void handle(Event event) {
         tab.getTabPane().getTabs().remove(tab);
         SocketFile socketFile = new SocketFile();
         socketFile.deleteFile(fileID);
-        Tools.displayInformation("Archivo Eliminado", "El archivo seleccionado ha sido eliminado");
+        String intStringDeletedFileTitle = rb.getString("deletedFileTitle");
+        String intStringDeletedFileMessage = rb.getString("deletedFileMessage");
+        Tools.displayInformation(intStringDeletedFileTitle, intStringDeletedFileMessage);
       }
 
     });
-  }
-
-  private void closeTab(Tab tab) {
-	EventHandler<Event> handler = tab.getOnClosed();
-	if (null != handler) {
-	  handler.handle(null);
-	} else {
-	  tab.getTabPane().getTabs().remove(tab);
-	}
   }
 
   @FXML
@@ -260,36 +247,27 @@ public class IU_TabController implements Initializable {
   void updateFile(KeyEvent event) {
     int roomNumber = projectID;
 	SocketFile socketFile = new SocketFile();
-	System.out.println("Actualizando el id: " + fileID);
     caretPosition = taEditor.getCaretPosition();
-    System.out.println("caret position: "+ caretPosition);
-        
 	socketFile.updateFile(taEditor.getText(), fileID, roomNumber);
   }
   
   public void refreshCodeArea() {
-    socket.on("fileUpdated", new Emitter.Listener() {
-      @Override
-      public void call(Object... os) {
-        Platform.runLater(() -> {
-          int fileIdBroadcasted = (int) os[1];
-          if (fileIdBroadcasted == fileID) {
-
-            String newContent = (String) os[0];
-            setContent(newContent);
-            taEditor.replaceText(newContent);
-            addNumberLines();
-            if (caretPosition <= taEditor.getLength()) {
-              taEditor.moveTo(caretPosition);
-            } else {
-              taEditor.moveTo(taEditor.getLength());
-            }
-            
-            System.out.println("file succesfully updated");
+    socket.on("fileUpdated", (Object... os) -> {
+      Platform.runLater(() -> {
+        int fileIdBroadcasted = (int) os[1];
+        if (fileIdBroadcasted == fileID) {
+          
+          String newContent = (String) os[0];
+          setContent(newContent);
+          taEditor.replaceText(newContent);
+          addNumberLines();
+          if (caretPosition <= taEditor.getLength()) {
+            taEditor.moveTo(caretPosition);
+          } else {
+            taEditor.moveTo(taEditor.getLength());
           }
-        });
-
-      }
+        }
+      });
     });
   }
 }
