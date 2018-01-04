@@ -25,6 +25,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
@@ -53,8 +54,14 @@ public class IU_LogInController implements Initializable {
   List<Project> projectList = new ArrayList<>();
 
   private ResourceBundle rb;
-  
+
+  @FXML
+  private ImageView aliasRedCross;
+
+  @FXML
+  private ImageView passwordRedCross;
   private boolean changingLanguage;
+  
 
   /**
    * Inicia la clase controller
@@ -69,6 +76,19 @@ public class IU_LogInController implements Initializable {
     drawerRegistrar.setOnDrawerClosed(event -> {
       drawerRegistrar.toBack();
     });
+	
+	tfUser.setOnKeyPressed(event ->{ 
+	  IU_SignUpController signController = new IU_SignUpController();
+	  String intStringPromtAlias = rb.getString("promptAlias");
+	  signController.resetTextFieldMessage(intStringPromtAlias, tfUser, aliasRedCross);
+	});
+	
+	pfPassword.setOnKeyPressed(event ->{
+	  IU_SignUpController signController = new IU_SignUpController();
+	  String intStringPromtPassword = rb.getString("promptPassword");
+	  signController.resetPasswordMessage(intStringPromtPassword, pfPassword, passwordRedCross);
+	});
+	
     openConnection();
   }
 
@@ -121,8 +141,7 @@ public class IU_LogInController implements Initializable {
   }
 
   @FXML
-  void eventLogIn(ActionEvent event) {
-  
+  public void eventLogIn(ActionEvent event) {
     String alias = tfUser.getText();
     String password = Tools.getHashedPassword(pfPassword.getText());
     
@@ -130,21 +149,25 @@ public class IU_LogInController implements Initializable {
     socketUser.accesUser(alias, password);
 
     socket.on("approved", (Object... os) -> {
-      Platform.runLater(
-          () -> {
-            if ((boolean) os[0]) {
-              User userReceived = createUser(os[1]);
-              System.out.println("usuario " + userReceived.getAlias());
-              Stage stage = (Stage) tfUser.getScene().getWindow();
-              IU_FileExplorerController newScene = new IU_FileExplorerController();
-              newScene.openFileExplorer(stage, rb, userReceived);
-              
-            } else {
-              System.out.println((String) os[1]);
-            }
-          }
-      );
-    });
+     Platform.runLater(() -> {
+		if ((boolean) os[0]) {
+		  User userReceived = createUser(os[1]);
+		  System.out.println("usuario " + userReceived.getAlias());
+		  Stage stage = (Stage) tfUser.getScene().getWindow();
+		  IU_FileExplorerController newScene = new IU_FileExplorerController();
+		  newScene.openFileExplorer(stage, rb, userReceived);
+		  
+		} else {
+		  IU_SignUpController signController = new IU_SignUpController();
+		  if ((int) os[1] == 1) {
+			signController.showPasswordMessage("Clave incorrecta", pfPassword, passwordRedCross);
+		  } else {
+			signController.showTextFieldMessage("El usuario no existe", tfUser, aliasRedCross);
+		  }
+		}
+	  }
+	  );
+	});
 
   }
 
@@ -192,7 +215,7 @@ public class IU_LogInController implements Initializable {
       socket = IO.socket("http://localhost:7000");
       socket.on(Socket.EVENT_DISCONNECT, (Object... os) -> {
         Platform.runLater(() -> {
-          if (!changingLanguage) {
+          if (!changingLanguage) { //Esto para que? 
             String intStringLostConnectionMessage = rb.getString("lostConnectionMessage");
             Tools.displayWarningAlert(intStringLostConnectionMessage, rb);
           }

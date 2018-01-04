@@ -143,25 +143,24 @@ public class IU_EditorController implements Initializable {
       setUserIcons();
     }
 
-    Platform.runLater(() -> {
-      loadCollaborators();
+	Platform.runLater(() -> {
+	  loadCollaborators();
+	  Platform.runLater(() -> {
+		joinProjectRoom();
+	  });
+	});
 
-      Platform.runLater(() -> {
-        joinProjectRoom();
-      });
-    });
-    
     drawerFileTree.setOnDrawerClosed(event -> {
       drawerFileTree.toBack();
     });
-
-    menuButtonUser.setOnMouseEntered((e -> imageVUser.setImage(new Image("/resources/icons/user_yellow.png"))));
-    menuButtonUser.setOnMouseExited((e -> imageVUser.setImage(new Image("/resources/icons/user_white.png"))));
 	
 	if (selectedProject.getLenguaje().equals("py")) {
-	  //buttonCompile.setDisable(true);
-	  //buttonCompile.setOpacity(0.50);
+	  buttonCompile.setDisable(true);
+	  buttonCompile.setOpacity(0.5);
 	}
+	
+    menuButtonUser.setOnMouseEntered((e -> imageVUser.setImage(new Image("/resources/icons/user_yellow.png"))));
+    menuButtonUser.setOnMouseExited((e -> imageVUser.setImage(new Image("/resources/icons/user_white.png"))));
     listenServer();
   }
 
@@ -516,16 +515,17 @@ public class IU_EditorController implements Initializable {
    * @param fileCuantity
    */
   public void showFirstTab(int fileCuantity) {
-    if (fileCuantity == 0) {
-        String className = selectedProject.getNombre();
-        SocketFile socketFile = new SocketFile();
-        socketFile.createNewFile(className, "", projectID, selectedProject.getLenguaje());
-    } else {
-      int fileId = fileList.get(0).getIdArchivo();
-      String name = fileList.get(0).getNombre();
-      String content = fileList.get(0).getContenido();
-      addTab(name, content, fileId);
-    }
+	if (fileCuantity == 0) {
+	  //AGREGAR ALGO PARA QUE SOLO SE GENERE UN NUEVO ARCHIVO SI ES NUEVO EL PROYECTO
+	  String className = selectedProject.getNombre();
+	  SocketFile socketFile = new SocketFile();
+	  socketFile.createNewFile(className, "", projectID, selectedProject.getLenguaje());
+	} else {
+	  int fileId = fileList.get(0).getIdArchivo();
+	  String name = fileList.get(0).getNombre();
+	  String content = fileList.get(0).getContenido();
+	  addTab(name, content, fileId);
+	}
   }
 
   /**
@@ -775,20 +775,14 @@ public class IU_EditorController implements Initializable {
   
   @FXML
   void runProgram(MouseEvent event) {
-	String mainClass = Tools.displayChoiceDialog("Ejecutar el programa", "Selecciona la clase principal", fileList);
-	
-	if (!mainClass.equals("")) {
-	  JSONObject projectToSend = new JSONObject();
-	  projectToSend.accumulate("projectID", selectedProject.getIdProyecto());
-	  projectToSend.accumulate("language", selectedProject.getLenguaje());
-	  projectToSend.accumulate("mainClass", mainClass);
-	 
-	  socket.emit("runProgram", projectToSend);
-
-	  //AQUI ABRIR LA TERMINAL 
-	  openConsole();
-	}
-	
+	FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/GUIRunProject.fxml"), rb);
+	GUIRunProjectController controller = new GUIRunProjectController();
+	loader.setController(controller);
+	controller.setFileList(fileList);
+	controller.setParent(this);
+	controller.setProjectToRun(selectedProject);
+	mainStage = (Stage) tabPaneArchivos.getScene().getWindow();
+	controller.openRunProject(mainStage, rb, loader);
   }
   
   public void openConsole(){

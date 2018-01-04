@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXCheckBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="264.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label alignment="CENTER" prefHeight="53.0" prefWidth="243.0" text="%runProgram">
+         <font>
+            <Font name="Proxima Nova ScOsf Th Regular" size="18.0" />
+         </font>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="62.0" prefWidth="400.0">
+         <children>
+            <Label prefHeight="21.0" prefWidth="208.0" text="%selectMainClass">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="cbMainClass" prefWidth="150.0" style="-fx-font: 15px &quot;Proxima Nova Alt Rg&quot;;" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" layoutX="10.0" layoutY="57.0" prefHeight="78.0" prefWidth="400.0">
+         <children>
+            <JFXCheckBox fx:id="checkRequiereArgs" checkedColor="#43bdc6" prefHeight="19.0" prefWidth="209.0" text="%requireArgs">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
+               </font>
+            </JFXCheckBox>
+            <TextField fx:id="tfArguments" disable="true" prefHeight="31.0" prefWidth="150.0">
+               <font>
+                  <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
+               </font></TextField>
+         </children>
+      </HBox>
+      <Button fx:id="buttonRunProgram" mnemonicParsing="false" onAction="#runProject" prefHeight="31.0" prefWidth="363.0" text="%runProgram">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
+         </font>
+      </Button>
+   </children>
+</VBox>

@@ -27,7 +27,6 @@ import static tequilaide.TequilaIDE.socket;
  * @author alanc
  */
 public class IU_SignUpController implements Initializable {
-
   private ResourceBundle rb;
 
   @FXML
@@ -135,7 +134,7 @@ public class IU_SignUpController implements Initializable {
 
     boolean emailIsReady = checkEmail(email, rb);
 
-    boolean aliasIsReady = checkAlias(alias, rb);
+    boolean aliasIsReady = checkAlias(alias, rb, tfAlias, imAliasRedCross);
 
     boolean passwordIsReady = checkPassword(password, rb);
 
@@ -179,7 +178,7 @@ public class IU_SignUpController implements Initializable {
     return nameIsReady;
   }
 
-  public boolean checkAlias(String alias, ResourceBundle rb) {
+  public boolean checkAlias(String alias, ResourceBundle rb, JFXTextField tfAlias, ImageView imAliasRedCross) {
     boolean aliasIsReady = false;
     boolean hasAliasSpecialCharacters = Tools.applyRegularExpression(alias, "[^A-Za-z0-9]");
     if (hasAliasSpecialCharacters) {
@@ -193,7 +192,7 @@ public class IU_SignUpController implements Initializable {
       showTextFieldMessage(intStringAliasLenghtWrong, tfAlias, imAliasRedCross);
     }
 
-    isAliasDuplicate();
+    isAliasDuplicate(tfAlias);
 
     if (!aliasDuplicated && !hasAliasSpecialCharacters && isLenghtOk) {
       String intStringPromtAlias = rb.getString("promptAlias");
@@ -234,23 +233,24 @@ public class IU_SignUpController implements Initializable {
     boolean hasNumber = Tools.applyRegularExpression(password, "(?=.*[0-9])");
     if (!hasNumber) {
       String intStringPasswordWithoutNumber = rb.getString("intStringPasswordWithoutNumber");
-      showPasswordMessage(intStringPasswordWithoutNumber);
+      showPasswordMessage(intStringPasswordWithoutNumber,pfPassword,imPasswordRedCross);
     }
 
     boolean isLenghtOk = Tools.checkLenght(password, 8, 40);
     if (!isLenghtOk) {
       String intStringPasswordLenghtWrong = rb.getString("intStringPasswordLenghtWrong");
-      showPasswordMessage(intStringPasswordLenghtWrong);
+      showPasswordMessage(intStringPasswordLenghtWrong, pfPassword, imPasswordRedCross);
     }
 
     if (isLenghtOk && hasNumber) {
-      resetPasswordMessage();
+	  String intStringPromptPassword = rb.getString("promptPassword");
+      resetPasswordMessage(intStringPromptPassword, pfPassword, imPasswordRedCross);
       passwordIsReady = true;
     }
     return passwordIsReady;
   }
 
-  public void isAliasDuplicate() {
+  public void isAliasDuplicate(JFXTextField tfAlias) {
     tfAlias.textProperty().addListener((observable, oldValue, newValue) -> {
       SocketUser socketUser = new SocketUser();
       socketUser.checkAlias(newValue);
@@ -307,7 +307,6 @@ public class IU_SignUpController implements Initializable {
         if ((boolean) os[0]) {
           aliasDuplicated = true;
           String intStringAliasDuplicated = rb.getString("intStringAliasDuplicated");
-          
           showTextFieldMessage(intStringAliasDuplicated, tfAlias, imAliasRedCross);
         } else {
           aliasDuplicated = false;
@@ -346,24 +345,20 @@ public class IU_SignUpController implements Initializable {
 
   }
 
-  public void showPasswordMessage(String message) {
-    pfPassword.setFocusColor(Paint.valueOf("orange"));
-    pfPassword.setUnFocusColor(Paint.valueOf("orange"));
-    pfPassword.setPromptText(message);
-    pfPassword.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
-    imPasswordRedCross.setVisible(true);
+  public void showPasswordMessage(String message, JFXPasswordField passwordField, ImageView ivRedCross) {
+    passwordField.setFocusColor(Paint.valueOf("orange"));
+    passwordField.setUnFocusColor(Paint.valueOf("orange"));
+    passwordField.setPromptText(message);
+    passwordField.setStyle("-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF");
+    ivRedCross.setVisible(true);
   }
 
-  public void resetPasswordMessage() {
-    pfPassword.setFocusColor(Paint.valueOf("#77d2ff"));
-    pfPassword.setUnFocusColor(Paint.valueOf("#17a589"));
-    
-    String intStringPromptPassword = rb.getString("promptPassword");
-    
-    pfPassword.setPromptText(intStringPromptPassword);
-    pfPassword.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
-    imPasswordRedCross.setVisible(false);
-
+  public void resetPasswordMessage(String message, JFXPasswordField passwordField, ImageView ivRedCross) {
+    passwordField.setFocusColor(Paint.valueOf("#77d2ff"));
+    passwordField.setUnFocusColor(Paint.valueOf("#17a589"));
+    passwordField.setPromptText(message);
+    passwordField.setStyle("-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF");
+    ivRedCross.setVisible(false);
   }
 
   public void registrationSuccesful(boolean registration) {

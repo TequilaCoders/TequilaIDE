@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXSlider?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <JFXButton alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="400.0" text="%information">
+         <font>
+            <Font name="Proxima Nova Alt Rg Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <Separator prefWidth="200.0" />
+      <Label contentDisplay="CENTER" prefHeight="21.0" prefWidth="367.0" text="%promptAlias" textAlignment="CENTER">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="buttonAlias" alignment="CENTER_RIGHT" contentDisplay="CENTER" nodeOrientation="RIGHT_TO_LEFT" prefHeight="80.0" prefWidth="400.0">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </JFXButton>
+      <Separator prefWidth="200.0" />
+      <Label layoutX="10.0" layoutY="130.0" prefHeight="21.0" prefWidth="371.0" text="%promptEmail" textAlignment="CENTER">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="buttonEmail" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="10.0" layoutY="204.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="80.0" prefWidth="400.0">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </JFXButton>
+      <Separator prefWidth="200.0" />
+      <Label layoutX="10.0" layoutY="231.0" prefHeight="21.0" prefWidth="375.0" text="%biography" textAlignment="CENTER">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="16.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="buttonBiography" alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="10.0" layoutY="284.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="80.0" prefWidth="400.0">
+         <font>
+            <Font name="Proxima Nova Alt Rg Regular" size="18.0" />
+         </font>
+      </JFXButton>
+      <Separator prefWidth="200.0" />
+      <JFXButton alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="10.0" layoutY="10.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="400.0" text="%theme">
+         <font>
+            <Font name="Proxima Nova Alt Rg Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <Pane prefHeight="79.0" prefWidth="400.0">
+         <children>
+            <JFXComboBox fx:id="cbTheme" layoutX="58.0" layoutY="14.0" prefHeight="31.0" prefWidth="285.0" />
+         </children>
+      </Pane>
+      <JFXButton alignment="CENTER_RIGHT" contentDisplay="CENTER" layoutX="10.0" layoutY="290.0" nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="400.0" text="%scale">
+         <font>
+            <Font name="Proxima Nova Alt Rg Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <Pane layoutX="10.0" layoutY="330.0" prefHeight="79.0" prefWidth="400.0">
+         <children>
+            <JFXSlider fx:id="sliderScale" indicatorPosition="RIGHT" layoutX="58.0" layoutY="17.0" prefHeight="44.0" prefWidth="285.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" />
+         </children>
+      </Pane>
+   </children>
+</VBox>

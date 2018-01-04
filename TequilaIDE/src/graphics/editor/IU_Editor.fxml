@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="55.0" prefWidth="1366.0">
          <children>
@@ -66,7 +66,7 @@
       <Separator prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" />
       <ToolBar prefHeight="50.0" prefWidth="1208.0" style="-fx-background-color: #0F1F38;" stylesheets="@../../resources/themes/theme_Tequila.css">
          <items>
-            <ImageView fx:id="paneFileExplorer" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="10.0">
+            <ImageView fx:id="buttonFileExplorer" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" onMouseClicked="#returnToFileExplorer" pickOnBounds="true" preserveRatio="true" translateX="10.0">
                <image>
                   <Image url="@../../resources/icons/proyecto.png" />
                </image>
@@ -74,7 +74,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView fx:id="paneFileExplorer1" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="10.0" layoutY="13.0" onMouseClicked="#addTab" pickOnBounds="true" preserveRatio="true" translateX="35.0">
+            <ImageView fx:id="buttonNewFile" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="10.0" layoutY="13.0" onMouseClicked="#addTab" pickOnBounds="true" preserveRatio="true" translateX="35.0">
                <image>
                   <Image url="@../../resources/icons/icons8-add-file-40.png" />
                </image>
@@ -82,7 +82,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView fx:id="paneFileExplorer11" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="45.0" layoutY="13.0" onMouseClicked="#runCompiler" pickOnBounds="true" preserveRatio="true" translateX="40.0">
+            <ImageView fx:id="buttonCompile" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="45.0" layoutY="13.0" onMouseClicked="#runCompiler" pickOnBounds="true" preserveRatio="true" translateX="40.0">
                <image>
                   <Image url="@../../resources/icons/icon_compile.png" />
                </image>
@@ -90,7 +90,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
-            <ImageView fx:id="paneFileExplorer111" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="80.0" layoutY="13.0" onMouseClicked="#runProgram" pickOnBounds="true" preserveRatio="true" translateX="45.0">
+            <ImageView fx:id="buttonRun" fitHeight="30.0" fitWidth="30.0" focusTraversable="true" layoutX="80.0" layoutY="13.0" onMouseClicked="#runProgram" pickOnBounds="true" preserveRatio="true" translateX="45.0">
                <image>
                   <Image url="@../../resources/icons/icons8-play-50%20(1).png" />
                </image>

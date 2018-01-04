@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="TequilaIDE.jnlp">
+  <information>
+    <title>TequilaIDE</title>
+    <vendor>Alan Yoset García Cruz</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="TequilaIDE.jar" size="147665" download="eager" />
+    <jar href="lib\engine.io-client-1.0.1-SNAPSHOT.jar" size="106098" download="eager" />
+    <jar href="lib\gson-2.8.2.jar" size="232932" download="eager" />
+    <jar href="lib\jfoenix.jar" size="2384520" download="eager" />
+    <jar href="lib\json-20140107.jar" size="64952" download="eager" />
+    <jar href="lib\mysql-connector-java-5.1.23-bin.jar" size="834126" download="eager" />
+    <jar href="lib\okhttp-3.9.0.jar" size="405733" download="eager" />
+    <jar href="lib\okio-1.13.0.jar" size="81811" download="eager" />
+    <jar href="lib\richtextfx-demos-fat-0.7-M5.jar" size="866119" download="eager" />
+    <jar href="lib\socket.io-client-1.0.1-SNAPSHOT.jar" size="63036" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="TequilaIDE" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="tequilaide.TequilaIDE"  name="TequilaIDE" />
+  <update check="always"/>
+</jnlp>

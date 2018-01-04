@@ -23,7 +23,7 @@ import static tequilaide.TequilaIDE.socket;
  * @author Alan Yoset García C
  */
 public class GUIConsoleController implements Initializable {
-
+  private ResourceBundle rb;
   @FXML
   private TextArea taConsole;
 
@@ -32,11 +32,27 @@ public class GUIConsoleController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+	this.rb = rb;
+	socket.on("compilationFinish", new Emitter.Listener() {
+	  @Override
+	  public void call(Object... os) {
+		Platform.runLater(() -> {
+		  String intStringCompilationResult;
+		  if ((int) os[0] == 0) {
+			intStringCompilationResult = rb.getString("successfulCompilation");
+			taConsole.setText(taConsole.getText()+ "\n\n" +intStringCompilationResult);
+		  } else {
+			taConsole.setText(taConsole.getText()+ "\n\n" + os[1]);
+		  }
+		});
+	  }
+	});
+	
 	socket.on("operationFinish", new Emitter.Listener() {
 	  @Override
 	  public void call(Object... os) {
 		Platform.runLater(() -> {
-		  taConsole.setText(taConsole.getText()+"\n"+(String)os[0]);
+		  taConsole.setText(taConsole.getText() + "\n\n" + (String) os[0]);
 		});
 	  }
 	});
@@ -50,6 +66,7 @@ public class GUIConsoleController implements Initializable {
 	  Scene scene = new Scene(root);
 
 	  stagePrincipal.setScene(scene);
+	  stagePrincipal.setTitle("TequilaIDE");
 	  stagePrincipal.show();
 	} catch (IOException ex) {
 	  Logger.getLogger(GUIConsoleController.class.getName()).log(Level.SEVERE, null, ex);
