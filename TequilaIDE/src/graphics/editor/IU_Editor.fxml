@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="55.0" prefWidth="1366.0">
          <children>
@@ -27,12 +27,14 @@
                   <Menu fx:id="menuFile" mnemonicParsing="false" text="%menuFile">
                      <items>
                         <MenuItem fx:id="menuItemNew" mnemonicParsing="false" onAction="#addTab" text="%menuNew" />
+                        <MenuItem fx:id="menuItemDeleteFile" mnemonicParsing="false" onAction="#onDeleteFile" text="%menuDeleteFile" />
+                        <MenuItem fx:id="menuItemDeleteProject" mnemonicParsing="false" onAction="#onDeleteProject" text="%menuDeleteProject" />
+                        <MenuItem fx:id="menuItemAbandonProject" mnemonicParsing="false" onAction="#abandonProject" text="%menuAbandonProject" />
                      </items>
                   </Menu>
                   <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
                      <items>
-                        <MenuItem fx:id="menuItemOptions" mnemonicParsing="false" text="%menuOptions" />
-						<MenuItem fx:id="menuItemAddCollaborator" mnemonicParsing="false" onAction="#addNewCollaborator" text="%menuItemAddCollaborator" />
+						<MenuItem fx:id="menuItemAddNewCollaborator" mnemonicParsing="false" onAction="#addNewCollaborator" text="%menuItemAddCollaborator" />
                      </items>
                   </Menu>
                   <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
@@ -48,7 +50,6 @@
                   <MenuButton fx:id="menuButtonUser" disable="true" mnemonicParsing="false" prefHeight="23.0" prefWidth="36.0" style="-fx-background-color: transparent;" stylesheets="@../../resources/themes/theme_Tequila.css">
                      <items>
                         <MenuItem fx:id="menuItemCollaboratorInformation" mnemonicParsing="false" styleClass="..\..\resources\themes\theme_Tequila.css" />
-                        <MenuItem fx:id="menuItemDeleteCollaborator" disable="true" mnemonicParsing="false" text="Eliminar Colaborador" />
                      </items>
                      <graphic>
                         <ImageView fx:id="imageVUser" fitHeight="42.0" fitWidth="29.0" focusTraversable="true" pickOnBounds="true" preserveRatio="true">
@@ -103,7 +104,7 @@
       <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <children>
             <JFXDrawer fx:id="drawerFileTree" defaultDrawerSize="500.0" overLayVisible="false" prefHeight="674.0" prefWidth="219.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-            <TabPane fx:id="tabPaneArchivos" prefHeight="200.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <TabPane fx:id="tabPaneFiles" prefHeight="200.0" prefWidth="200.0" stylesheets="@../../resources/themes/theme_Tequila.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
    </children>

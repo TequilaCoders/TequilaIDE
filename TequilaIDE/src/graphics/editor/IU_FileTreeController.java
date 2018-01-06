@@ -83,12 +83,10 @@ public class IU_FileTreeController implements Initializable {
     treeViewProjectFiles.setOnMouseClicked(new EventHandler<MouseEvent>() {
       @Override
       public void handle(MouseEvent mouseEvent) {
-        if (mouseEvent.getClickCount() == 2) {
+        if (mouseEvent.getClickCount() == 2 && !treeViewProjectFiles.getSelectionModel().isEmpty()) {
           TreeItem<String> item = treeViewProjectFiles.getSelectionModel().getSelectedItem();
 
-          System.out.println("item value " + item.getValue());
           String fileName = item.getValue();
-          //se busca el proyecto por su nombre
           File selectedFile = searchFileByName(fileName);
           
           String name = selectedFile.getNombre();

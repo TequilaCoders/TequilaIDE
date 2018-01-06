@@ -3,7 +3,6 @@ package graphics.explorer;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-import io.socket.emitter.Emitter;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -95,7 +94,7 @@ public class IU_NewProjectController implements Initializable {
   }
 
   /**
-   * 
+   * Toma los valores de los campos tfName y cbLanguages para registrar un proyecto.
    * @param event 
    */
   @FXML
@@ -126,7 +125,7 @@ public class IU_NewProjectController implements Initializable {
   }
   
   /**
-   * Activa la escucha de llamadas por parte del servidor
+   * Metodo que esta a la escucha de cualquier evento recibido del servidor.
    */
   public void listenServer(){
 	socket.on("projectSaved", (Object... os) -> {

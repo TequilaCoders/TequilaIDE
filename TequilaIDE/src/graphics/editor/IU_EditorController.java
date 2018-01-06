@@ -57,14 +57,14 @@ import static tequilaide.TequilaIDE.socket;
  */
 public class IU_EditorController implements Initializable {
 
-    @FXML
+  @FXML
   private Menu menuFile;
   @FXML
   private MenuItem menuItemNew;
   @FXML
   private Menu menuTools;
   @FXML
-  private MenuItem menuItemOptions;
+  private MenuItem menuItemDeleteProject;
   @FXML
   private MenuItem menuItemAddNewCollaborator;
   @FXML
@@ -80,6 +80,10 @@ public class IU_EditorController implements Initializable {
   @FXML
   private MenuItem menuItemDeleteCollaborator;
   @FXML
+  private MenuItem menuItemAbandonProject;
+  @FXML
+  private MenuItem menuItemDeleteFile;
+  @FXML
   private ImageView imageVUser;
   @FXML
   private ToolBar tbAddedCollaborator;
@@ -92,7 +96,7 @@ public class IU_EditorController implements Initializable {
   @FXML
   private ImageView buttonRun;
   @FXML
-  private TabPane tabPaneArchivos;
+  private TabPane tabPaneFiles;
   @FXML
   private JFXDrawer drawerFileTree;
   @FXML
@@ -109,8 +113,6 @@ public class IU_EditorController implements Initializable {
   List<Collaborator> collaboratorsConnected = new ArrayList<>();
 
   private Project selectedProject;
-
-  private int projectID;
 
   private ResourceBundle rb;
 
@@ -132,23 +134,35 @@ public class IU_EditorController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+    menuItemNew.setOnAction(e -> {
+      addTab();
+    });
+    
     hamburgerTransition = new HamburgerBackArrowBasicTransition(hamburgerButton);
     hamburgerTransition.setRate(-1);
     this.rb = rb;
-    setProjectID();
     loadFiles();
-    this.projectID = selectedProject.getIdProyecto();
 
     if (!selectedProject.isShared()) {
       setUserIcons();
+      menuItemAbandonProject.setDisable(true);
+    } else {
+      menuItemDeleteFile.setDisable(true);
+      menuItemDeleteProject.setDisable(true);
+      menuItemAddNewCollaborator.setDisable(true);
     }
 
-	Platform.runLater(() -> {
-	  loadCollaborators();
-	  Platform.runLater(() -> {
-		joinProjectRoom();
-	  });
-	});
+    Platform.runLater(() -> {
+      loadCollaborators();
+      Platform.runLater(() -> {
+        //joinProjectRoom();
+        Platform.runLater(() -> {
+          joinProjectRoom();
+          //showFirstTab(checkNumberOfFiles());
+        });
+        showFirstTab(checkNumberOfFiles());
+      });
+    });
 
     drawerFileTree.setOnDrawerClosed(event -> {
       drawerFileTree.toBack();
@@ -166,10 +180,6 @@ public class IU_EditorController implements Initializable {
 
   public void setSelectedProject(Project selectedProject) {
     this.selectedProject = selectedProject;
-  }
-
-  public void setProjectID() {
-    this.projectID = selectedProject.getIdProyecto();
   }
 
   public List<String> getCurrentTabs() {
@@ -191,11 +201,81 @@ public class IU_EditorController implements Initializable {
     socketFile.leaveFilesRoom();
     
     SocketProject socketProject = new SocketProject();
-    socketProject.leaveProjectRoom(projectID, user.getIdUsuario());
+    socketProject.leaveProjectRoom(selectedProject.getIdProyecto(), user.getIdUsuario());
 
-    mainStage = (Stage) tabPaneArchivos.getScene().getWindow();
+    mainStage = (Stage) tabPaneFiles.getScene().getWindow();
     IU_FileExplorerController explorador = new IU_FileExplorerController();
     explorador.openFileExplorer(mainStage, rb, user);
+  }
+  
+  /**
+   * Metodo sobrecargado que cierra la ventana IU_Editor y abre IU_FileExplorer sin recibir argumentos.
+   */
+  public void returnToFileExplorer() {
+    SocketFile socketFile = new SocketFile();
+    socketFile.leaveFilesRoom();
+    
+    SocketProject socketProject = new SocketProject();
+    socketProject.leaveProjectRoom(selectedProject.getIdProyecto(), user.getIdUsuario());
+
+    mainStage = (Stage) tabPaneFiles.getScene().getWindow();
+    IU_FileExplorerController explorador = new IU_FileExplorerController();
+    explorador.openFileExplorer(mainStage, rb, user);
+  }
+
+  /**
+   * Elimina el proyecto actual, primero elimina la lista de archivos y la lista de colaboradores.
+   * @param event 
+   */
+  @FXML
+  void onDeleteProject(ActionEvent event) {
+    boolean choice;
+    String intStringDeleteProjectConfirmation = rb.getString("DeleteProjectConfirmation");
+    choice = Tools.displayWarningAlertWithChoice(intStringDeleteProjectConfirmation, rb);
+    if (choice) {
+      SocketProject socketProject = new SocketProject();
+      socketProject.deleteProject(selectedProject.getIdProyecto());
+      returnToFileExplorer();
+      
+      String intStringDeletedProjectConfirmation = rb.getString("DeletedProjectConfirmation");
+      Tools.displayConfirmationAlert(intStringDeletedProjectConfirmation, rb);
+    }
+  }
+
+  /**
+   * Elimina el archivo que este seleccionado en el tabPaneFiles.
+   * @param event 
+   */
+  @FXML
+  void onDeleteFile(ActionEvent event) {
+    if (!tabPaneFiles.getSelectionModel().isEmpty()) {
+      Tab tab = tabPaneFiles.getSelectionModel().getSelectedItem();
+      File fileToDelete = searchFileByName(tab.getId());
+      int fileID = fileToDelete.getIdArchivo();
+
+      tab.getTabPane().getTabs().remove(tab);
+      SocketFile socketFile = new SocketFile();
+      socketFile.deleteFile(fileID);
+      String intStringDeletedFileTitle = rb.getString("deletedFileTitle");
+      String intStringDeletedFileMessage = rb.getString("deletedFileMessage");
+      Tools.displayInformation(intStringDeletedFileTitle, intStringDeletedFileMessage);
+
+    }
+  }
+  
+  /**
+   * Regresa el archivo cuyo nombre coincida con la cadena recibida
+   * @param name
+   * @return 
+   */
+  public File searchFileByName(String name){
+    File foundFile = null;
+    for (int i = 0; i < fileList.size(); i++) {
+      if (fileList.get(i).getNombre().equals(name)) {
+        foundFile = fileList.get(i);
+      }
+    }
+    return foundFile;
   }
 
   /**
@@ -256,13 +336,35 @@ public class IU_EditorController implements Initializable {
     }
     tbAddedCollaborator.getItems().clear();
     tbAddedCollaborator.getItems().addAll(collaboratorsButtons);
+    hoverListeners();
   }
 
   /**
-   * Agrega listeners que se activan cuando el cursor se posiciona en los botones de los colaboradores.
+   * Elimina la colaboracion del colaborador actual del proyecto.
+   * @param event 
+   */
+  @FXML
+  void abandonProject(ActionEvent event) {
+
+    boolean choice;
+    String intStringLeaveProjectAlert = rb.getString("leaveProjectAlert");
+    choice = Tools.displayWarningAlertWithChoice(intStringLeaveProjectAlert, rb);
+    if (choice) {
+      SocketCollaborator socketCollaborator = new SocketCollaborator();
+      socketCollaborator.deleteCollaborator(user.getIdUsuario(), selectedProject.getIdProyecto());
+
+      returnToFileExplorer();
+    }
+  }
+
+  /**
+   * Agrega listeners que se activan cuando el cursor se posiciona en los botones de los
+   * colaboradores.
    */
   public void hoverListeners() {
-    for (int i = 0; i < collaboratorsButtons.size(); i++) {
+    try {
+      for (int i = 0; i < collaboratorsButtons.size(); i++) {
+
       Collaborator collaborator = collaboratorsList.get(i);
       ImageView im1 = (ImageView) collaboratorsButtons.get(i).getGraphic();
       
@@ -290,6 +392,9 @@ public class IU_EditorController implements Initializable {
         }
       }));
     }
+    }catch(IndexOutOfBoundsException ex){
+      Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   /**
@@ -316,7 +421,7 @@ public class IU_EditorController implements Initializable {
         @Override
         public void handle(Event event) {
           int collaboratorID = collaboratorsList.get(indice).getIdUsuario();
-          socketCollaborator.deleteCollaborator(collaboratorID, projectID);
+          socketCollaborator.deleteCollaborator(collaboratorID, selectedProject.getIdProyecto());
           
           String intStringWarningTitle = rb.getString("intStringWarningTitle");
           String intStringCollaboratorDeleted = rb.getString("intStringCollaboratorDeleted");
@@ -336,7 +441,7 @@ public class IU_EditorController implements Initializable {
     FXMLLoader loader = new FXMLLoader(getClass().getResource("IU_AddCollaborator.fxml"), rb);
     Stage stageAddCollaborator;
     IU_AddCollaboratorController controller = new IU_AddCollaboratorController();
-    controller.setProjectID(projectID);
+    controller.setProjectID(selectedProject.getIdProyecto());
     controller.setCollaboratorsList(collaboratorsList);
     controller.setUser(user);
     stageAddCollaborator = loadAddCollaboratorWindow(loader, controller);
@@ -383,6 +488,9 @@ public class IU_EditorController implements Initializable {
       savedStatus = loader.<IU_AddCollaboratorController>getController().isSavedStatus();
       
       if (savedStatus) {
+        String intStringCollaboratorSaved = rb.getString("intStringCollaboratorSaved");
+        Tools.displayConfirmationAlert(intStringCollaboratorSaved, rb);
+        
         collaboratorsButtons.clear();
         loadCollaborators();
       }
@@ -398,7 +506,19 @@ public class IU_EditorController implements Initializable {
 	String className = Tools.displayTextInputDialog("Nueva clase", "Nombre de la clase: ");
 	if (!className.equals("")) {
 	  SocketFile socketFile = new SocketFile();
-	  socketFile.createNewFile(className, "", projectID, selectedProject.getLenguaje());
+	  socketFile.createNewFile(className, "", selectedProject.getIdProyecto(), selectedProject.getLenguaje());
+	}
+  }
+  
+  /**
+   *Método que agrega un nuevo archivo (pestaña) al proyecto
+   * @param event
+   */
+  void addTab() {
+	String className = Tools.displayTextInputDialog("Nueva clase", "Nombre de la clase: ");
+	if (!className.equals("")) {
+	  SocketFile socketFile = new SocketFile();
+	  socketFile.createNewFile(className, "", selectedProject.getIdProyecto(), selectedProject.getLenguaje());
 	}
   }
 
@@ -411,6 +531,7 @@ public class IU_EditorController implements Initializable {
     
     try {
       Tab tab = new Tab();
+      tab.setId(title);
       tab.setText(title + "." + selectedProject.getLenguaje());
       FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/IU_Tab.fxml"), rb);
 
@@ -419,15 +540,15 @@ public class IU_EditorController implements Initializable {
       controller.setTab(tab);
       controller.setFile(fileId);
       controller.setFileList(fileList);
-      controller.setProjectID(projectID);
+      controller.setProjectID(selectedProject.getIdProyecto());
 
       ScrollPane newFile = loader.load();
       tab.setContent(newFile);
       socketFile.joinFilesRoom(fileId);
       controller.setContent(content);
 
-      tabPaneArchivos.getTabs().add(tab);
-      tabPaneArchivos.getSelectionModel().selectLast();
+      tabPaneFiles.getTabs().add(tab);
+      tabPaneFiles.getSelectionModel().selectLast();
       currentTabs.add(title);
 
       tab.setOnSelectionChanged((Event t) -> {
@@ -516,10 +637,7 @@ public class IU_EditorController implements Initializable {
    */
   public void showFirstTab(int fileCuantity) {
 	if (fileCuantity == 0) {
-	  //AGREGAR ALGO PARA QUE SOLO SE GENERE UN NUEVO ARCHIVO SI ES NUEVO EL PROYECTO
-	  String className = selectedProject.getNombre();
-	  SocketFile socketFile = new SocketFile();
-	  socketFile.createNewFile(className, "", projectID, selectedProject.getLenguaje());
+      addTab();
 	} else {
 	  int fileId = fileList.get(0).getIdArchivo();
 	  String name = fileList.get(0).getNombre();
@@ -536,7 +654,7 @@ public class IU_EditorController implements Initializable {
    * @param rb
    * @param user
    */
-  public void open_Editor(Project selectedProject, Stage fileExplorerStage, ResourceBundle rb, User user) {
+  public void openEditor(Project selectedProject, Stage fileExplorerStage, ResourceBundle rb, User user) {
 	try {
 	  FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/graphics/editor/IU_Editor.fxml"), rb);
 
@@ -560,31 +678,31 @@ public class IU_EditorController implements Initializable {
    */
   public void loadFiles() {
     SocketFile socketFile = new SocketFile();
-    socketFile.loadFiles(projectID);
+    socketFile.loadFiles(selectedProject.getIdProyecto());
 
     socket.on("filesRecovered", (Object... os) -> {
-      List<File> aux = new ArrayList<>();
+      List<File> aux;
       
       JSONArray receivedList = (JSONArray) os[1];
       String jsonString = receivedList.toString();
       
       Gson gson = new Gson();
-      
+
       File[] jsonFileList = gson.fromJson(jsonString, File[].class);
       aux = Arrays.asList(jsonFileList);
       fileList = new ArrayList<>(aux);
-      Platform.runLater(() -> {
-        showFirstTab(checkNumberOfFiles());
-      });
     });
   }
-  
+
+  /**
+   * Actualiza la lista de archivos del proyecto.
+   */
   public void reloadFiles() {
     SocketFile socketFile = new SocketFile();
-    socketFile.reloadFiles(projectID);
+    socketFile.reloadFiles(selectedProject.getIdProyecto());
 
     socket.on("filesReloaded", (Object... os) -> {
-      List<File> aux = new ArrayList<>();
+      List<File> aux;
       
       JSONArray receivedList = (JSONArray) os[1];
       String jsonString = receivedList.toString();
@@ -593,6 +711,8 @@ public class IU_EditorController implements Initializable {
       
       File[] jsonFileList = gson.fromJson(jsonString, File[].class);
       aux = Arrays.asList(jsonFileList);
+      
+      fileList.clear();
       fileList = new ArrayList<>(aux);
     });
   }
@@ -602,7 +722,7 @@ public class IU_EditorController implements Initializable {
    */
   public void joinProjectRoom() {
     SocketProject socketProject = new SocketProject();
-    socketProject.joinProjectRoom(projectID, user.getIdUsuario());
+    socketProject.joinProjectRoom(selectedProject.getIdProyecto(), user.getIdUsuario());
     
     socket.on("connectedToProjectRoom", (Object... os) -> {
       JSONArray receivedList = (JSONArray) os[0];
@@ -617,7 +737,6 @@ public class IU_EditorController implements Initializable {
       Platform.runLater(() -> {
         collaboratorsButtons.clear();
         setCollaboratorsIcons();
-        hoverListeners();
         menuItemsSelectedAction();
       });
     });
@@ -670,7 +789,7 @@ public class IU_EditorController implements Initializable {
    */
   public void loadCollaborators() {
     SocketCollaborator socketCollaborator = new SocketCollaborator();
-    socketCollaborator.loadCollaborators(projectID);
+    socketCollaborator.loadCollaborators(selectedProject.getIdProyecto());
     
     socket.on("collaboratorsRecovered", (Object... os) -> {
       List<Collaborator> aux = new ArrayList<>();
@@ -686,32 +805,22 @@ public class IU_EditorController implements Initializable {
       Platform.runLater(() -> {
         collaboratorsButtons.clear();
         setCollaboratorsIcons();
-        hoverListeners();
         menuItemsSelectedAction();
       });
     });
   }
 
+  /**
+   * Metodo que esta a la escucha de cualquier evento recibido del servidor.
+   */
   public void listenServer() {
     socket.on("fileSaved", (Object... os) -> {
       Platform.runLater(() -> {
-        try {
-          Tab tab = new Tab();
-          tab.setText(os[1] + "." + selectedProject.getLenguaje());
-          FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/IU_Tab.fxml"), rb);
-          IU_TabController controller = new IU_TabController();
-          loader.setController(controller);
-          controller.setTab(tab);
-          controller.setFileList(fileList);
-          controller.setFile((int) os[0]);
-          ScrollPane newFile = loader.load();
-          tab.setContent(newFile);
-          tabPaneArchivos.getTabs().add(tab);
-          tabPaneArchivos.getSelectionModel().selectLast();
-          reloadFiles();
-        } catch (IOException ex) {
-          Logger.getLogger(IU_EditorController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String tabName = (String) os[1];
+        int fileID = (int) os[0];
+        
+        addTab(tabName, "", fileID);
+        reloadFiles();
       });
     }).on("disconnectedFromProjectRoom", (Object... os) -> {
       JSONArray receivedList = (JSONArray) os[0];
@@ -726,13 +835,10 @@ public class IU_EditorController implements Initializable {
       Platform.runLater(() -> {
         collaboratorsButtons.clear();
         setCollaboratorsIcons();
-        hoverListeners();
         menuItemsSelectedAction();
       });
     }).on("fileDeleted", (Object... os) -> {
-      Platform.runLater(()->{
-        reloadFiles();
-      });
+      reloadFiles();
     }).on("collaborationDeleted", (Object... os) -> {
       Platform.runLater(() -> {
         loadCollaborators();
@@ -746,7 +852,6 @@ public class IU_EditorController implements Initializable {
         collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
         collaboratorsButtons.clear();
         setCollaboratorsIcons();
-        hoverListeners();
         menuItemsSelectedAction();
       });
     }).on("collaborationSaved", (Object... os) -> {
@@ -757,7 +862,6 @@ public class IU_EditorController implements Initializable {
         collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
         
         setCollaboratorsIcons();
-        hoverListeners();
         menuItemsSelectedAction();
       });
     });
@@ -781,7 +885,7 @@ public class IU_EditorController implements Initializable {
 	controller.setFileList(fileList);
 	controller.setParent(this);
 	controller.setProjectToRun(selectedProject);
-	mainStage = (Stage) tabPaneArchivos.getScene().getWindow();
+	mainStage = (Stage) tabPaneFiles.getScene().getWindow();
 	controller.openRunProject(mainStage, rb, loader);
   }
   
@@ -789,7 +893,7 @@ public class IU_EditorController implements Initializable {
 	FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/GUIConsole.fxml"), rb);
 	GUIConsoleController controller = new GUIConsoleController();
 	loader.setController(controller);
-	mainStage = (Stage) tabPaneArchivos.getScene().getWindow();
+	mainStage = (Stage) tabPaneFiles.getScene().getWindow();
 	controller.openConsole(mainStage, rb);
   }
 }

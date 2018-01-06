@@ -1,10 +1,8 @@
 package graphics.editor;
 
 import graphics.tools.Tools;
-import io.socket.emitter.Emitter;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +29,6 @@ import logic.sockets.SocketFile;
 import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.json.JSONObject;
 import static tequilaide.TequilaIDE.socket;
 
 /**
@@ -123,7 +120,6 @@ public class IU_TabController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle rb) {
     this.rb = rb;
-	loadContextMenu();
 	borderPane.prefHeightProperty().bind(scrollPane.heightProperty());
 	borderPane.prefWidthProperty().bind(scrollPane.widthProperty());
 
@@ -212,37 +208,6 @@ public class IU_TabController implements Initializable {
 	return taEditor.getText();
   }
 
-  public void loadContextMenu() {
-    String intStringDeleteFile = rb.getString("deleteFile");
-	MenuItem menuItemDelete = new MenuItem(intStringDeleteFile);
-    
-    contextMenu.getItems().addAll(menuItemDelete);
-    
-	menuItemDelete.setOnAction(new EventHandler() {
-	  @Override
-      public void handle(Event event) {
-        tab.getTabPane().getTabs().remove(tab);
-        SocketFile socketFile = new SocketFile();
-        socketFile.deleteFile(fileID);
-        String intStringDeletedFileTitle = rb.getString("deletedFileTitle");
-        String intStringDeletedFileMessage = rb.getString("deletedFileMessage");
-        Tools.displayInformation(intStringDeletedFileTitle, intStringDeletedFileMessage);
-      }
-
-    });
-  }
-
-  @FXML
-  void loadContextMenu(ContextMenuEvent event) {
-	contextMenu.show(taEditor, event.getScreenX(), event.getScreenY());
-	event.consume();
-  }
-
-  @FXML
-  void hideContextMenu(MouseEvent event) {
-	contextMenu.hide();
-  }
-  
   @FXML
   void updateFile(KeyEvent event) {
     int roomNumber = projectID;

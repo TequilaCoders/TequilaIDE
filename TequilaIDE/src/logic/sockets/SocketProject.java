@@ -47,4 +47,12 @@ public class SocketProject {
     
     socket.emit("leaveProjectRoom", membershipToSend);
   }
+  
+  public void deleteProject(int projectID){
+	JSONObject projectToSend = new JSONObject();
+    
+    projectToSend.accumulate("projectID", projectID);
+
+    socket.emit("deleteProject", projectToSend);
+  }
 }

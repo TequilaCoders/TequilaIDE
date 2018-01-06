@@ -90,7 +90,6 @@ public class IU_AddCollaboratorController implements Initializable {
 
   /**
    * Metodo llamado al accionar el elemento buttonCancel
-   *
    * @param event
    */
   @FXML
@@ -99,6 +98,10 @@ public class IU_AddCollaboratorController implements Initializable {
     stage.close();
   }
 
+  /**
+   * Esta a la escucha de una tecla presionada en el textfield tfSearch
+   * @param event 
+   */
   @FXML
   void searchListener(KeyEvent event) {
     String searchCriteria = tfSearch.getText() + event.getText();
@@ -106,13 +109,17 @@ public class IU_AddCollaboratorController implements Initializable {
     searchCollaborator(searchCriteria);
   }
 
+  /**
+   * Busca a un colaborador en el servidor que coincida con el criterio de busqueda recibido
+   * @param searchCriteria 
+   */
   public void searchCollaborator(String searchCriteria) {
     SocketCollaborator socketCollaborator = new SocketCollaborator();
     socketCollaborator.searchCollaborator(searchCriteria);
 
     socket.on("searchFinalized", (Object... os) -> {
       if ((boolean) os[0]) {
-  
+
         JSONArray listRecovered;
         JSONObject objectRecovered;
         String jsonString;
@@ -128,7 +135,6 @@ public class IU_AddCollaboratorController implements Initializable {
         Platform.runLater(() -> {
           loadInformation(receivedUser);
         });
-
       } else {
         Platform.runLater(() -> {
           loadNoMatchMessage();
@@ -137,6 +143,10 @@ public class IU_AddCollaboratorController implements Initializable {
     });
   }
 
+  /**
+   * Muestra la biografia del usuario recibido
+   * @param userFound 
+   */
   public void loadInformation(User userFound) {
     String name = userFound.getAlias();
     String biography = userFound.getBiografia();
@@ -148,20 +158,29 @@ public class IU_AddCollaboratorController implements Initializable {
     collaboratorToSave = userFound;
   }
 
+  /**
+   * Muestra un mensaje de no coinidencias.
+   */
   public void loadNoMatchMessage() {
-    String noMatchMessage = "No hay coincidencias";
-    labelError.setText(noMatchMessage);
+    String intStringNoMatchMessage = rb.getString("NoMatchMessage");
+    labelError.setText(intStringNoMatchMessage);
     labelAlias.setText("");
     taBiography.setText("");
     buttonAddCollaborator.setDisable(true);
   }
 
+  /**
+   * Agrega un colaborador al sistema, verifica si este no esta repetido, si no es el mismo usuario
+   * creador del proyecto y si no se ha sobrepasado la cantidad maxima de colaboradores en el sistema.
+   * @param event 
+   */
   @FXML
   void addCollaborator(ActionEvent event) {
     int collaboratorID = collaboratorToSave.getIdUsuario();
 
     boolean isCollaboratorRepeated = searchCollaboratorInList(collaboratorID, collaboratorsList);
     boolean isCollaboratorAndUserTheSame = isCollaboratorAndUserTheSame(collaboratorID);
+    boolean isCollaboratorLimitSurpassed = checkCollaboratorLimits();
 
     if (isCollaboratorRepeated) {
       String intStringRepeatedCollaborator = rb.getString("repeatedCollaborator");
@@ -169,6 +188,9 @@ public class IU_AddCollaboratorController implements Initializable {
     } else if (isCollaboratorAndUserTheSame) {
       String intStringCollaboratorAndUserSame = rb.getString("collaboratorAndUserSame");
       Tools.displayWarningAlert(intStringCollaboratorAndUserSame, rb);
+    } else if (isCollaboratorLimitSurpassed) {
+      String intStringCollaboratorSurpassed = rb.getString("collaboratorSurpassed");
+      Tools.displayWarningAlert(intStringCollaboratorSurpassed, rb);
     } else {
       SocketCollaborator socketCollaborator = new SocketCollaborator();
       socketCollaborator.addCollaborator(collaboratorID, projectID);
@@ -179,14 +201,19 @@ public class IU_AddCollaboratorController implements Initializable {
 
           Stage stage = (Stage) labelAlias.getScene().getWindow();
           stage.close();
-
-          Tools.displayInformation("Guardado", "Colaboración guardada exitosamente!");
+         
         });
       });
     }
-
   }
-  
+
+  /**
+   * Busca a un colaborador en una lista de colaborades, regresa el colaborador que coincida con el 
+   * id recibido.
+   * @param collaboratorID
+   * @param collaboratorsList
+   * @return 
+   */
   private boolean searchCollaboratorInList(int collaboratorID, List<Collaborator> collaboratorsList){
     boolean flag = false;
     for (int i = 0; i < collaboratorsList.size(); i++) {
@@ -197,9 +224,26 @@ public class IU_AddCollaboratorController implements Initializable {
     return flag;
   }
   
+  /**
+   * Verifica que el id del colaborador a agregar y y el id del usuario no sean iguales.
+   * @param collaboratorID
+   * @return 
+   */
   public boolean isCollaboratorAndUserTheSame(int collaboratorID){
     boolean flag = false;
     if (user.getIdUsuario() == collaboratorID) {
+      flag = true;
+    }
+    return flag;
+  }
+  
+  /**
+   * Verifica si se ha alcanzado el limite de colaboradores, regresa true si es asi.
+   * @return 
+   */
+  public boolean checkCollaboratorLimits(){
+    boolean flag = false;
+    if (collaboratorsList.size() > 4) {
       flag = true;
     }
     return flag;

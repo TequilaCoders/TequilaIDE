@@ -1,9 +1,9 @@
 /**
- *
- * @version 1.0
- * @author Alan Yoset García Cruz
- * @author Miguel Alejandro Cámara Árciga
- */
+*
+* @version 1.0
+* @author Alan Yoset García Cruz
+* @author Miguel Alejandro Cámara Árciga
+*/
 
 var io = require("socket.io")(7000);
 var mysql = require("mysql");
@@ -16,221 +16,262 @@ var filesRooms = [];
 var user;
 
 var connection = mysql.createConnection({
-  host: "127.0.0.1",
-  user: "tequiladmin",
-  password: "tequiladmin",
-  database: "tequilaIDE",
-  port: 3306
+  multipleStatements: true,
+ 	host: "127.0.0.1",
+ 	user: "tequiladmin",
+ 	password: "tequiladmin",
+ 	database: "tequilaIDE",
+ 	port: 3306
 });
 
 console.log("Corriendo en el puerto 7000");
 
-io.on("connection", function(socket) {
+io.on("connection",function(socket) {
   console.log("conectado");
 
   socket.on("disconnect", (reason) => {
     console.log("desconectado");
     filesRooms = [];
     if (user != null) {
-      leaveProjectRoom(user, connection);
-    }
+    leaveProjectRoom(user, connection);
+  }
   });
 
-  //clients++;
-  //io.sockets.emit('broadcast',{ description: clients + ' clients connected!'});
+   //clients++;
+   //io.sockets.emit('broadcast',{ description: clients + ' clients connected!'});
 
-  socket.on("access", function(user) {
+  socket.on("access", function(user){
     logIn(user, connection);
   });
 
-  socket.on("aliasChanged", function(alias) {
+  socket.on("aliasChanged", function(alias){
     verifyAlias(alias, connection);
   });
 
-  socket.on("emailChanged", function(email) {
+  socket.on("emailChanged", function(email){
     verifyEmail(email, connection);
   });
 
-  socket.on("saveUser", function(user) {
+  socket.on("saveUser", function(user){
     registerUser(user, connection);
   });
 
-  socket.on("saveFile", function(file) {
+  socket.on("saveFile", function(file){
     saveFile(file, connection);
   });
 
-  socket.on("updateFile", function(file) {
+  socket.on("updateFile", function(file){
     updateFile(file, connection);
   });
 
-  socket.on("loadFiles", function(project) {
+  socket.on("loadFiles", function(project){
     recoverFiles(project, connection);
   });
 
-  socket.on("reloadFiles", function(project) {
+  socket.on("reloadFiles", function(project){
     reloadFiles(project, connection);
-  });
+  }); 
 
-  socket.on("joinProjectRoom", function(connectedUser) {
+  socket.on("joinProjectRoom", function(connectedUser){
     joinProjectRoom(connectedUser, connection);
   });
 
-  socket.on("leaveProjectRoom", function(connectedUser) {
+  socket.on("leaveProjectRoom", function(connectedUser){
     leaveProjectRoom(connectedUser, connection);
   });
 
-  socket.on("joinFilesRoom", function(file) {
-    joinFilesRoom(file, connection);
+  socket.on("joinFilesRoom", function(file){
+    joinFilesRoom(file,connection);
   });
 
-  socket.on("leaveFilesRoom", function() {
+  socket.on("leaveFilesRoom", function(){
     leaveFilesRoom(connection);
   });
 
-  socket.on("loadProjects", function(user) {
+  socket.on("loadProjects", function(user){
 
     recoverProjects(user, connection);
-  });
+  }); 
 
-  socket.on("saveProject", function(project) {
+  socket.on("saveProject", function(project){
     saveProject(project, connection);
-  });
+  }); 
 
-  socket.on("searchProject", function(criteria) {
-    searchProject(criteria, connection);
-  });
+  socket.on("deleteProject", function(project){
+    deleteProject(project, connection);
+  }); 
 
-  socket.on("getCollaborators", function(projectID) {
+  socket.on("getCollaborators", function(projectID){
     getCollaborators(projectID, connection);
-  });
+  }); 
 
-  socket.on("searchUser", function(criteria) {
+  socket.on("searchUser", function(criteria){
     searchUser(criteria, connection);
   });
 
-  socket.on("saveCollaborator", function(collaboration) {
+  socket.on("saveCollaborator", function(collaboration){
     saveCollaborator(collaboration, connection);
-  });
+  });  
 
-  socket.on("deleteCollaborator", function(collaboration) {
+  socket.on("deleteCollaborator", function(collaboration){
     deleteCollaborator(collaboration, connection);
-  });
+  });  
 
-  socket.on("deleteFile", function(file) {
+  socket.on("deleteFile", function(file){
     deleteFile(file, connection);
-  });
+  }); 
 
-  socket.on("loadSharedProjects", function(user) {
+  socket.on("loadSharedProjects", function(user){
     loadSharedProjects(user, connection);
+  }); 
+
+  socket.on("runCompiler", function(project){ 
+    runCompiler(project, connection);
+  }); 
+
+  socket.on("runProgram", function(project){
+    runProgram(project,connection);
   });
 
-  socket.on("runCompiler", function(project) {
-    createProgramFiles(project, connection);
-    compileProject(project.language, project.projectID);
-  });
-
-  socket.on("runProgram", function(project) {
-    if (project.language == 'py') {
-      createProgramFiles(project, connection);
-      runProgram(project.projectID, project.mainClass, project.language, project.arguments);
-    } else {
-      runProgram(project.projectID, project.mainClass, project.language, project.arguments);
+  function runProgram(project, connection){
+    switch(project.language) {
+      case 'java':
+        runJava(project.mainClass,project.projectID);
+        break;
+      case 'cpp':
+        runCpp(project.mainClass,project.projectID);
+        break;
+      case 'py':
+        runPython(project, project.mainClass,connection);
+        break; 
     }
+  }
 
-  });
+  function runCompiler(project,connection){
+    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
+      if (error) {
+        throw error;
+      } else {
+        
+        var files = result; 
+        var fs = require('fs');
+    	var dirname = ""+project.projectID;
 
-  socket.on("updateBiography", function(user) {
-    updateBiography(user, connection);
-  });
+	    if (!fs.existsSync(dirname)) {
+	      fs.mkdirSync(dirname);
+	    }
 
-  /**
-   * Crea un archivo
-   * @param {string} fileName nombre del archivo
-   * @param {string} fileType extensión del archivo
-   * @param {string} fileContent contenido del archivo
-   * @param {string} directory directorio donde se desea guardar el archivo
-   */
-  function createFile(fileName, fileType, fileContent, directory) {
+        for (var i = 0; i < files.length; i++) {
+          createProgramFile(files[i],project.projectID);
+        }
+
+        switch(project.language) {
+          case 'java':
+            compileJava(project.projectID);
+            break;
+          case 'cpp':
+            compileCpp(project.projectID);
+            break;
+        }
+      }
+    });
+  }
+
+  function createProgramFile(file, projectID){
     var fs = require('fs');
-    var filePath = directory + "/" + fileName + "." + fileType;
-
-    fs.writeFile(filePath, fileContent, function(err) {
+    fs.writeFile(projectID + "/" + file.nombre + "." + file.tipo, file.contenido, function(err) {
       if (err) {
         return console.log(err);
       }
     });
   }
 
-  /**
-   * Crea los archivos de programa de un proyecto dado
-   * @param {JSON} project JSON object de tipo proyecto
-   * @param {MySQL} connection la conexión con la base de datos MySQL
-   */
-  function createProgramFiles(project, connection) {
-    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?", [project.projectID], function(error, result) {
+  function compileJava(directory){
+    var spawn = require('child_process').spawn;
+    var compile = spawn('javac', [directory+'/*.java']);
+
+    compile.stderr.on('data', function (data) {
+      socket.emit("operationFinish", String(data));
+    });
+
+    compile.on('close', function (code) {
+      if (code == 0) {
+        socket.emit("operationFinish", "BUILD SUCCESSFUL, CODE: " + String(code));
+      } else{
+        socket.emit("operationFinish", "BUILD FAILED, CODE: " + String(code));
+      }
+      
+    });
+  }
+
+  function compileCpp(directory){
+    var spawn = require('child_process').spawn;
+    var compile = spawn('gcc', [directory+'/*.cpp']);
+    
+    compile.stdout.on('data', function (data) {
+      socket.emit("operationFinish", "BUILD SUCCESSFUL");
+    });
+
+    compile.stderr.on('data', function (data) {
+      socket.emit("operationFinish", String(data));
+    });
+  }
+
+  function runJava(mainClass, directory){
+    var spawn = require('child_process').spawn;
+    var run = spawn('java', ['-cp', directory, mainClass]);
+    
+    run.stdout.on('data', function (output) {
+      socket.emit("operationFinish", String(output));
+    });
+    
+    run.stderr.on('data', function (output) {
+      socket.emit("operationFinish", String(output));
+    });
+    
+    run.on('close', function (output) {
+      socket.emit("operationFinish", String(output));
+    }); 
+  }
+
+  function runCpp(mainClass){
+    
+  }
+
+  function runPython(project, mainClass, connection){
+    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
       if (error) {
         throw error;
       } else {
-        var files = result;
+        
+        var files = result; 
         var fs = require('fs');
-        var directory = String(project.projectID);
+    	var dirname = ""+project.projectID;
 
-        if (!fs.existsSync(directory)) {
-          fs.mkdirSync(directory);
-        }
+	    if (!fs.existsSync(dirname)) {
+	      fs.mkdirSync(dirname);
+	    }
 
         for (var i = 0; i < files.length; i++) {
-          createFile(files[i].nombre, files[i].tipo, files[i].contenido, directory);
+          createProgramFile(files[i], project.projectID);
         }
       }
     });
-  }
 
-  /**
-   * Compila los archivos de una extensión determinada (java o cpp) en un directorio determinado
-   * @param {string} language el lenguaje de los archivos que se van a compilar
-   * @param {string} directory el directorio donde se encuntran los archivos
-   */
-  function compileProject(language, directory) {
     var spawn = require('child_process').spawn;
-
-    if (language == 'java') {
-      var compile = spawn('javac', [directory + '/*.java']);
-    } else {
-      var compile = spawn('g++', ['-o', directory+'/'+directory+'Program', directory+'/*.cpp']);
-    }
-
-    compile.stderr.on('data', function(data) {
-      socket.emit("compilationFinish", 1, String(data));
+    var run = spawn('python', [project.projectID+'/'+mainClass+".py"]);
+    
+    run.stdout.on('data', function (output) {
+      socket.emit("operationFinish", String(output));
     });
-
-    compile.on('close', function(code) {
-      socket.emit("compilationFinish", code);
+    
+    run.stderr.on('data', function (output) {
+      socket.emit("operationFinish", String(output));
     });
-  }
-
-  function runProgram(directory, mainClass, language, args) {
-    switch (language) {
-      case 'java':
-        var command = 'java -cp ' + directory + ' ' + mainClass + ' ' + args;
-        break;
-      case 'cpp':
-        var command = directory + '\\' + directory + 'Program ' + args;
-        break;
-      case 'py':
-        var command = 'python '+ directory + '/' + mainClass + '.py ' + args;
-        break;
-    }
-
-    var exec = require('child_process').exec, child;
-    child = exec(command, function(error, stdout, stderr) {
-        socket.emit("operationFinish", stdout);
-        socket.emit("operationFinish", stderr);
-        if (error !== null) {
-          console.log('exec error: ' + error);
-        }
-      });
-
+    
+    run.on('close', function (output) {
+      socket.emit("operationFinish", String(output));
+    }); 
   }
 
   function logIn(user, connection) {
@@ -260,7 +301,7 @@ io.on("connection", function(socket) {
 
   function verifyAlias(alias, connection) {
     console.log([alias.alias]);
-    var query = connection.query("select alias from usuario where alias=?", [alias.alias], function(error, result) {
+    var query = connection.query("select alias from usuario where alias=?",[alias.alias],function(error,result){
       if (error) {
         throw error;
       } else {
@@ -284,7 +325,7 @@ io.on("connection", function(socket) {
 
   function verifyEmail(email, connection) {
     console.log([email.email]);
-    var query = connection.query("select correo from usuario where correo=?", [email.email], function(error, result) {
+    var query = connection.query("select correo from usuario where correo=?",[email.email],function(error,result){
       if (error) {
         throw error;
       } else {
@@ -306,10 +347,10 @@ io.on("connection", function(socket) {
     });
   }
 
-  function registerUser(user, connection) {
+  function registerUser(user, connection){
     console.log([user.name]);
     var values = [user.name, user.alias, user.email, user.password];
-    var query = connection.query("insert into usuario(nombres, alias, correo, clave) values (?)", [values], function(error, result) {
+    var query = connection.query("insert into usuario(nombres, alias, correo, clave) values (?)",[values],function(error,result){
 
       if (error) {
         throw error;
@@ -320,21 +361,22 @@ io.on("connection", function(socket) {
     });
   }
 
-  function saveFile(file, connection) {
+  function saveFile(file, connection){
     console.log([file.name]);
     var values = [file.name, file.content, file.projectID, file.fileType];
-    var query = connection.query("insert into archivo(nombre, contenido, Proyecto_idProyecto, tipo) values (?)", [values], function(error, result) {
+    var query = connection.query("insert into archivo(nombre, contenido, Proyecto_idProyecto, tipo) values (?)",[values],function(error,result){
 
       if (error) {
         throw error;
       } else {
+        console.log("ARCHIVO GUARDADO EXITOSAMENTE");
         socket.emit("fileSaved", result.insertId, file.name);
       }
     });
   }
 
-  function updateFile(file, connection) {
-    var query = connection.query("update archivo set contenido = ? where idarchivo = ?", [file.content, file.fileID], function(error, result) {
+  function updateFile(file, connection){
+    var query = connection.query("update archivo set contenido = ? where idarchivo = ?",[file.content, file.fileID],function(error,result){
       if (error) {
         throw error;
       } else {
@@ -345,9 +387,9 @@ io.on("connection", function(socket) {
     });
   }
 
-  function recoverFiles(project, connection) {
+  function recoverFiles(project, connection){
 
-    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?", [project.projectID], function(error, result) {
+    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
 
       if (error) {
         throw error;
@@ -357,9 +399,9 @@ io.on("connection", function(socket) {
     });
   }
 
-  function reloadFiles(project, connection) {
+  function reloadFiles(project, connection){
 
-    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?", [project.projectID], function(error, result) {
+    var query = connection.query("select * from archivo where Proyecto_idProyecto = ?",[project.projectID],function(error,result){
 
       if (error) {
         throw error;
@@ -369,102 +411,102 @@ io.on("connection", function(socket) {
     });
   }
 
-  function joinFilesRoom(file, connection) {
+  function joinFilesRoom(file, connection){
     room = "room-" + file.fileID;
 
     socket.leave(filesRooms[0]);
     filesRooms = [];
 
-    socket.join(room);
+        socket.join(room);
 
-    filesRooms.push(room);
+        filesRooms.push(room);
 
-    console.log("se unio al nuevo room de archivos que creo" + JSON.stringify(filesRooms));
-    io.sockets.in(room).emit('connectToFilesRoom', filesRooms[0]);
+        console.log("se unio al nuevo room de archivos que creo" + JSON.stringify(filesRooms));
+        io.sockets.in(room).emit('connectToFilesRoom', filesRooms[0]);  
 
   }
 
-  function leaveFilesRoom(connection) {
+  function leaveFilesRoom(connection){
 
     //var room = file.fileID;
 
-    socket.leave(filesRooms[0]);
-    console.log("rooms archivos antes " + JSON.stringify(filesRooms));
-    //var index = filesRooms.findIndex(x => x.room==room);
-    //filesRooms.splice(index, 1);
+        socket.leave(filesRooms[0]);
+        console.log("rooms archivos antes " + JSON.stringify(filesRooms));
+        //var index = filesRooms.findIndex(x => x.room==room);
+        //filesRooms.splice(index, 1);
 
-    filesRooms = [];
+        filesRooms = [];
 
-    console.log("rooms archivos despues " + JSON.stringify(filesRooms));
-    //io.sockets.in(room).emit('disconnectFromFilesRoom', filesRooms);
+console.log("rooms archivos despues " + JSON.stringify(filesRooms));
+        //io.sockets.in(room).emit('disconnectFromFilesRoom', filesRooms);  
 
   }
 
-  function joinProjectRoom(connectedUser, connection) {
+  function joinProjectRoom(connectedUser, connection){
 
     user = connectedUser;
     room = connectedUser.projectID;
     var filteredRooms = [];
 
-    console.log("se unio al nuevo room que creo");
-    socket.join(room);
-    users = {
-      room: room,
-      idUsuario: connectedUser.userID
-    }
-    projectsRooms.push(users);
+      console.log("se unio al nuevo room que creo");
+        socket.join(room);
+        users = {
+          room: room,
+          idUsuario: connectedUser.userID
+        }
+        projectsRooms.push(users);
 
-    for (var i = projectsRooms.length - 1; i >= 0; i--) {
-      if (projectsRooms[i].room == room) {
-        filteredRooms.push(projectsRooms[i]);
-      }
-    }
-    console.log("se unio al nuevo room que creo" + JSON.stringify(projectsRooms));
-    io.sockets.in(room).emit('connectedToProjectRoom', filteredRooms);
+        for (var i = projectsRooms.length - 1; i >= 0; i--) {
+          if (projectsRooms[i].room == room) {
+            filteredRooms.push(projectsRooms[i]);
+          }
+        }
+        console.log("se unio al nuevo room que creo" + JSON.stringify(projectsRooms));
+        io.sockets.in(room).emit('connectedToProjectRoom', filteredRooms);  
 
   }
 
-  function leaveProjectRoom(connectedUser, connection) {
+  function leaveProjectRoom(connectedUser, connection){
 
     room = connectedUser.projectID;
     var filteredRooms = [];
 
-    console.log("dejo el room");
+      console.log("dejo el room");
 
-    console.log("rooms antes " + JSON.stringify(projectsRooms));
+      console.log("rooms antes " + JSON.stringify(projectsRooms));
 
-    socket.leave(room);
+        socket.leave(room);
 
-    users = {
-      room: room,
-      idUsuario: connectedUser.userID
-    }
+        users = {
+          room: room,
+          idUsuario: connectedUser.userID
+        }
 
-    //var index = rooms.indexOf(users);
-    var index = projectsRooms.findIndex(x => x.room == room & x.idUsuario == connectedUser.userID);
+        //var index = rooms.indexOf(users);
+        var index = projectsRooms.findIndex(x => x.room==room & x.idUsuario == connectedUser.userID);
 
-    console.log("indice del usuario a eliminar " + index);
+        console.log("indice del usuario a eliminar " + index);
 
-    projectsRooms.splice(index, 1);
+        projectsRooms.splice(index, 1);
 
-    console.log("rooms despues " + JSON.stringify(projectsRooms));
+        console.log("rooms despues " + JSON.stringify(projectsRooms));
 
-    for (var i = projectsRooms.length - 1; i >= 0; i--) {
-      if (projectsRooms[i].room == room) {
-        filteredRooms.push(projectsRooms[i]);
-      }
-    }
+        for (var i = projectsRooms.length - 1; i >= 0; i--) {
+          if (projectsRooms[i].room == room) {
+            filteredRooms.push(projectsRooms[i]);
+          }
+        }
 
-    console.log("rooms filtrados " + JSON.stringify(filteredRooms));
-    io.sockets.in(room).emit('disconnectedFromProjectRoom', filteredRooms);
+        console.log("rooms filtrados " + JSON.stringify(filteredRooms));
+        io.sockets.in(room).emit('disconnectedFromProjectRoom', filteredRooms);  
 
-    console.log("room = " + room);
+        console.log("room = " + room);
 
   }
 
-  function recoverProjects(user, connection) {
+  function recoverProjects(user, connection){
     console.log([user.userID]);
-    var query = connection.query("select * from proyecto where Usuario_idUsuario = ?", [user.userID], function(error, result) {
+    var query = connection.query("select * from proyecto where Usuario_idUsuario = ?",[user.userID],function(error,result){
 
       if (error) {
         throw error;
@@ -474,10 +516,10 @@ io.on("connection", function(socket) {
     });
   }
 
-  function saveProject(project, connection) {
+  function saveProject(project, connection){
     console.log([project.name]);
     var values = [project.name, project.programmingLanguage, project.userID];
-    var query = connection.query("insert into proyecto(nombre, lenguaje, Usuario_idUsuario) values (?)", [values], function(error, result) {
+    var query = connection.query("insert into proyecto(nombre, lenguaje, Usuario_idUsuario) values (?)",[values],function(error,result){
 
       if (error) {
         throw error;
@@ -487,9 +529,44 @@ io.on("connection", function(socket) {
     });
   }
 
-  function getCollaborators(projectID, connection) {
+  function deleteProject(project, connection){
+
+    /*var sql = "delete from archivo where proyecto_idproyecto = ?;delete from colaborador where proyecto_idproyecto = ?;delete from Proyecto where idproyecto = ?";
+    connection.query(sql,[project.projectID, project.projectID, project.projectID],function(error,result){
+
+      if (error) {
+        throw error;
+      } else {
+        console.log("proyecto eliminado");
+       socket.emit("projectDeleted", true);
+      }
+    });*/
+
+    var query = connection.query("delete from archivo where proyecto_idproyecto = ?",[project.projectID],function(error,result){
+
+      if (error) {
+        throw error;
+      }
+    });
+
+    var query = connection.query("delete from colaborador where proyecto_idproyecto = ?",[project.projectID],function(error,result){
+
+      if (error) {
+        throw error;
+      }
+    });
+
+    var query = connection.query("delete from Proyecto where idproyecto = ?",[project.projectID],function(error,result){
+
+      if (error) {
+        throw error;
+      }
+    });
+  }
+
+  function getCollaborators(projectID, connection){
     console.log([projectID.projectID]);
-    var query = connection.query("select idUsuario, alias, biografia from Usuario inner join Colaborador on idusuario=usuario_idusuario where proyecto_idProyecto= ?", [projectID.projectID], function(error, result) {
+    var query = connection.query("select idUsuario, alias, biografia from Usuario inner join Colaborador on idusuario=usuario_idusuario where proyecto_idProyecto= ?",[projectID.projectID],function(error,result){
 
       if (error) {
         throw error;
@@ -499,31 +576,31 @@ io.on("connection", function(socket) {
     });
   }
 
-  function searchUser(criteria, connection) {
+  function searchUser(criteria, connection){
     console.log([criteria.searchCriteria]);
-    var query = connection.query("select idUsuario, alias, biografia from Usuario where alias= ?", [criteria.searchCriteria], function(error, result) {
+    var query = connection.query("select idUsuario, alias, biografia from Usuario where alias= ?",[criteria.searchCriteria],function(error,result){
 
       if (error) {
         throw error;
       } else {
-        if (result.length > 0) {
-          if (result[0].alias == criteria.searchCriteria) {
-            socket.emit("searchFinalized", true, result);
+        if (result.length > 0) {    
+          if(result[0].alias == criteria.searchCriteria){
+          socket.emit("searchFinalized",true, result);
           } else {
             socket.emit("searchFinalized", false, "no coincidences");
           }
-        } else {
+          }else {
           console.log("no entra");
           socket.emit("searchFinalized", false, "no existe el usuario");
         }
-      }
+        }
     });
   }
 
-  function saveCollaborator(collaboration, connection) {
+  function saveCollaborator(collaboration, connection){
     console.log([collaboration.collaboratorID]);
     var values = [collaboration.collaboratorID, collaboration.projectID];
-    var query = connection.query("insert into colaborador(Usuario_idusuario, proyecto_idproyecto) values (?)", [values], function(error, result) {
+    var query = connection.query("insert into colaborador(Usuario_idusuario, proyecto_idproyecto) values (?)",[values],function(error,result){
 
       if (error) {
         throw error;
@@ -533,10 +610,10 @@ io.on("connection", function(socket) {
     });
   }
 
-  function deleteCollaborator(collaboration, connection) {
+  function deleteCollaborator(collaboration, connection){
     console.log([collaboration.collaboratorID]);
     var values = [collaboration.collaboratorID, collaboration.projectID];
-    var query = connection.query("delete from colaborador where Usuario_idusuario=? and proyecto_idproyecto=?", values, function(error, result) {
+    var query = connection.query("delete from colaborador where Usuario_idusuario=? and proyecto_idproyecto=?",values,function(error,result){
 
       if (error) {
         throw error;
@@ -546,39 +623,30 @@ io.on("connection", function(socket) {
     });
   }
 
-  function deleteFile(file, connection) {
+  function deleteFile(file, connection){
     console.log([file.fileID]);
 
-    var query = connection.query("delete from archivo where idArchivo =?", [file.fileID], function(error, result) {
+    var query = connection.query("delete from archivo where idArchivo =?",[file.fileID],function(error,result){
 
       if (error) {
         throw error;
       } else {
+        console.log("Archivo eliminado");
         socket.emit("fileDeleted", true);
       }
     });
   }
 
-  function loadSharedProjects(user, connection) {
+  function loadSharedProjects(user, connection){
     console.log([user.userID]);
 
-    var query = connection.query("select idProyecto, p.nombre, p.lenguaje from proyecto p inner join colaborador c on idProyecto=proyecto_idproyecto where c.usuario_idusuario = ?", [user.userID], function(error, result) {
+    var query = connection.query("select idProyecto, p.nombre, p.lenguaje from proyecto p inner join colaborador c on idProyecto=proyecto_idproyecto where c.usuario_idusuario = ?",[user.userID],function(error,result){
 
       if (error) {
         throw error;
       } else {
         console.log(result);
         socket.emit("sharedProjectsRecovered", true, result);
-      }
-    });
-  }
-
-  function updateBiography(user, connection) {
-    var query = connection.query("update usuario set biografia = ? where idUsuario = ?", [user.biography, user.userId], function(error, result) {
-      if (error) {
-        throw error;
-      } else {
-        socket.emit("biographySaved", true);
       }
     });
   }

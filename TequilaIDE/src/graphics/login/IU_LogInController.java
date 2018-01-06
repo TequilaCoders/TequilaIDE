@@ -152,7 +152,6 @@ public class IU_LogInController implements Initializable {
      Platform.runLater(() -> {
 		if ((boolean) os[0]) {
 		  User userReceived = createUser(os[1]);
-		  System.out.println("usuario " + userReceived.getAlias());
 		  Stage stage = (Stage) tfUser.getScene().getWindow();
 		  IU_FileExplorerController newScene = new IU_FileExplorerController();
 		  newScene.openFileExplorer(stage, rb, userReceived);

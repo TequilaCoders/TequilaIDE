@@ -12,7 +12,7 @@
             <VBox fx:id="vboxNumberLines" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="40.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER" />
          </left>
          <center>
-            <CodeArea id="codeArea" fx:id="taEditor" autoScrollOnDragDesired="false" onContextMenuRequested="#loadContextMenu" onKeyReleased="#updateFile" onKeyTyped="#addNumberLines" onMousePressed="#hideContextMenu" prefHeight="192.0" prefWidth="558.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER" />
+            <CodeArea id="codeArea" fx:id="taEditor" autoScrollOnDragDesired="false" onKeyReleased="#updateFile" onKeyTyped="#addNumberLines" prefHeight="192.0" prefWidth="558.0" stylesheets="@../../resources/themes/theme_Tequila.css" BorderPane.alignment="CENTER" />
          </center>
       </BorderPane>
    </content>

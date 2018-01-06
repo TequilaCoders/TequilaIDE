@@ -32,6 +32,11 @@ import logic.domain.Project;
  */
 public class Tools {
 
+  /**
+   * Muestra una alerta de tipo advertencia
+   * @param message
+   * @param rb 
+   */
   public static void displayWarningAlert(String message, ResourceBundle rb) {
     String intStringWarningTitle = rb.getString("intStringWarningTitle");
     String intStringAccept = rb.getString("buttonAccept");
@@ -43,7 +48,38 @@ public class Tools {
     alert.setHeaderText(null);
     alert.show();
   }
+  
+  /**
+   * Muestra una alerta de tipo advertencia con los botones Aceptar y Cancelar
+   * @param message
+   * @param rb
+   * @return 
+   */
+  public static boolean displayWarningAlertWithChoice(String message, ResourceBundle rb) {
+    boolean choice = false;
+    String intStringWarningTitle = rb.getString("intStringWarningTitle");
+    String intStringAccept = rb.getString("buttonAccept");
+    String intStringCancel = rb.getString("buttonCancel");
+    
+    ButtonType btAccept = new ButtonType(intStringAccept, ButtonBar.ButtonData.OK_DONE);
+    ButtonType btCancel = new ButtonType(intStringCancel, ButtonBar.ButtonData.CANCEL_CLOSE);
 
+    Alert alert = new Alert(Alert.AlertType.WARNING, message, btAccept, btCancel);
+    alert.setTitle(intStringWarningTitle);
+    alert.setHeaderText(null);
+    
+    Optional<ButtonType> result = alert.showAndWait();
+    if (result.get() == btAccept){
+      choice = true;
+    } 
+    return choice;
+  }
+
+  /**
+   * Muestra una alerta del tipo Confirmación
+   * @param message
+   * @param rb 
+   */
   public static void displayConfirmationAlert(String message, ResourceBundle rb) {
     String intStringConfirmTitle = rb.getString("intStringConfirmationTitle");
     String intStringAccept = rb.getString("buttonAccept");
@@ -56,6 +92,11 @@ public class Tools {
     alert.show();
   }
   
+  /**
+   * Muestra una alerta personalizada 
+   * @param title
+   * @param message 
+   */
   public static void displayInformation(String title, String message) {
     Stage primaryStage = new Stage();
     StackPane stackPane = new StackPane();
@@ -81,6 +122,12 @@ public class Tools {
     primaryStage.show();
   }
   
+  /**
+   * Muestra una alerta con la opcion de ingresar información
+   * @param title
+   * @param content
+   * @return 
+   */
   public static String displayTextInputDialog(String title, String content) {
 	TextInputDialog dialog = new TextInputDialog("");
 	dialog.setTitle(title);
@@ -98,6 +145,13 @@ public class Tools {
 	}
   }
  
+  /**
+   * Muestra una alerta del tipo choiceDialog, con diferentes opciones para elegir.
+   * @param title
+   * @param content
+   * @param choices
+   * @return 
+   */
   public static String displayChoiceDialog(String title, String content, List choices) {
 	ChoiceDialog<File> dialog = new ChoiceDialog<>(choices.get(0), choices);
 	dialog.setTitle(title);
@@ -111,6 +165,11 @@ public class Tools {
 	}
   }
 
+  /**
+   * Regresa un password hasheado del estilo SHA-256.
+   * @param password
+   * @return 
+   */
   public static String getHashedPassword(String password) {
     String result = null;
 
@@ -130,6 +189,7 @@ public class Tools {
   /**
    * Método que regresa el proyecto cuyo nombre coincida con el parametro de entrada
    * @param name
+   * @param projectList
    * @return
    */
   public static Project searchProjectByName(String name, List<Project> projectList) {
@@ -145,6 +205,12 @@ public class Tools {
     return selectedProject;
   }
   
+  /**
+   * Aplica una expresión regular a una cadena recibida y regresa el resultado en forma de booleano.
+   * @param field
+   * @param regex
+   * @return 
+   */
   public static boolean applyRegularExpression(String field, String regex){
     boolean flag;
     Pattern p = Pattern.compile(regex);
@@ -154,6 +220,13 @@ public class Tools {
       return flag;
   }
   
+  /**
+   * Verifica que la longitud de la cadena recibida este entre los valores minimo y maximo.
+   * @param field
+   * @param minimo
+   * @param maximo
+   * @return 
+   */
   public static boolean checkLenght(String field, int minimo, int maximo){
     boolean isLenghtOk = false;
     int lenght = field.length();
