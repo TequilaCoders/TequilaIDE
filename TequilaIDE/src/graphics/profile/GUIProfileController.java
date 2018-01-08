@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextFormatter;
 import javafx.stage.Stage;
 import logic.domain.User;
 import logic.sockets.SocketUser;
@@ -37,6 +38,7 @@ public class GUIProfileController implements Initializable {
   private Button buttonCancel;
   
   private User user; 
+  private static final int MAX_CHARS = 299;
 
   /**
    * Initializes the controller class.
@@ -46,7 +48,10 @@ public class GUIProfileController implements Initializable {
 	buttonAlias.setText(user.getAlias());
 	buttonEmail.setText(user.getCorreo());
 	taBiography.setText(user.getBiografia());
-	
+
+	taBiography.setTextFormatter(new TextFormatter<>(change -> 
+			change.getControlNewText().length() <= MAX_CHARS ? change : null));
+
 	if (user.getBiografia() != null) {
 	  taBiography.setOnKeyReleased(event -> {
 		String newBio = taBiography.getText();

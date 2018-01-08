@@ -46,7 +46,7 @@
       </JFXButton>
       <Pane prefHeight="308.0" prefWidth="400.0">
          <children>
-            <TextArea fx:id="taBiography" layoutX="29.0" layoutY="13.0" prefHeight="175.0" prefWidth="342.0" />
+            <TextArea fx:id="taBiography" layoutX="29.0" layoutY="13.0" prefHeight="175.0" prefWidth="342.0" wrapText="true" />
             <Button fx:id="buttonAcept" disable="true" layoutX="100.0" layoutY="198.0" mnemonicParsing="false" onAction="#updateBiography" prefWidth="125.0" text="%buttonAcept">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="16.0" />

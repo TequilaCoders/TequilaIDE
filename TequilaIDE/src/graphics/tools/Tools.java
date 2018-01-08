@@ -17,6 +17,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextFormatter;
@@ -140,10 +141,19 @@ public class Tools {
    * @param pattern
    * @return 
    */
-  public static String displayTextInputDialog(String title, String content, String pattern) {
+  public static String displayTextInputDialog(String title, String content, String pattern, ResourceBundle rb) {
 	TextInputDialog dialog = new TextInputDialog("");
 	dialog.setTitle(title);
 	dialog.setContentText(content);
+	dialog.setHeaderText(null);
+	
+	String intStringAccept = rb.getString(BUTTONACEPT);
+	String intStringCancel = rb.getString("buttonCancel");
+
+	ButtonType btAccept = new ButtonType(intStringAccept, ButtonBar.ButtonData.OK_DONE);
+	ButtonType btCancel = new ButtonType(intStringCancel, ButtonBar.ButtonData.CANCEL_CLOSE);
+	dialog.getDialogPane().getButtonTypes().clear();
+    dialog.getDialogPane().getButtonTypes().addAll(btAccept, btCancel);
 	
 	Pattern patternFileName = Pattern.compile(pattern);
 	TextFormatter formatoFileName = new TextFormatter((UnaryOperator<TextFormatter.Change>) change -> {

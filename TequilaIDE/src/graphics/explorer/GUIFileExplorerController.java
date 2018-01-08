@@ -65,9 +65,6 @@ public class GUIFileExplorerController implements Initializable {
   private JFXButton buttonLogOut;
 
   @FXML
-  private JFXButton buttonSetUp;
-
-  @FXML
   private JFXButton buttonProfileOptions;
 
   @FXML
@@ -302,30 +299,6 @@ public class GUIFileExplorerController implements Initializable {
   }
 
   /**
-   * Cambia la apariencia del boton cuando se posiciona el mouse en el boton
-   * @param event
-   */
-  @FXML
-  void buttonSetUpMouseEntered(MouseEvent event) {
-	buttonSetUp.setStyle(BACKGROUND_COLOR);
-	buttonSetUp.setPrefHeight(36);
-	buttonSetUp.setMaxHeight(36);
-	buttonSetUp.setMinHeight(36);
-  }
-
-  /**
-   * Cambia la apariencia del boton cuando el mouse sale del area del botón.
-   * @param event
-   */
-  @FXML
-  void buttonSetUpMouseExited(MouseEvent event) {
-	buttonSetUp.setStyle(BUTTONS_BACKGROUND);
-	buttonSetUp.setPrefHeight(32);
-	buttonSetUp.setMaxHeight(32);
-    buttonSetUp.setMinHeight(32);
-  }
-
-  /**
    * Listener en el elemento tfSearchProject que al encontrar un proyecto que coincida con el criterio
    * ingresado lo muestra en el flowPaneProjects.
    */
@@ -352,7 +325,6 @@ public class GUIFileExplorerController implements Initializable {
   private void loadProfileMenuButtons() {
     nodeListProfile.addAnimatedNode(buttonProfile);
     nodeListProfile.addAnimatedNode(buttonProfileOptions);
-    nodeListProfile.addAnimatedNode(buttonSetUp);
 	nodeListProfile.addAnimatedNode(buttonLogOut);
 	nodeListProfile.setSpacing(15);
   }

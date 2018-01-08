@@ -53,6 +53,8 @@ public class GUILogInController implements Initializable {
   private ImageView aliasRedCross;
   @FXML
   private ImageView passwordRedCross;
+  @FXML
+  private Hyperlink hpGithub;
   
   List<Project> projectList = new ArrayList<>();
   private ResourceBundle rb;
@@ -67,6 +69,8 @@ public class GUILogInController implements Initializable {
   public void initialize(URL url, ResourceBundle rb) {
     changingLanguage = false;
     this.rb = rb;
+	
+	hpGithub.setOnAction(event -> goToURL("https://github.com/TequilaCoders/TequilaIDE"));
     
     drawerRegistrar.setOnDrawerClosed(event -> {
       drawerRegistrar.toBack();
@@ -230,7 +234,7 @@ public class GUILogInController implements Initializable {
    */
   public void openConnection() {
     try {
-      socket = IO.socket("http://localhost:7000");
+      socket = IO.socket("http://192.168.43.68:7000");
       socket.on(Socket.EVENT_DISCONNECT, (Object... os) -> {
         Platform.runLater(() -> {
           if (!changingLanguage) { //Esto para que? 
@@ -251,5 +255,25 @@ public class GUILogInController implements Initializable {
       Logger.getLogger(TequilaIDE.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
+  
+  /**
+   * Permite abrir una página web desde el navegador por defecto
+   * @param URL 
+   */
+  public void goToURL(String URL) {
+	if (java.awt.Desktop.isDesktopSupported()) {
+	  java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+	  if (desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
+		try {
+		  java.net.URI uri = new java.net.URI(URL);
+		  desktop.browse(uri);
+		} catch (URISyntaxException | IOException ex) {
+		  Logger.getLogger(GUILogInController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+	  }
+	}
+  }
+
 
 }

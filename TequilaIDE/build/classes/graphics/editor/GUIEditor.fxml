@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="780.0" prefWidth="1395.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="55.0" prefWidth="1366.0">
          <children>
@@ -35,11 +35,6 @@
                   <Menu fx:id="menuTools" mnemonicParsing="false" text="%menuTools">
                      <items>
 						<MenuItem fx:id="menuItemAddNewCollaborator" mnemonicParsing="false" onAction="#addNewCollaborator" text="%menuItemAddCollaborator" />
-                     </items>
-                  </Menu>
-                  <Menu fx:id="menuHelp" mnemonicParsing="false" text="%menuHelp">
-                     <items>
-                        <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" text="%menuAbout" />
                      </items>
                   </Menu>
                </menus>

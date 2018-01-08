@@ -484,7 +484,7 @@ public class GUIEditorController implements Initializable {
   void addTab() {
 	String newFile = rb.getString("intStringNewClass");
 	String fileName = rb.getString("intStringClassName");
-	String className = Tools.displayTextInputDialog(newFile, fileName, "^[a-zA-Z0-9]*$");
+	String className = Tools.displayTextInputDialog(newFile, fileName, "^[a-zA-Z0-9]*$", rb);
 	if (!className.equals("")) {
 	  SocketFile socketFile = new SocketFile();
 	  socketFile.createNewFile(className, "", selectedProject.getIdProyecto(), selectedProject.getLenguaje());

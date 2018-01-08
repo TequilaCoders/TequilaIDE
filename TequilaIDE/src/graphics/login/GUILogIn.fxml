@@ -37,7 +37,7 @@
                   <Font name="Proxima Nova ScOsf Th Regular" size="24.0" />
                </font>
             </Label>
-            <Hyperlink fx:id="botonCrearCuenta" layoutX="135.0" layoutY="444.0" onAction="#openDrawer" text="%hpSignUp" underline="true">
+            <Hyperlink fx:id="botonCrearCuenta" layoutX="135.0" layoutY="444.0" onAction="#openDrawer" text="%hpSignUp" textFill="#66d4ff" underline="true">
                <font>
                   <Font name="Proxima Nova Alt Rg Bold" size="15.0" />
                </font>
@@ -121,7 +121,7 @@
                   <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
                </font>
             </Label>
-            <Hyperlink layoutX="61.0" layoutY="600.0" text="%hpGithub" textFill="#17a589" underline="true">
+            <Hyperlink fx:id="hpGithub" layoutX="61.0" layoutY="600.0" text="%hpGithub" textFill="#17a589" underline="true">
                <font>
                   <Font name="Proxima Nova Alt Rg Regular" size="14.0" />
                </font>
