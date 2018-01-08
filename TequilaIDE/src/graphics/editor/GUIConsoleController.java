@@ -13,7 +13,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import static tequilaide.TequilaIDE.socket;
 
@@ -33,6 +32,31 @@ public class GUIConsoleController implements Initializable {
   @Override
   public void initialize(URL url, ResourceBundle rb) {
 	this.rb = rb;
+	listenServer();
+  }  
+  
+  /**
+   * Abre la ventana GUIConsole
+   * @param fileExplorerStage
+   * @param rb 
+   */
+  public void openConsole(Stage fileExplorerStage, ResourceBundle rb){
+	Stage stagePrincipal = new Stage();
+	try {
+	  FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/GUIConsole.fxml"), rb);
+	  Parent root = (Parent) loader.load();
+	  Scene scene = new Scene(root);
+	  stagePrincipal.setScene(scene);
+	  stagePrincipal.show();
+	} catch (IOException ex) {
+	  Logger.getLogger(GUIConsoleController.class.getName()).log(Level.SEVERE, null, ex);
+	}
+  }
+  
+  /**
+   * Se mantiene a la escucha de eventos emitidos por el servidor. 
+   */
+  public void listenServer() {
 	socket.on("compilationFinish", new Emitter.Listener() {
 	  @Override
 	  public void call(Object... os) {
@@ -40,9 +64,11 @@ public class GUIConsoleController implements Initializable {
 		  String intStringCompilationResult;
 		  if ((int) os[0] == 0) {
 			intStringCompilationResult = rb.getString("successfulCompilation");
-			taConsole.setText(taConsole.getText()+ "\n\n" +intStringCompilationResult);
+			taConsole.setText(taConsole.getText() + "\n\n" + intStringCompilationResult);
 		  } else {
-			taConsole.setText(taConsole.getText()+ "\n\n" + os[1]);
+			if (os.length > 1) {
+			  taConsole.setText(taConsole.getText() + "\n\n" + os[1]);
+			}
 		  }
 		});
 	  }
@@ -51,25 +77,8 @@ public class GUIConsoleController implements Initializable {
 	socket.on("operationFinish", new Emitter.Listener() {
 	  @Override
 	  public void call(Object... os) {
-		Platform.runLater(() -> {
-		  taConsole.setText(taConsole.getText() + "\n\n" + (String) os[0]);
-		});
+		Platform.runLater(() -> taConsole.setText(taConsole.getText() + "\n\n" + (String) os[0]));
 	  }
 	});
-  }  
-  
-  public void openConsole(Stage fileExplorerStage, ResourceBundle rb){
-	Stage stagePrincipal = new Stage();
-	try {
-	  FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/editor/GUIConsole.fxml"), rb);
-	  Parent root = (Parent) loader.load();
-	  Scene scene = new Scene(root);
-
-	  stagePrincipal.setScene(scene);
-	  stagePrincipal.setTitle("TequilaIDE");
-	  stagePrincipal.show();
-	} catch (IOException ex) {
-	  Logger.getLogger(GUIConsoleController.class.getName()).log(Level.SEVERE, null, ex);
-	}
   }
 }

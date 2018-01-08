@@ -2,7 +2,6 @@ package graphic.tools;
 
 import graphics.tools.Tools;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import logic.domain.Project;
 import static org.junit.Assert.assertEquals;

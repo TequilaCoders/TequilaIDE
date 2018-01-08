@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package graphics.editor;
 
 import com.jfoenix.controls.JFXCheckBox;
@@ -18,14 +13,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import logic.domain.File;
 import logic.domain.Project;
-import org.json.JSONObject;
-import static tequilaide.TequilaIDE.socket;
+import logic.sockets.SocketProject;
 
 /**
  * FXML Controller class
@@ -44,8 +37,7 @@ public class GUIRunProjectController implements Initializable {
   private Button buttonRunProgram;
   
   private Project projectToRun; 
-  private ResourceBundle rb; 
-  private IU_EditorController parent; 
+  private GUIEditorController parent; 
   private List<File> fileList;
 
   /**
@@ -53,7 +45,6 @@ public class GUIRunProjectController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
-	this.rb = rb; 
 	cbMainClass.getItems().addAll(fileList);
 	cbMainClass.getSelectionModel().selectFirst();
 	
@@ -70,7 +61,7 @@ public class GUIRunProjectController implements Initializable {
 	this.projectToRun = projectToRun;
   }
 
-  public void setParent(IU_EditorController parent) {
+  public void setParent(GUIEditorController parent) {
 	this.parent = parent;
   }
 
@@ -78,6 +69,12 @@ public class GUIRunProjectController implements Initializable {
 	this.fileList = fileList;
   }
   
+  /**
+   * Carga la bentana GUIRunProject. 
+   * @param mainStage
+   * @param rb
+   * @param loader 
+   */
   public void openRunProject(Stage mainStage, ResourceBundle rb, FXMLLoader loader){
 	Stage stagePrincipal = new Stage();
 	try {
@@ -85,22 +82,23 @@ public class GUIRunProjectController implements Initializable {
 	  Scene scene = new Scene(root);
 	  stagePrincipal.setScene(scene);
 	  stagePrincipal.show();
-	} catch (Exception ex) {
+	} catch (IOException ex) {
 	  Logger.getLogger(GUIRunProjectController.class.getName()).log(Level.SEVERE, null, ex);
 	}
   }
   
+  /**
+   * Emite un evento al servidor que permite ejecutar el proyecto actual previamente compilado. 
+   */
   @FXML
   public void runProject() {
 	String mainClass = cbMainClass.getSelectionModel().getSelectedItem().getNombre();
 	String arguments = tfArguments.getText(); 
+	int projectId = projectToRun.getIdProyecto();
+	String language = projectToRun.getLenguaje();
 	
-	JSONObject projectToSend = new JSONObject();
-	projectToSend.accumulate("projectID", projectToRun.getIdProyecto());
-	projectToSend.accumulate("language", projectToRun.getLenguaje());
-	projectToSend.accumulate("mainClass", mainClass);
-	projectToSend.accumulate("arguments", arguments);
-	socket.emit("runProgram", projectToSend);
+	SocketProject socketProject = new SocketProject();
+	socketProject.runProject(projectId, language, mainClass, arguments);
 
 	parent.openConsole();
 	Stage stage = (Stage) cbMainClass.getScene().getWindow();

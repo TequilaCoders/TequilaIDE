@@ -1,22 +1,22 @@
 package graphics.profile;
 
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXSlider;
-import graphics.editor.GUIRunProjectController;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import logic.domain.User;
+import logic.sockets.SocketUser;
 
 /**
  * FXML Controller class
@@ -30,52 +30,83 @@ public class GUIProfileController implements Initializable {
   @FXML
   private JFXButton buttonEmail;
   @FXML
-  private JFXButton buttonBiography;
+  private TextArea taBiography;
   @FXML
-  private JFXComboBox<?> cbTheme;
+  private Button buttonAcept;
   @FXML
-  private JFXSlider sliderScale;
+  private Button buttonCancel;
   
   private User user; 
-  boolean emailDuplicated = false;
-  boolean aliasDuplicated = false;
-  private ResourceBundle rb; 
+
   /**
    * Initializes the controller class.
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
-	this.rb = rb; 
 	buttonAlias.setText(user.getAlias());
 	buttonEmail.setText(user.getCorreo());
-	buttonBiography.setText(user.getBiografia());
+	taBiography.setText(user.getBiografia());
 	
-	buttonAlias.setOnAction(event -> {
-	  openEditAlias();
-	});
-  }  
+	if (user.getBiografia() != null) {
+	  taBiography.setOnKeyReleased(event -> {
+		String newBio = taBiography.getText();
+		if (newBio.equals(user.getBiografia())) {
+		  buttonAcept.setDisable(true);
+		} else {
+		  buttonAcept.setDisable(false);
+		}
+	  });
+	} else {
+	  buttonAcept.setDisable(false);
+	}
+  }
   
-  public void openProfile(ResourceBundle rb, FXMLLoader loader){
+  /**
+   * Carga la ventana GUIProfileController.
+   * @param rb
+   * @param loader 
+   */
+  public void openBiography(ResourceBundle rb, FXMLLoader loader){
 	Stage stagePrincipal = new Stage();
 	try {
 	  Parent root = (Parent) loader.load();
 	  Scene scene = new Scene(root);
 	  stagePrincipal.setScene(scene);
 	  stagePrincipal.show();
-	} catch (Exception ex) {
-	  Logger.getLogger(GUIRunProjectController.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (IOException ex) {
+	  Logger.getLogger(GUIProfileController.class.getName()).log(Level.SEVERE, null, ex);
 	}
-  }
-  
-  public void openEditAlias(){
-	FXMLLoader loader = new FXMLLoader(getClass().getResource("/graphics/profile/GUIEditAlias.fxml"), rb);
-	GUIEditAliasController controller = new GUIEditAliasController();
-	loader.setController(controller);
-	controller.setAlias(user.getAlias());
-	controller.openEditAlias(rb, loader);
   }
   
   public void setUser(User user) {
     this.user = user;
   }
+  
+  /**
+   * Invoca un método de la capa lógica que permite actualizar la biografía del usuario actual. 
+   * @param event 
+   */
+  @FXML
+  void updateBiography(ActionEvent event) {
+	String newBio = taBiography.getText();
+	int userId = user.getIdUsuario();
+	
+	SocketUser socketUser = new SocketUser();
+	socketUser.updateBiography(userId, newBio);
+
+	user.setBiografia(taBiography.getText());
+	Stage stage = (Stage) buttonAcept.getScene().getWindow();
+	stage.close();
+  }
+
+  /**
+   * Cierra la ventana
+   * @param event 
+   */
+  @FXML
+  void cancel(ActionEvent event) {
+	Stage stage = (Stage) buttonAcept.getScene().getWindow();
+	stage.close();
+  }
+ 
 }

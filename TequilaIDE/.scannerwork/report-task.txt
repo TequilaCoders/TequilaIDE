@@ -1,6 +1,6 @@
-projectKey=proyecto:prueba
+projectKey=proyecto:TequilaIDE
 serverUrl=http://localhost:9000
-serverVersion=6.7.0.33306
-dashboardUrl=http://localhost:9000/dashboard/index/proyecto:prueba
-ceTaskId=AV_faVjcXjNDhCHG4PA9
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AV_faVjcXjNDhCHG4PA9
+serverVersion=6.7.1.35068
+dashboardUrl=http://localhost:9000/dashboard/index/proyecto:TequilaIDE
+ceTaskId=AWDWOGcc6Bs-iPFQxUeC
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWDWOGcc6Bs-iPFQxUeC

@@ -8,11 +8,12 @@ import static tequilaide.TequilaIDE.socket;
  * @author Alan Yoset García C
  */
 public class SocketCollaborator {
+  private static final String PROJECTID = "projectID";
   
   public void loadCollaborators(int projectID) {
     JSONObject projectIDToSend = new JSONObject();
     
-    projectIDToSend.accumulate("projectID", projectID);
+    projectIDToSend.accumulate(PROJECTID, projectID);
    
     socket.emit("getCollaborators", projectIDToSend);
   }
@@ -20,7 +21,7 @@ public class SocketCollaborator {
   public void deleteCollaborator(int collaboratorID, int projectID) {
     JSONObject collaborationToSend = new JSONObject();
 
-    collaborationToSend.accumulate("projectID", projectID);
+    collaborationToSend.accumulate(PROJECTID, projectID);
     collaborationToSend.accumulate("collaboratorID", collaboratorID);
 
     socket.emit("deleteCollaborator", collaborationToSend);
@@ -37,7 +38,7 @@ public class SocketCollaborator {
   public void addCollaborator(int collaboratorID, int projectID) {
     JSONObject collaborationToSend = new JSONObject();
     collaborationToSend.accumulate("collaboratorID", collaboratorID);
-    collaborationToSend.accumulate("projectID", projectID);
+    collaborationToSend.accumulate(PROJECTID, projectID);
 
     socket.emit("saveCollaborator", collaborationToSend);
   }

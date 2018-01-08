@@ -8,6 +8,8 @@ import static tequilaide.TequilaIDE.socket;
  * @author Alan Yoset García C
  */
 public class SocketFile {
+  private static final String FILEID = "fileID"; 
+  private static final String PROJECTID = "projectID";
   
   /**
    * Permite crear un nuevo archivo para un proyecto en la base de datos
@@ -21,7 +23,7 @@ public class SocketFile {
 
     fileToSave.accumulate("name", nameTab);
     fileToSave.accumulate("content", content);
-    fileToSave.accumulate("projectID", projectID);
+    fileToSave.accumulate(PROJECTID, projectID);
     fileToSave.accumulate("fileType", language);
     socket.emit("saveFile", fileToSave);
 	
@@ -34,7 +36,7 @@ public class SocketFile {
     JSONObject fileToSave = new JSONObject();
 
     fileToSave.accumulate("name", name);
-    fileToSave.accumulate("projectID", projectID);
+    fileToSave.accumulate(PROJECTID, projectID);
     fileToSave.accumulate("fileType", language);
     socket.emit("saveFile", fileToSave);
 	
@@ -46,7 +48,7 @@ public class SocketFile {
   public void updateFile(String content, int fileId, int room) {
     JSONObject fileToUpdate = new JSONObject();
 
-    fileToUpdate.accumulate("fileID", fileId);
+    fileToUpdate.accumulate(FILEID, fileId);
     fileToUpdate.accumulate("content", content);
     fileToUpdate.accumulate("room", room);
     socket.emit("updateFile", fileToUpdate);
@@ -55,28 +57,27 @@ public class SocketFile {
   public void deleteFile(int fileID) {
     JSONObject fileToSend = new JSONObject();
     
-    fileToSend.accumulate("fileID", fileID);
+    fileToSend.accumulate(FILEID, fileID);
     socket.emit("deleteFile", fileToSend);
   }
   
   public void loadFiles(int projectID) {
     JSONObject projectIDToSend = new JSONObject();
     
-    projectIDToSend.accumulate("projectID", projectID);
+    projectIDToSend.accumulate(PROJECTID, projectID);
     socket.emit("loadFiles", projectIDToSend);
   }
   
   public void reloadFiles(int projectID) {
     JSONObject projectIDToSend = new JSONObject();
     
-    projectIDToSend.accumulate("projectID", projectID);
+    projectIDToSend.accumulate(PROJECTID, projectID);
     socket.emit("reloadFiles", projectIDToSend);
   }
   
   public void joinFilesRoom(int fileID) {
     JSONObject fileToJoin = new JSONObject();
-    
-    fileToJoin.accumulate("fileID", fileID);
+    fileToJoin.accumulate(FILEID, fileID);
     socket.emit("joinFilesRoom", fileToJoin);
   }
   

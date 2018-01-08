@@ -9,7 +9,7 @@ public class Collaborator {
   private int idProyecto;
   private String alias;
   private String biografia;
-  private boolean Connected;
+  private boolean connected;
 
   public Collaborator() {
   }
@@ -52,11 +52,11 @@ public class Collaborator {
   }
 
   public boolean isConnected() {
-    return Connected;
+    return connected;
   }
 
-  public void setConnected(boolean Connected) {
-    this.Connected = Connected;
+  public void setConnected(boolean connected) {
+    this.connected = connected;
   }
   
   
