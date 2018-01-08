@@ -19,7 +19,7 @@ var connection = mysql.createConnection({
   multipleStatements: true,
   host: "127.0.0.1",
   user: "tequiladmin",
-  password: "tequiladmin",
+  password: "mezcal2112",
   database: "tequilaIDE",
   port: 3306
 });
@@ -324,7 +324,6 @@ io.on("connection", function(socket) {
       if (error) {
         throw error;
       } else {
-        console.log("ARCHIVO GUARDADO EXITOSAMENTE");
         socket.emit("fileSaved", result.insertId, file.name);
       }
     });
@@ -383,18 +382,12 @@ io.on("connection", function(socket) {
 
   function leaveFilesRoom(connection) {
 
-    //var room = file.fileID;
-
     socket.leave(filesRooms[0]);
     console.log("rooms archivos antes " + JSON.stringify(filesRooms));
-    //var index = filesRooms.findIndex(x => x.room==room);
-    //filesRooms.splice(index, 1);
 
     filesRooms = [];
 
     console.log("rooms archivos despues " + JSON.stringify(filesRooms));
-    //io.sockets.in(room).emit('disconnectFromFilesRoom', filesRooms);
-
   }
 
   function joinProjectRoom(connectedUser, connection) {
@@ -544,7 +537,7 @@ io.on("connection", function(socket) {
       }
     });
   }
-
+  
   function deleteCollaborator(collaboration, connection) {
     console.log([collaboration.collaboratorID]);
     var values = [collaboration.collaboratorID, collaboration.projectID];

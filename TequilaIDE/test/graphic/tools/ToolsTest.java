@@ -1,8 +1,13 @@
 package graphic.tools;
 
 import graphics.tools.Tools;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import logic.domain.Project;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -111,6 +116,22 @@ public class ToolsTest {
     Project expected = testProject4;
     Project result = Tools.searchProjectByName(testName, projectList);
     assertEquals(expected, result);
+  }
+  
+  @Test
+  public void testConnection() throws InterruptedException {
+    try {
+      Socket socket;
+      socket = IO.socket("http://localhost:7000");
+      socket.connect();
+      
+      Thread.sleep(10000);
+      boolean expectedResult = true;
+      boolean result = socket.connected();
+      assertEquals(expectedResult, result);
+    } catch (URISyntaxException ex) {
+      Logger.getLogger(ToolsTest.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
 }

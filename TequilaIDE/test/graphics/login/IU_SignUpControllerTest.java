@@ -1,6 +1,11 @@
 package graphics.login;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import java.net.URISyntaxException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

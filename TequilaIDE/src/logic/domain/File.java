@@ -14,6 +14,12 @@ public class File {
   public File() {
   }
   
+  public File(int idArchivo, int idProyecto, String nombre) {
+    this.idArchivo = idArchivo;
+    this.idProyecto = idProyecto;
+    this.nombre = nombre;
+  }
+  
   public File(int idArchivo, int idProyecto, String nombre, String tipo, String contenido) {
     this.idArchivo = idArchivo;
     this.idProyecto = idProyecto;

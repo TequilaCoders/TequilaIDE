@@ -108,5 +108,4 @@ public class GUIProfileController implements Initializable {
 	Stage stage = (Stage) buttonAcept.getScene().getWindow();
 	stage.close();
   }
- 
 }

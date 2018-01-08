@@ -57,7 +57,7 @@ public class GUISignUpController implements Initializable {
   boolean aliasDuplicated = false;
 
   private static final String FOCUS_COLOR = "orange";
-  private static final String PASSWORD_FIELD_STYLE = "\"-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF\"";
+  private static final String WRONG_FIELD_STYLE = "-fx-prompt-text-fill: orange; -fx-text-fill: #FFFFFF";
   private static final String DEFAULT_PASSWORD_STYLE = "-fx-prompt-text-fill: #6494ed; -fx-text-fill: #FFFFFF";
   private static final String SPECIAL_CHARACTERS = "hasSpecialCharacters";
   private static final String WRONG_LENGHT = "lenghtIsWrong";
@@ -398,7 +398,7 @@ public class GUISignUpController implements Initializable {
 	  String intStringWrongPasswordConfirmation = rb.getString("intStringWrongPasswordConfirmation");
 
 	  pfConfirmPassword.setPromptText(intStringWrongPasswordConfirmation);
-	  pfConfirmPassword.setStyle(PASSWORD_FIELD_STYLE);
+	  pfConfirmPassword.setStyle(WRONG_FIELD_STYLE);
 	  imConfirmPasswordRedCross.setVisible(true);
 	} else {
 	  passwordConfirmationIsReady = true;
@@ -476,6 +476,7 @@ public class GUISignUpController implements Initializable {
 	  Platform.runLater(() -> {
 		String intStringRegistrationSuccesful = rb.getString("intStringRegistrationSuccesful");
 		Tools.displayConfirmationAlert(intStringRegistrationSuccesful, rb);
+        eventLogIn();
 	  }
 	  );
 	}).on("aliasDuplicated", (Object... os) -> {
@@ -515,7 +516,7 @@ public class GUISignUpController implements Initializable {
 	textField.setFocusColor(Paint.valueOf(FOCUS_COLOR));
 	textField.setUnFocusColor(Paint.valueOf(FOCUS_COLOR));
 	textField.setPromptText(message);
-	textField.setStyle(PASSWORD_FIELD_STYLE);
+	textField.setStyle(WRONG_FIELD_STYLE);
 	ivRedCross.setVisible(true);
   }
 
@@ -546,7 +547,7 @@ public class GUISignUpController implements Initializable {
 	passwordField.setFocusColor(Paint.valueOf(FOCUS_COLOR));
 	passwordField.setUnFocusColor(Paint.valueOf(FOCUS_COLOR));
 	passwordField.setPromptText(message);
-	passwordField.setStyle(PASSWORD_FIELD_STYLE);
+	passwordField.setStyle(WRONG_FIELD_STYLE);
 	ivRedCross.setVisible(true);
   }
 

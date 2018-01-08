@@ -6,7 +6,7 @@ package logic.domain;
  */
 public class Collaborator {
   private int idUsuario; 
-  private int idProyecto;
+  private int room;
   private String alias;
   private String biografia;
   private boolean connected;
@@ -14,9 +14,10 @@ public class Collaborator {
   public Collaborator() {
   }
 
-  public Collaborator(int idUsuario, int idProyecto) {
+  public Collaborator(int idUsuario, int room, boolean connected) {
     this.idUsuario = idUsuario;
-    this.idProyecto = idProyecto;
+    this.room = room;
+    this.connected = connected;
   }
 
   public String getAlias() {
@@ -43,12 +44,12 @@ public class Collaborator {
     this.idUsuario = idUsuario;
   }
 
-  public int getIdProyecto() {
-    return idProyecto;
+  public int getRoom() {
+    return room;
   }
 
-  public void setIdProyecto(int idProyecto) {
-    this.idProyecto = idProyecto;
+  public void setRoom(int room) {
+    this.room = room;
   }
 
   public boolean isConnected() {

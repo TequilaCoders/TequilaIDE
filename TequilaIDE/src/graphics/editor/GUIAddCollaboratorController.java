@@ -213,7 +213,7 @@ public class GUIAddCollaboratorController implements Initializable {
    * @param collaboratorsList
    * @return 
    */
-  private boolean searchCollaboratorInList(int collaboratorID, List<Collaborator> collaboratorsList){
+  public boolean searchCollaboratorInList(int collaboratorID, List<Collaborator> collaboratorsList){
     boolean flag = false;
     for (int i = 0; i < collaboratorsList.size(); i++) {
       if (collaboratorsList.get(i).getIdUsuario() == collaboratorID) {

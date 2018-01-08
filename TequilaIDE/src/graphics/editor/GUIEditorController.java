@@ -231,7 +231,7 @@ public class GUIEditorController implements Initializable {
   void onDeleteFile(ActionEvent event) {
 	if (!tabPaneFiles.getSelectionModel().isEmpty()) {
 	  Tab tab = tabPaneFiles.getSelectionModel().getSelectedItem();
-	  File fileToDelete = searchFileByName(tab.getId());
+	  File fileToDelete = searchFileByName(tab.getId(), fileList);
 	  int fileID = fileToDelete.getIdArchivo();
 
 	  tab.getTabPane().getTabs().remove(tab);
@@ -248,7 +248,7 @@ public class GUIEditorController implements Initializable {
    * @param name
    * @return
    */
-  public File searchFileByName(String name) {
+  public File searchFileByName(String name, List<File> fileList) {
 	File foundFile = null;
 	for (int i = 0; i < fileList.size(); i++) {
 	  if (fileList.get(i).getNombre().equals(name)) {
@@ -343,15 +343,15 @@ public class GUIEditorController implements Initializable {
   public void hoverListeners() {
 	try {
 	  for (int i = 0; i < collaboratorsButtons.size(); i++) {
+        int index = i;
 
-		Collaborator collaborator = collaboratorsList.get(i);
 		ImageView im1 = (ImageView) collaboratorsButtons.get(i).getGraphic();
 
 		collaboratorsButtons.get(i).setOnMouseEntered((new EventHandler<MouseEvent>() {
 		  @Override
 		  public void handle(MouseEvent e) {
 
-			if (collaborator.isConnected()) {
+			if (collaboratorsList.get(index).isConnected()) {
 			  im1.setImage(new Image("/resources/icons/user_lightGreen.png"));
 			} else {
 			  im1.setImage(new Image("/resources/icons/user_yellow.png"));
@@ -363,7 +363,7 @@ public class GUIEditorController implements Initializable {
 		collaboratorsButtons.get(i).setOnMouseExited((new EventHandler<MouseEvent>() {
 		  @Override
 		  public void handle(MouseEvent e) {
-			if (collaborator.isConnected()) {
+			if (collaboratorsList.get(index).isConnected()) {
 			  im2.setImage(new Image("/resources/icons/user_forestGreen.png"));
 			} else {
 			  im2.setImage(new Image("/resources/icons/user_orange.png"));
@@ -568,6 +568,7 @@ public class GUIEditorController implements Initializable {
 
 	  controller.setSelectedProject(selectedProject);
 	  controller.setFileList(fileList);
+      controller.setCurrentTabs(currentTabs);
 	  controller.setEditorController(this);
 
 	  JFXTreeView pane = loader.load();
@@ -667,6 +668,8 @@ public class GUIEditorController implements Initializable {
 
 	  Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
 	  collaboratorsConnected = Arrays.asList(jsonFileList);
+      System.out.println("lo que recibio es " + os[0]);
+      System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
 	  collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
 
 	  Platform.runLater(() -> {
@@ -684,7 +687,7 @@ public class GUIEditorController implements Initializable {
 
   /**
    * Cambia el atributo "connected" de los colaboradores de la segunda lista recibida como parametro
-   * a verdadero, en base a los colaboradores del primera lista.
+   * a verdadero, en base a los colaboradores de la primera lista.
    * @param collaboratorsConnected
    * @param collaboratorsList
    * @return
@@ -692,36 +695,18 @@ public class GUIEditorController implements Initializable {
   public List<Collaborator> markCollaboratorsAsConnected(List<Collaborator> collaboratorsConnected,
 		  List<Collaborator> collaboratorsList) {
 
-	for (int i = 0; i < collaboratorsList.size(); i++) {
-	  collaboratorsList.get(i).setConnected(false);
+    List<Collaborator> collaboratorAuxiliar = collaboratorsList;
+	for (int i = 0; i < collaboratorAuxiliar.size(); i++) {
+	  collaboratorAuxiliar.get(i).setConnected(false);
 	}
-	for (int i = 0; i < collaboratorsList.size(); i++) {
+	for (int i = 0; i < collaboratorAuxiliar.size(); i++) {
 	  for (int j = 0; j < collaboratorsConnected.size(); j++) {
-		if (collaboratorsList.get(i).getIdUsuario() == collaboratorsConnected.get(j).getIdUsuario()) {
-		  collaboratorsList.get(i).setConnected(true);
+		if (collaboratorAuxiliar.get(i).getIdUsuario() == collaboratorsConnected.get(j).getIdUsuario()) {
+		  collaboratorAuxiliar.get(i).setConnected(true);
 		}
 	  }
 	}
-	return collaboratorsList;
-  }
-
-  /**
-   * Cambia el atributo "connected" de los colaboradores de la segunda lista recibida
-   * como parametro a falso, en base a los colaboradores del primera lista.
-   * @param collaboratorsConnected
-   * @param collaboratorsList
-   * @return
-   */
-  public List<Collaborator> markCollaboratorsAsDisconnected(List<Collaborator> collaboratorsConnected,
-		  List<Collaborator> collaboratorsList) {
-	for (int i = 0; i < collaboratorsConnected.size(); i++) {
-	  for (int j = 0; j < collaboratorsList.size(); j++) {
-		if (collaboratorsList.get(j).getIdUsuario() == collaboratorsConnected.get(i).getIdUsuario()) {
-		  collaboratorsList.get(j).setConnected(false);
-		}
-	  }
-	}
-	return collaboratorsList;
+	return collaboratorAuxiliar;
   }
 
   /**
@@ -741,6 +726,7 @@ public class GUIEditorController implements Initializable {
 	  Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
 	  aux = Arrays.asList(jsonFileList);
 	  collaboratorsList = new ArrayList<>(aux);
+      collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
 
 	  Platform.runLater(() -> {
 		collaboratorsButtons.clear();
@@ -770,6 +756,8 @@ public class GUIEditorController implements Initializable {
 
 	  Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
 	  collaboratorsConnected = Arrays.asList(jsonFileList);
+      System.out.println("lo que recibio es " + os[0]);
+      System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
 	  collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
 
 	  Platform.runLater(() -> {
@@ -797,11 +785,13 @@ public class GUIEditorController implements Initializable {
 	  loadCollaborators();
 	  Platform.runLater(() -> {
 		collaboratorsButtons.clear();
-
+        
+        System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
 		collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
 
 		setCollaboratorsIcons();
 		menuItemsSelectedAction();
+        
 	  });
 	});
   }

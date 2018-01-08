@@ -15,25 +15,6 @@ import static org.junit.Assert.*;
  * @author Alan Yoset García C
  */
 public class GUINewProjectControllerTest {
-  
-  public GUINewProjectControllerTest() {
-  }
-  
-  @BeforeClass
-  public static void setUpClass() {
-  }
-  
-  @AfterClass
-  public static void tearDownClass() {
-  }
-  
-  @Before
-  public void setUp() {
-  }
-  
-  @After
-  public void tearDown() {
-  }
 
   @Test
   public void testProjectExist(){
