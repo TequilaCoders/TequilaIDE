@@ -267,7 +267,7 @@ public class Tools {
   
   public static void showNotification(String title, String text, Pos pos) {
 	Notifications notification;
-	notification = Notifications.create().title(title).text(text).hideAfter(Duration.seconds(1)).position(pos);
+	notification = Notifications.create().title(title).text(text).hideAfter(Duration.seconds(2)).position(pos);
 	notification.show();
   }
  

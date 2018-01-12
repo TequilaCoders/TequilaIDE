@@ -64,8 +64,10 @@ public class GUIAddCollaboratorController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
-    this.rb = rb;
+    listenServer();
+	this.rb = rb;
     savedStatus = false;
+	
   }
 
   public void setCollaboratorsList(List<Collaborator> collaboratorsList) {
@@ -116,30 +118,7 @@ public class GUIAddCollaboratorController implements Initializable {
     SocketCollaborator socketCollaborator = new SocketCollaborator();
     socketCollaborator.searchCollaborator(searchCriteria);
 
-    socket.on("searchFinalized", (Object... os) -> {
-      if ((boolean) os[0]) {
-
-        JSONArray listRecovered;
-        JSONObject objectRecovered;
-        String jsonString;
-        User receivedUser;
-
-        listRecovered = (JSONArray) os[1];
-        objectRecovered = listRecovered.getJSONObject(0);
-        jsonString = objectRecovered.toString();
-
-        Gson gson = new Gson();
-
-        receivedUser = gson.fromJson(jsonString, User.class);
-        Platform.runLater(() -> {
-          loadInformation(receivedUser);
-        });
-      } else {
-        Platform.runLater(() -> {
-          loadNoMatchMessage();
-        });
-      }
-    });
+    
   }
 
   /**
@@ -176,7 +155,7 @@ public class GUIAddCollaboratorController implements Initializable {
   @FXML
   void addCollaborator(ActionEvent event) {
     int collaboratorID = collaboratorToSave.getIdUsuario();
-
+	String alias = collaboratorToSave.getAlias();
     boolean isCollaboratorRepeated = searchCollaboratorInList(collaboratorID, collaboratorsList);
     boolean isCollaboratorAndUserTheSame = isCollaboratorAndUserTheSame(collaboratorID);
     boolean isCollaboratorLimitSurpassed = checkCollaboratorLimits();
@@ -192,17 +171,7 @@ public class GUIAddCollaboratorController implements Initializable {
       Tools.displayWarningAlert(intStringCollaboratorSurpassed, rb);
     } else {
       SocketCollaborator socketCollaborator = new SocketCollaborator();
-      socketCollaborator.addCollaborator(collaboratorID, projectID);
-
-      socket.on("collaborationSaved", (Object... os) -> {
-        Platform.runLater(() -> {
-          savedStatus = true;
-
-          Stage stage = (Stage) labelAlias.getScene().getWindow();
-          stage.close();
-         
-        });
-      });
+      socketCollaborator.addCollaborator(collaboratorID, projectID, alias, user.getAlias());
     }
   }
 
@@ -246,5 +215,42 @@ public class GUIAddCollaboratorController implements Initializable {
       flag = true;
     }
     return flag;
+  }
+  
+  public void listenServer(){
+	socket.on("searchFinalized", (Object... os) -> {
+      if ((boolean) os[0]) {
+
+        JSONArray listRecovered;
+        JSONObject objectRecovered;
+        String jsonString;
+        User receivedUser;
+
+        listRecovered = (JSONArray) os[1];
+        objectRecovered = listRecovered.getJSONObject(0);
+        jsonString = objectRecovered.toString();
+
+        Gson gson = new Gson();
+
+        receivedUser = gson.fromJson(jsonString, User.class);
+        Platform.runLater(() -> {
+          loadInformation(receivedUser);
+        });
+      } else {
+        Platform.runLater(() -> {
+          loadNoMatchMessage();
+        });
+      }
+    });
+	
+	socket.on("collaborationSaved", (Object... os) -> {
+        Platform.runLater(() -> {
+          savedStatus = true;
+
+          Stage stage = (Stage) labelAlias.getScene().getWindow();
+          stage.close();
+         
+        });
+      });
   }
 }

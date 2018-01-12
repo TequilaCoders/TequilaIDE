@@ -9,7 +9,7 @@ var io = require("socket.io")(7000);
 var mysql = require("mysql");
 
 var room;
-
+var usersOnline = [];
 var users;
 var projectsRooms = [];
 var filesRooms = [];
@@ -108,6 +108,12 @@ io.on("connection", function(socket) {
 
   socket.on("saveCollaborator", function(collaboration) {
     saveCollaborator(collaboration, connection);
+    var roomUser = searchOnlineUser(collaboration.alias);
+    if (roomUser != null) {
+      console.log("se encontro el user");
+      //en este tendré que ponerle que vuelva a solicitar los proyectos compartidos además de un mensaje
+      socket.broadcast.to(roomUser).emit("collaborationInvitation", collaboration.mainCollaboratorAlias);
+    }
   });
 
   socket.on("deleteCollaborator", function(collaboration) {
@@ -140,6 +146,16 @@ io.on("connection", function(socket) {
   socket.on("updateBiography", function(user) {
     updateBiography(user, connection);
   });
+
+  function searchOnlineUser(user) {
+    for (i = 0; i < usersOnline.length; i++) {
+      if (user === usersOnline[i].username) {
+        return usersOnline[i].room
+      }
+    }
+    return null;
+  }
+
   /**
    * Crea un archivo
    * @param {string} fileName nombre del archivo
@@ -245,6 +261,9 @@ io.on("connection", function(socket) {
               biografia: resultado[0].biografia,
               correo: resultado[0].correo
             };
+            socket.username = user.alias;
+            socket.room = socket.id;
+            usersOnline.push(socket);
             socket.emit("approved", true, usuario);
           } else {
             socket.emit("approved", false, 1);
@@ -537,7 +556,7 @@ io.on("connection", function(socket) {
       }
     });
   }
-  
+
   function deleteCollaborator(collaboration, connection) {
     console.log([collaboration.collaboratorID]);
     var values = [collaboration.collaboratorID, collaboration.projectID];

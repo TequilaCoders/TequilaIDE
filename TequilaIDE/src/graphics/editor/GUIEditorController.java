@@ -134,6 +134,7 @@ public class GUIEditorController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+	listenServer();
 	menuItemNew.setOnAction(e -> {
 	  addTab();
 	});
@@ -173,7 +174,7 @@ public class GUIEditorController implements Initializable {
 
 	menuButtonUser.setOnMouseEntered((e -> imageVUser.setImage(new Image("/resources/icons/user_yellow.png"))));
 	menuButtonUser.setOnMouseExited((e -> imageVUser.setImage(new Image("/resources/icons/user_white.png"))));
-	listenServer();
+	
   }
 
   public void setSelectedProject(Project selectedProject) {
@@ -207,7 +208,6 @@ public class GUIEditorController implements Initializable {
 
   /**
    * Elimina el proyecto actual, primero elimina la lista de archivos y la lista de colaboradores.
-   *
    * @param event
    */
   @FXML
@@ -636,21 +636,6 @@ public class GUIEditorController implements Initializable {
   public void reloadFiles() {
 	SocketFile socketFile = new SocketFile();
 	socketFile.reloadFiles(selectedProject.getIdProyecto());
-
-	socket.on("filesReloaded", (Object... os) -> {
-	  List<File> aux;
-
-	  JSONArray receivedList = (JSONArray) os[1];
-	  String jsonString = receivedList.toString();
-
-	  Gson gson = new Gson();
-
-	  File[] jsonFileList = gson.fromJson(jsonString, File[].class);
-	  aux = Arrays.asList(jsonFileList);
-
-	  fileList.clear();
-	  fileList = new ArrayList<>(aux);
-	});
   }
 
   /**
@@ -659,30 +644,6 @@ public class GUIEditorController implements Initializable {
   public void joinProjectRoom() {
 	SocketProject socketProject = new SocketProject();
 	socketProject.joinProjectRoom(selectedProject.getIdProyecto(), user.getIdUsuario());
-
-	socket.on("connectedToProjectRoom", (Object... os) -> {
-	  JSONArray receivedList = (JSONArray) os[0];
-	  String jsonString = receivedList.toString();
-
-	  Gson gson = new Gson();
-
-	  Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
-	  collaboratorsConnected = Arrays.asList(jsonFileList);
-      System.out.println("lo que recibio es " + os[0]);
-      System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
-	  collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
-
-	  Platform.runLater(() -> {
-		collaboratorsButtons.clear();
-		setCollaboratorsIcons();
-		menuItemsSelectedAction();
-		if (user.getIdUsuario() != (int) os[1]) {
-		  String notificationString = rb.getString("notificationNewCollaborator");
-		  Tools.showNotification("Tequila IDE", notificationString, Pos.TOP_RIGHT);
-		}
-
-	  });
-	});
   }
 
   /**
@@ -715,25 +676,6 @@ public class GUIEditorController implements Initializable {
   public void loadCollaborators() {
 	SocketCollaborator socketCollaborator = new SocketCollaborator();
 	socketCollaborator.loadCollaborators(selectedProject.getIdProyecto());
-
-	socket.on("collaboratorsRecovered", (Object... os) -> {
-	  List<Collaborator> aux = new ArrayList<>();
-	  JSONArray receivedList = (JSONArray) os[0];
-	  String jsonString = receivedList.toString();
-
-	  Gson gson = new Gson();
-
-	  Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
-	  aux = Arrays.asList(jsonFileList);
-	  collaboratorsList = new ArrayList<>(aux);
-      collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
-
-	  Platform.runLater(() -> {
-		collaboratorsButtons.clear();
-		setCollaboratorsIcons();
-		menuItemsSelectedAction();
-	  });
-	});
   }
 
   /**
@@ -756,8 +698,8 @@ public class GUIEditorController implements Initializable {
 
 	  Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
 	  collaboratorsConnected = Arrays.asList(jsonFileList);
-      System.out.println("lo que recibio es " + os[0]);
-      System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
+	  System.out.println("lo que recibio es " + os[0]);
+	  System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
 	  collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
 
 	  Platform.runLater(() -> {
@@ -773,6 +715,7 @@ public class GUIEditorController implements Initializable {
 		if (deletedUserID == user.getIdUsuario()) {
 		  String intStringYourCollaborationDeleted = rb.getString("intStringYourCollaborationDeleted");
 		  Tools.displayWarningAlert(intStringYourCollaborationDeleted, rb);
+		  returnToFileExplorer();
 		} else {
 		  loadCollaborators();
 		  collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
@@ -785,13 +728,65 @@ public class GUIEditorController implements Initializable {
 	  loadCollaborators();
 	  Platform.runLater(() -> {
 		collaboratorsButtons.clear();
-        
-        System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
+
+		System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
 		collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
 
 		setCollaboratorsIcons();
 		menuItemsSelectedAction();
-        
+
+	  });
+	}).on("filesReloaded", (Object... os) -> {
+	  List<File> aux;
+
+	  JSONArray receivedList = (JSONArray) os[1];
+	  String jsonString = receivedList.toString();
+
+	  Gson gson = new Gson();
+
+	  File[] jsonFileList = gson.fromJson(jsonString, File[].class);
+	  aux = Arrays.asList(jsonFileList);
+
+	  fileList.clear();
+	  fileList = new ArrayList<>(aux);
+	}).on("connectedToProjectRoom", (Object... os) -> {
+	  JSONArray receivedList = (JSONArray) os[0];
+	  String jsonString = receivedList.toString();
+
+	  Gson gson = new Gson();
+
+	  Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
+	  collaboratorsConnected = Arrays.asList(jsonFileList);
+	  System.out.println("lo que recibio es " + os[0]);
+	  System.out.println("colaboradores conectados " + collaboratorsConnected.toString());
+	  collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
+
+	  Platform.runLater(() -> {
+		collaboratorsButtons.clear();
+		setCollaboratorsIcons();
+		menuItemsSelectedAction();
+		if (user.getIdUsuario() != (int) os[1]) {
+		  String notificationString = rb.getString("notificationNewCollaborator");
+		  Tools.showNotification("Tequila IDE", notificationString, Pos.TOP_RIGHT);
+		}
+
+	  });
+	}).on("collaboratorsRecovered", (Object... os) -> {
+	  List<Collaborator> aux = new ArrayList<>();
+	  JSONArray receivedList = (JSONArray) os[0];
+	  String jsonString = receivedList.toString();
+
+	  Gson gson = new Gson();
+
+	  Collaborator[] jsonFileList = gson.fromJson(jsonString, Collaborator[].class);
+	  aux = Arrays.asList(jsonFileList);
+	  collaboratorsList = new ArrayList<>(aux);
+	  collaboratorsList = markCollaboratorsAsConnected(collaboratorsConnected, collaboratorsList);
+
+	  Platform.runLater(() -> {
+		collaboratorsButtons.clear();
+		setCollaboratorsIcons();
+		menuItemsSelectedAction();
 	  });
 	});
   }

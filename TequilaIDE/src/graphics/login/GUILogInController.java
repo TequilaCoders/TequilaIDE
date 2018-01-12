@@ -89,6 +89,7 @@ public class GUILogInController implements Initializable {
 	});
 	
     openConnection();
+	listenServer();
   }
 
   /**
@@ -165,29 +166,6 @@ public class GUILogInController implements Initializable {
     
     SocketUser socketUser = new SocketUser();
     socketUser.accesUser(alias, password);
-
-    socket.on("approved", (Object... os) -> {
-     Platform.runLater(() -> {
-		if ((boolean) os[0]) {
-		  User userReceived = createUser(os[1]);
-		  Stage stage = (Stage) tfUser.getScene().getWindow();
-		  GUIFileExplorerController newScene = new GUIFileExplorerController();
-		  newScene.openFileExplorer(stage, rb, userReceived);
-		  
-		} else {
-		  GUISignUpController signController = new GUISignUpController();
-		  if ((int) os[1] == 1) {
-			String promptPassword = rb.getString("promptWrongPassword");
-			signController.showPasswordMessage(promptPassword, pfPassword, passwordRedCross);
-		  } else {
-			String promptUser = rb.getString("promptWrongUser");
-			signController.showTextFieldMessage(promptUser, tfUser, aliasRedCross);
-		  }
-		}
-	  }
-	  );
-	});
-
   }
 
   /**
@@ -234,7 +212,7 @@ public class GUILogInController implements Initializable {
    */
   public void openConnection() {
     try {
-      socket = IO.socket("http://192.168.43.68:7000");
+      socket = IO.socket("http://localhost:7000");
       socket.on(Socket.EVENT_DISCONNECT, (Object... os) -> {
         Platform.runLater(() -> {
           if (!changingLanguage) { //Esto para que? 
@@ -258,14 +236,14 @@ public class GUILogInController implements Initializable {
   
   /**
    * Permite abrir una página web desde el navegador por defecto
-   * @param URL 
+   * @param url
    */
-  public void goToURL(String URL) {
+  public void goToURL(String url) {
 	if (java.awt.Desktop.isDesktopSupported()) {
 	  java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
 	  if (desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
 		try {
-		  java.net.URI uri = new java.net.URI(URL);
+		  java.net.URI uri = new java.net.URI(url);
 		  desktop.browse(uri);
 		} catch (URISyntaxException | IOException ex) {
 		  Logger.getLogger(GUILogInController.class.getName()).log(Level.SEVERE, null, ex);
@@ -273,6 +251,30 @@ public class GUILogInController implements Initializable {
 		
 	  }
 	}
+  }
+  
+  public void listenServer(){
+	socket.on("approved", (Object... os) -> {
+     Platform.runLater(() -> {
+		if ((boolean) os[0]) {
+		  User userReceived = createUser(os[1]);
+		  Stage stage = (Stage) tfUser.getScene().getWindow();
+		  GUIFileExplorerController newScene = new GUIFileExplorerController();
+		  newScene.openFileExplorer(stage, rb, userReceived);
+		  
+		} else {
+		  GUISignUpController signController = new GUISignUpController();
+		  if ((int) os[1] == 1) {
+			String promptPassword = rb.getString("promptWrongPassword");
+			signController.showPasswordMessage(promptPassword, pfPassword, passwordRedCross);
+		  } else {
+			String promptUser = rb.getString("promptWrongUser");
+			signController.showTextFieldMessage(promptUser, tfUser, aliasRedCross);
+		  }
+		}
+	  }
+	  );
+	});
   }
 
 

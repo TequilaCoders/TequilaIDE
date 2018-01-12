@@ -22,6 +22,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -115,13 +116,14 @@ public class GUIFileExplorerController implements Initializable {
    */
   @Override
   public void initialize(URL url, ResourceBundle rb) {
+	listenServer();
 	this.rb = rb;
 	SocketProject socketProject = new SocketProject();
 
 	socketProject.loadProjects(user.getIdUsuario());
 	socketProject.loadSharedProjects(user.getIdUsuario());
 
-    listenServer();
+    
 
     listeners();
     loadProfileMenuButtons();
@@ -439,6 +441,13 @@ public class GUIFileExplorerController implements Initializable {
 	}).on("biographySaved", (Object... os) -> {
 	  Platform.runLater(() -> {
 		Tools.displayInformation(rb.getString("confirmBiographyUpdated"), rb.getString("biographyUpdated"));
+	  });
+	}).on("collaborationInvitation", (Object... os) -> {
+	  Platform.runLater(() -> {
+		String title = rb.getString("invitation");
+		Tools.showNotification(title, (String) os[0] +" "+ rb.getString("collaborationInvitation"), Pos.TOP_RIGHT);
+		SocketProject socketProject = new SocketProject();
+		socketProject.loadSharedProjects(user.getIdUsuario());
 	  });
 	});
   }

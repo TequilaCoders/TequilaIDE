@@ -35,10 +35,12 @@ public class SocketCollaborator {
     socket.emit("searchUser", searchCriteriaToSend);
   }
   
-  public void addCollaborator(int collaboratorID, int projectID) {
+  public void addCollaborator(int collaboratorID, int projectID, String alias, String mainCollaboratorAlias) {
     JSONObject collaborationToSend = new JSONObject();
     collaborationToSend.accumulate("collaboratorID", collaboratorID);
     collaborationToSend.accumulate(PROJECTID, projectID);
+	collaborationToSend.accumulate("alias", alias);
+	collaborationToSend.accumulate("mainCollaboratorAlias", mainCollaboratorAlias);
 
     socket.emit("saveCollaborator", collaborationToSend);
   }

@@ -4,12 +4,17 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/tools/Tools.java</file>
+            <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/editor/GUIConsoleController.java</file>
+            <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/editor/GUITabController.java</file>
+            <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/explorer/GUIFileExplorerController.java</file>
             <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/profile/GUIProfileController.java</file>
             <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/editor/GUIAddCollaboratorController.java</file>
+            <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/explorer/GUINewProjectController.java</file>
             <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/login/GUILogInController.java</file>
-            <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/test/graphics/editor/GUIFileTreeControllerTest.java</file>
             <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/editor/GUIFileTreeController.java</file>
             <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/editor/GUIEditorController.java</file>
+            <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/graphics/login/GUISignUpController.java</file>
+            <file>file:/C:/Users/Alan%20Yoset%20García%20C/Documents/GitHub/TequilaIDE/TequilaIDE/src/logic/sockets/SocketCollaborator.java</file>
         </group>
     </open-files>
 </project-private>
